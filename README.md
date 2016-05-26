@@ -1,28 +1,11 @@
-# Webpack React generator
+# webpack-example
+Example Javascript ES6 project with React, React Router and Flux (Alt)
+Read the article related to this project on our UnderTheHood blog: https://underthehood.myob.com/changing-of-the-guard-in-web-technologies/
 
-This is a simple Webpack static site generator based on isomorphic React components.
+## Requirements
+Make sure you have installed NodeJS and NPM first and that you can run them from the command line.
+* Run `npm install` first to install dependencies
 
-It's using BrowserSync to run development server with live reload, ES2015 via Babel, PostCSS
-(with PreCSS and Autoprefixer) and CSS Modules.
-
-## Installation
-
-Install NPM dependencies
-
-```
-npm install
-```
-
-## Usage
-
-To run dev server
-
-```
-npm start
-```
-
-To build static files in `dist` directory
-
-```
-npm run build
-```
+## Commands
+* `npm run build` - Build the project
+* `npm run watch` - Start the Webpack dev server

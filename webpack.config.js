@@ -1,54 +1,48 @@
-var fs = require('fs');
+'use strict';
 
-var webpack = require('webpack');
-var precss = require('precss');
-var autoprefixer = require('autoprefixer');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var StaticSiteGeneratorPlugin = require('static-site-generator-webpack-plugin');
-var ejs = require('ejs');
-var template = ejs.compile(fs.readFileSync(__dirname + '/src/template.html', 'utf-8'));
+var webpack = require('webpack'),
+  HtmlWebpackPlugin = require('html-webpack-plugin'),
+  path = require('path'),
+  srcPath = path.join(__dirname, 'src');
 
-var routes = [
-  '/',
-  '/item'
-];
-
-var config = {
-  entry: './src/index.js',
-
+module.exports = {
+  target: 'web',
+  cache: true,
+  entry: {
+    module: path.join(srcPath, 'module.js'),
+    common: ['react', 'react-router', 'alt']
+  },
+  resolve: {
+    root: srcPath,
+    extensions: ['', '.js'],
+    modulesDirectories: ['node_modules', 'src']
+  },
   output: {
-    filename: 'bundle.js',
-    path: 'dist',
-    libraryTarget: 'umd'
+    path: path.join(__dirname, 'tmp'),
+    publicPath: '',
+    filename: '[name].js',
+    library: ['Example', '[name]'],
+    pathInfo: true
   },
 
   module: {
     loaders: [
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style', 'css?modules&sourceMap!postcss')
-      },
-      {
-        test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
-        loader: 'babel'
-      }
+      {test: /\.js?$/, exclude: /node_modules/, loader: 'babel?cacheDirectory'}
     ]
   },
-
-  postcss: function() {
-    return [
-      autoprefixer({ browsers: ['> 1%', 'last 2 versions', 'IE 9']} ),
-      precss
-    ];
-  },
-
   plugins: [
-    new ExtractTextPlugin('bundle.css', { allChunks: true }),
-    new StaticSiteGeneratorPlugin('main', routes, { template: template })
+    new webpack.optimize.CommonsChunkPlugin('common', 'common.js'),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: 'src/index.html'
+    }),
+    new webpack.NoErrorsPlugin()
   ],
 
-  devtool: 'cheap-module-source-map'
+  debug: true,
+  devtool: 'eval-cheap-module-source-map',
+  devServer: {
+    contentBase: './tmp',
+    historyApiFallback: true
+  }
 };
-
-module.exports = config;

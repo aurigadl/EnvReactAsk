@@ -1,13 +1,13 @@
-const React = require('react');
-const { Route, IndexRoute } = require('react-router');
+import React from 'react';
+import {Route} from 'react-router';
 
-const App = require('./modules/App');
-const Home = require('./modules/Home');
-const Item = require('./modules/Item');
+import Main from 'components/main';
+import Example from 'components/example';
 
-module.exports = (
-  <Route path="/" component={App}>
-    <IndexRoute component={Home}/>
-    <Route path="/item" component={Item}/>
+const routes = (
+  <Route handler={Main}>
+    <Route name='example' handler={Example}/>
   </Route>
 );
+
+export default routes;
