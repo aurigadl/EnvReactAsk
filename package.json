@@ -1,8 +1,7 @@
 {
   "name": "reactAsk",
   "version": "0.0.1",
-  "description": "management questions for evaluations with statistics and
-  results management",
+  "description": "management questions for evaluations with statistics and results management",
   "main": "dist/index.js",
   "engines": {
     "node": "6.0.0"
@@ -25,7 +24,8 @@
   "dependencies": {
     "alt": "0.18.4",
     "babel-runtime": "6.9.0",
-    "react": "15.1.0",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
     "react-router": "2.4.1"
   },
   "devDependencies": {
