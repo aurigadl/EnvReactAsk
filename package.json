@@ -2,13 +2,13 @@
   "name": "reactAsk",
   "version": "0.0.1",
   "description": "management questions for evaluations with statistics and results management",
-  "main": "dist/index.js",
+  "main": "src/modules.js",
   "engines": {
     "node": "6.0.0"
   },
   "scripts": {
     "build": "webpack --progress --profile --colors",
-    "watch": "webpack-dev-server --hot --inline --progress --colors --port 3000 ",
+    "watch": "webpack-dev-server --hot --inline --progress --colors --port 3000 --content-base ",
     "test": "echo \"No unit tests and e2e tests yet\" && exit 1"
   },
   "repository": {
@@ -29,8 +29,11 @@
     "react-router": "2.4.1"
   },
   "devDependencies": {
-    "babel-core": "6.9.0",
-    "babel-loader": "6.2.4",
+    "babel-cli": "^6.9.0",
+    "babel-core": "^6.9.0",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.5.0",
     "html-webpack-plugin": "2.17.0",
     "webpack": "1.13.0",
     "webpack-dev-server": "1.14.1"

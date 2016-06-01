@@ -20,14 +20,14 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'tmp'),
     publicPath: '',
-    filename: '[name].js',
+    filename: 'bundle.js',
     library: ['Example', '[name]'],
     pathInfo: true
   },
 
   module: {
     loaders: [
-      {test: /\.js?$/, exclude: /node_modules/, loader: 'babel?cacheDirectory'}
+      {test: /\.js?$/, exclude: /node_modules/, loader: 'babel-loader?presets[]=es2015&presets[]=react'}
     ]
   },
   plugins: [
