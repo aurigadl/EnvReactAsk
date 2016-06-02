@@ -1,15 +1,13 @@
 import flux from 'control';
-import {createStore, bind} from 'alt/utils/decorators';
+import {createStore, bind} from 'alt-utils/lib/decorators';
 import actions from 'actions/dummyActions';
 
 @createStore(flux)
 class DummyStore {
-  name = 'awesome';
-
-  @bind(actions.updateName)
-  updateName(name) {
-    this.name = name;
+  constructor() {
+    this.name = 'awesome';
   }
+
 }
 
 export default DummyStore;

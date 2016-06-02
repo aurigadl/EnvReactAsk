@@ -1,5 +1,5 @@
 import React from 'react';
-import connectToStores from 'alt/utils/connectToStores';
+import connectToStores from 'alt-utils/lib/connectToStores';
 import DummyStore from 'stores/dummyStore';
 import DummyActions from 'actions/dummyActions';
 
@@ -29,7 +29,7 @@ class Example extends React.Component {
     );
   }
 
-  onChange = evt => {
+  onChange(evt){
     this.setState({name: evt.target.value});
     DummyActions.updateName(evt.target.value);
   }
