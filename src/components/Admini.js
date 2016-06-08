@@ -1,7 +1,12 @@
 import React from 'react'
+import { AdminCreateTest } from './AdminCreateTest'
+import { AdminShowTest }   from './AdminShowTest'
 
 export default React.createClass({
   render() {
-    return <div>Administración</div>
+    return(<div className="commentBox">
+              <AdminShowTest />
+              <AdminCreateTest />
+           </div>)
   }
 })
