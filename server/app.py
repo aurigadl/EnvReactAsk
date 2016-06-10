@@ -163,10 +163,7 @@ def login_required(f):
     return decorated_function
 
 
-# Create a user to test with
-@app.before_first_request
 def create_user_role():
-    db.create_all()
     if not User.query.first():
         anon = Role('anonymous')
         guest = User(email='guest@sindominio.co', password='1234',
@@ -254,6 +251,7 @@ def signup():
     db.session.commit()
 
 if __name__ == '__main__':
-    if not os.path.exists('db.sqlite'):
+    if not os.path.exists('app.db'):
         db.create_all()
+    create_user_role()
     app.run(host='0.0.0.0', port=5000, debug=True)
