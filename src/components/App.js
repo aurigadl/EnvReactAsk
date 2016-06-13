@@ -1,20 +1,47 @@
 import React from 'react'
-import NavLink from './NavLink'
+import { Link } from 'react-router'
+import auth from '../utils/auth'
 
-export default React.createClass({
+const App = React.createClass({
+
+  getInitialState() {
+    return {
+      loggedIn: auth.loggedIn()
+    }
+  },
+
+  updateAuth(loggedIn) {
+    this.setState({
+      loggedIn: !!loggedIn
+    })
+  },
+
+  componentWillMount() {
+    auth.onChange = this.updateAuth
+    auth.login()
+  },
+
   render() {
     return (
       <div>
-        <h1>Evaluciones por Competencias</h1>
-        <ul role="nav">
-          <li><NavLink to="/" onlyActiveOnIndex>Inicio</NavLink></li>
-          <li><NavLink to="/evalua" onlyActiveOnIndex>Evaluaciones</NavLink></li>
-          <li><NavLink to="/results">Resultados</NavLink></li>
-          <li><NavLink to="/admini">Administracion</NavLink></li>
+        <ul>
+          <li>
+            {this.state.loggedIn ? (
+              <Link to="/logout">Log out</Link>
+            ) : (
+              <Link to="/login">Sign in</Link>
+            )}
+          </li>
+          <li><Link to="/about">About</Link></li>
+          <li><Link to="/">Home</Link> (changes depending on auth status)</li>
+          <li><Link to="/page2">Page Two</Link> (authenticated)</li>
+          <li><Link to="/user/foo">User: Foo</Link> (authenticated)</li>
         </ul>
         {this.props.children}
-        <h2>Esto esta fuera del menu</h2>
       </div>
     )
   }
+
 })
+
+export default App
