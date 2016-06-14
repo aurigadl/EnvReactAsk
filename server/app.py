@@ -207,7 +207,7 @@ def nim():
     return jsonify(items=ret_dict)
 
 
-
+@rbac.allow(['anonymous'], methods=['POST'])
 @app.route('/api/me')
 @login_required
 def me():
@@ -215,16 +215,20 @@ def me():
     return jsonify(user.to_json())
 
 
-@rbac.allow(['anonymous'], methods=['POST'])
 @app.route('/auth/login', methods=['POST'])
 def login():
-    user = User.query.filter_by(email=request.json['email']).first()
-    if not user or not user.check_password(request.json['password']):
-        response = jsonify(message='Wrong Email or Password')
-        response.status_code = 401
+    r_email = request.form['email']
+    r_passw = request.form['password']
+    response = jsonify(message='Worng email or password')
+    response.status_code = 401
+    if r_email == '' or r_passw == '':
         return response
-    token = create_token(user)
-    return jsonify(token=token)
+    else:
+        user = User.query.filter_by(email=r_email).first()
+        if not user or not user.check_password(r_passw):
+            return response
+        token = create_token(user)
+        return jsonify(token=token)
 
 
 @app.route('/api/users', methods=['POST'])
