@@ -145,11 +145,11 @@ def login_required(f):
 
         try:
             payload = parse_token(request)
-        except DecodeError:
+        except jwt.DecodeError:
             response = jsonify(message='Token is invalid')
             response.status_code = 401
             return response
-        except ExpiredSignature:
+        except jwt.ExpiredSignature:
             response = jsonify(message='Token has expired')
             response.status_code = 401
             return response
@@ -173,28 +173,28 @@ def index():
     return jsonify(items=ret_dict)
 
 
-@app.route('/login', methods=['GET'])
+@app.route('/apiuser/login', methods=['GET'])
 def login():
     r_email = request.form['email']
-    r_passw = request.form['password']
-    response = jsonify(message='Worng email or password')
-    response.status_code = 401
-    if r_email == '' or r_passw == '':
-        return response
+    r_password = request.form['password']
+    if r_email == '' or r_password == '':
+        return abort(401, jsonify({"jsonrpc": "2.0", "result": False}))
     else:
         user = User.query.filter_by(email=r_email).first()
-        if not user or not user.check_password(r_passw):
-            return response
+        if not user or not user.check_password(r_password):
+            return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
         token = create_token(user)
-        return jsonify(token=token)
+        return jsonify({"jsonrpc": "2.0", "result": True, "token":token}), 202
 
 
-@app.route('/api/newuser', methods=['POST'])
+@app.route('/apiuser/newuser', methods=['POST'])
 def new_user():
+    if not hasattr(request.json, 'get'):
+        abort(400, 'does not have the correct json format')
     usermail = request.json.get('usermail')
     password = request.json.get('password')
     display_name = request.json.get('name_to_show')
-    if usermail is None or password is None:
+    if usermail is None or password is None or len(usermail) < 5 or len(password) < 5:
         abort(400, 'missing arguments')
     if User.query.filter_by(email=usermail).first() is not None:
         abort(400, 'existing user')
@@ -205,7 +205,7 @@ def new_user():
     return jsonify({"jsonrpc": "2.0", "result": True}), 201
 
 
-@app.route('/auth/signup', methods=['POST'])
+@app.route('/apiuser/signup', methods=['POST'])
 def signup():
     user = User(email=request.json['email'], password=request.json['password'])
     db.session.add(user)
@@ -213,12 +213,15 @@ def signup():
 
 
 if __name__ == '__main__':
-    if not os.path.exists('app.db'):
-        db.create_all()
-        anon = Role('candidate', 'They may present evidence only')
-        db.session.add(anon)
-        db.session.commit()
-        db.create_all()
+
+    if os.path.exists('app.db'):
+        os.remove('app.db')
+
+    db.create_all()
+    anon = Role('candidate', 'They may present evidence only')
+    db.session.add(anon)
+    db.session.commit()
+    db.create_all()
 
     rbac.set_role_model(Role)
     rbac.set_user_model(User)
