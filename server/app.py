@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
 import os
 import jwt
-from functools import wraps
-from flask import Flask, g, request, jsonify, url_for
+from flask import Flask, g, request, jsonify, abort
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from jwt import DecodeError, ExpiredSignature
 from flask.ext.rbac import RBAC, RoleMixin, UserMixin
 
 
@@ -18,14 +16,12 @@ app.config.from_object('config')
 rbac = RBAC(app)
 db = SQLAlchemy(app)
 
-
 roles_parents = db.Table('roles_parents',
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True),
-    db.Column('parent_id', db.Integer, db.ForeignKey('role.id'), primary_key=True)
-)
+                         db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True),
+                         db.Column('parent_id', db.Integer, db.ForeignKey('role.id'), primary_key=True)
+                         )
 
 
-@rbac.as_role_model
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True)
@@ -44,9 +40,10 @@ class Role(db.Model, RoleMixin):
         backref=db.backref('children', lazy='dynamic')
     )
 
-    def __init__(self, name):
+    def __init__(self, name, description):
         RoleMixin.__init__(self)
         self.name = name
+        self.description = description
 
     def add_parent(self, parent):
         # You don't need to add this role to parent's children set,
@@ -69,7 +66,6 @@ users_roles = db.Table(
 )
 
 
-@rbac.as_user_model
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -112,7 +108,7 @@ class User(db.Model, UserMixin):
     def add_role(self, role):
         self.roles.append(role)
 
-    def add_role(self, roles):
+    def add_roles(self, roles):
         for role in roles:
             self.add_role(role)
 
@@ -160,62 +156,24 @@ def login_required(f):
 
         g.current_user = payload['sub']
         return f(*args, **kwargs)
+
     return decorated_function
 
 
-def create_user_role():
-    if not User.query.first():
-        anon = Role('anonymous')
-        guest = User(email='guest@sindominio.co', password='1234',
-                     display_name='Anonymous')
-        guest.roles.append(anon)
-        db.session.add(anon)
-        db.session.add(guest)
-        db.session.commit()
-        db.create_all()
-        g.current_user = guest
-        print guest.to_json()
-
-
 def get_current_user():
-    if not hasattr(g, 'current_user'):
-        q = User.query.filter(User.email == 'guest@sindominio.co').first()
-        if q:
-            g.current_user = q
-    return g.current_user
-
-
-rbac.set_user_loader(get_current_user)
+    if not hasattr(g, 'user'):
+        g.user = User()
+    return g.user
 
 
 # ------ Routes
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
-    ret_dict = {
-        "Key1": "Value1",
-        "Key2": "value2"
-    }
+    ret_dict = {"Key1": "Value1", "Key2": "value2"}
     return jsonify(items=ret_dict)
 
 
-@rbac.allow(['anonymous'], methods=['GET'])
-@app.route('/nim')
-def nim():
-    ret_dict = {
-        "Key2": ":P"
-    }
-    return jsonify(items=ret_dict)
-
-
-@rbac.allow(['anonymous'], methods=['POST'])
-@app.route('/api/me')
-@login_required
-def me():
-    user = User.query.filter_by(id=g.user_id).first()
-    return jsonify(user.to_json())
-
-
-@app.route('/auth/login', methods=['POST'])
+@app.route('/login', methods=['GET'])
 def login():
     r_email = request.form['email']
     r_passw = request.form['password']
@@ -231,21 +189,20 @@ def login():
         return jsonify(token=token)
 
 
-@app.route('/api/users', methods=['POST'])
+@app.route('/api/newuser', methods=['POST'])
 def new_user():
-    username = request.json.get('username')
+    usermail = request.json.get('usermail')
     password = request.json.get('password')
-    if username is None or password is None:
-        abort(400)    # missing arguments
-    if User.query.filter_by(username=username).first() is not None:
-        abort(400)    # existing user
-    user = User(username=username)
-    user.hash_password(password)
-    db.session.add(user)
+    display_name = request.json.get('name_to_show')
+    if usermail is None or password is None:
+        abort(400, 'missing arguments')
+    if User.query.filter_by(email=usermail).first() is not None:
+        abort(400, 'existing user')
+    new_user_db = User(email=usermail, password=password, display_name=display_name)
+    new_user_db.add_role(Role.get_by_name('candidate'))
+    db.session.add(new_user_db)
     db.session.commit()
-    token = create_token(user)
-    return (jsonify({'username': user.username}, token=token), 201,
-            {'Location': url_for('get_user', id=user.id, _external=True)})
+    return jsonify({"jsonrpc": "2.0", "result": True}), 201
 
 
 @app.route('/auth/signup', methods=['POST'])
@@ -254,8 +211,16 @@ def signup():
     db.session.add(user)
     db.session.commit()
 
+
 if __name__ == '__main__':
     if not os.path.exists('app.db'):
         db.create_all()
-    create_user_role()
+        anon = Role('candidate', 'They may present evidence only')
+        db.session.add(anon)
+        db.session.commit()
+        db.create_all()
+
+    rbac.set_role_model(Role)
+    rbac.set_user_model(User)
+    rbac.set_user_loader(get_current_user)
     app.run(host='0.0.0.0', port=5000, debug=True)
