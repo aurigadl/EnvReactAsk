@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 import os
 import jwt
-from flask import Flask, g, request, jsonify, abort
+import asklibs.sessionPickle as newSession
+from functools import wraps
+from flask import Flask, g, request, jsonify, abort, session
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.rbac import RBAC, RoleMixin, UserMixin
@@ -124,7 +126,7 @@ def create_token(user):
     payload = {
         'sub': user.id,
         'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + timedelta(days=14)
+        'exp': datetime.utcnow() + timedelta(days=1)
     }
     token = jwt.encode(payload, app.config['TOKEN_SECRET'])
     return token.decode('unicode_escape')
@@ -161,6 +163,7 @@ def login_required(f):
 
 
 def get_current_user():
+    session['user_obj'] = User()
     if not hasattr(g, 'user'):
         g.user = User()
     return g.user
@@ -173,18 +176,28 @@ def index():
     return jsonify(items=ret_dict)
 
 
+@app.route('/apiquestionary/assigned', methods=['GET'])
+@rbac.allow(['caramelo'], methods=['GET'])
+@login_required
+def assigned_questionnaires():
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200
+
+
 @app.route('/apiuser/login', methods=['GET'])
 def login():
-    r_email = request.form['email']
-    r_password = request.form['password']
-    if r_email == '' or r_password == '':
+    if not hasattr(request.json, 'get'):
+        abort(400, 'does not have the correct json format')
+    r_email = request.json.get('usermail')
+    r_password = request.json.get('password')
+    if r_email is None or r_password is None or len(r_email) < 5 or len(r_password) < 5:
         return abort(401, jsonify({"jsonrpc": "2.0", "result": False}))
     else:
         user = User.query.filter_by(email=r_email).first()
         if not user or not user.check_password(r_password):
             return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
+        g.user = user
         token = create_token(user)
-        return jsonify({"jsonrpc": "2.0", "result": True, "token":token}), 202
+        return jsonify({"jsonrpc": "2.0", "result": True, "token": token}), 202
 
 
 @app.route('/apiuser/newuser', methods=['POST'])
@@ -214,6 +227,11 @@ def signup():
 
 if __name__ == '__main__':
 
+    path = './app_session'
+    if not os.path.exists(path):
+        os.mkdir(path)
+        os.chmod(path, int('700', 8))
+
     if os.path.exists('app.db'):
         os.remove('app.db')
 
@@ -226,4 +244,6 @@ if __name__ == '__main__':
     rbac.set_role_model(Role)
     rbac.set_user_model(User)
     rbac.set_user_loader(get_current_user)
+    app.session_interface = newSession.PickleSessionInterface(path)
+
     app.run(host='0.0.0.0', port=5000, debug=True)

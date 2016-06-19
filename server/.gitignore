@@ -1,3 +1,4 @@
 .idea
 *.pyc
 *.db
+app_session
