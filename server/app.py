@@ -3,7 +3,7 @@ import os
 import jwt
 import asklibs.sessionPickle as newSession
 from functools import wraps
-from flask import Flask, g, request, jsonify, abort, session
+from flask import Flask, g, request, jsonify, abort, session, current_app
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.rbac import RBAC, RoleMixin, UserMixin
@@ -17,6 +17,24 @@ app = Flask(__name__)
 app.config.from_object('config')
 rbac = RBAC(app)
 db = SQLAlchemy(app)
+
+
+def init_db():
+    """Initializes the database."""
+    if os.path.exists('app.db'):
+        os.remove('app.db')
+
+    db.create_all()
+    new_role_basic = Role('candidate', 'They may present test')
+    new_role_admon = Role('admon', 'They may to do anything')
+    new_user_admon = User(email='admonUser', password='qwerasdf', display_name='User admin system')
+    new_user_admon.add_role(new_role_admon)
+    db.session.add(new_role_basic)
+    db.session.add(new_role_admon)
+    db.session.add(new_user_admon)
+    db.session.commit()
+    db.create_all()
+
 
 roles_parents = db.Table('roles_parents',
                          db.Column('role_id', db.Integer, db.ForeignKey('role.id'), primary_key=True),
@@ -146,7 +164,7 @@ def login_required(f):
             return response
 
         try:
-            payload = parse_token(request)
+            parse_token(request)
         except jwt.DecodeError:
             response = jsonify(message='Token is invalid')
             response.status_code = 401
@@ -155,18 +173,18 @@ def login_required(f):
             response = jsonify(message='Token has expired')
             response.status_code = 401
             return response
-
-        g.current_user = payload['sub']
         return f(*args, **kwargs)
 
     return decorated_function
 
 
 def get_current_user():
-    session['user_obj'] = User()
-    if not hasattr(g, 'user'):
-        g.user = User()
-    return g.user
+    if session.get('user_id') is not None:
+        current_user = User.query.join(Role, User.roles).filter(User.id == session.get('user_id')).first()
+        return current_user
+    else:
+        # Return empty user used for anonymous register
+        return None
 
 
 # ------ Routes
@@ -176,14 +194,21 @@ def index():
     return jsonify(items=ret_dict)
 
 
-@app.route('/apiquestionary/assigned', methods=['GET'])
-@rbac.allow(['caramelo'], methods=['GET'])
+@app.route('/api_questionary/assigned', methods=['GET'])
 @login_required
+@rbac.allow(['candidate'], methods=['GET'])
 def assigned_questionnaires():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
-@app.route('/apiuser/login', methods=['GET'])
+@app.route('/api_admin/users', methods=['GET'])
+@login_required
+@rbac.allow(['admon'], methods=['GET'])
+def api_admin_users():
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200
+
+
+@app.route('/apiUser/login', methods=['GET'])
 def login():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
@@ -192,15 +217,19 @@ def login():
     if r_email is None or r_password is None or len(r_email) < 5 or len(r_password) < 5:
         return abort(401, jsonify({"jsonrpc": "2.0", "result": False}))
     else:
-        user = User.query.filter_by(email=r_email).first()
-        if not user or not user.check_password(r_password):
+        user_logged = User.query.join(Role, User.roles).filter(User.email == r_email).first()
+        if not user_logged or not user_logged.check_password(r_password):
             return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
-        g.user = user
-        token = create_token(user)
+
+        # Loading importan information from user to used in other request
+        session['user_id'] = user_logged.id
+        session['user_time_init'] = datetime.utcnow()
+
+        token = create_token(user_logged)
         return jsonify({"jsonrpc": "2.0", "result": True, "token": token}), 202
 
 
-@app.route('/apiuser/newuser', methods=['POST'])
+@app.route('/api_user/newuser', methods=['POST'])
 def new_user():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
@@ -218,13 +247,6 @@ def new_user():
     return jsonify({"jsonrpc": "2.0", "result": True}), 201
 
 
-@app.route('/apiuser/signup', methods=['POST'])
-def signup():
-    user = User(email=request.json['email'], password=request.json['password'])
-    db.session.add(user)
-    db.session.commit()
-
-
 if __name__ == '__main__':
 
     path = './app_session'
@@ -232,15 +254,7 @@ if __name__ == '__main__':
         os.mkdir(path)
         os.chmod(path, int('700', 8))
 
-    if os.path.exists('app.db'):
-        os.remove('app.db')
-
-    db.create_all()
-    anon = Role('candidate', 'They may present evidence only')
-    db.session.add(anon)
-    db.session.commit()
-    db.create_all()
-
+    init_db()
     rbac.set_role_model(Role)
     rbac.set_user_model(User)
     rbac.set_user_loader(get_current_user)
