@@ -14,8 +14,8 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertEqual(json.loads(r.text), {u'items': {u'Key2': u'value2', u'Key1': u'Value1'}})
 
-    def test_apiNewUser_a(self):
-        path = 'api_user/newuser'
+    def test_apiNewUser(self):
+        path = 'apiUser/newuser'
         payload = {}
         digits = "".join([random.choice(string.digits) for i in xrange(10)])
         name_user = "testName_{x}".format(x=digits)
@@ -53,7 +53,8 @@ class TestApiUserRest(unittest.TestCase):
 
         # json format correct create user for test
         payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
-        requests.post(self.URL + 'api_user/newuser', json=payload)
+        requests.post(self.URL + 'apiUser/newuser', json=payload)
+
 
         # login bad parameters
         payload = {}
@@ -96,16 +97,16 @@ class TestApiUserRest(unittest.TestCase):
         self.assertRegexpMatches(answer_json['token'], '.+[.].+[.].+', 'does not have correct format')
 
     def test_questionary(self):
-        path = 'api_questionary/assigned'
+        path = 'apiQuestionary/assigned'
         reqsess = requests.Session()
         # Login user to get token
         payload = dict(usermail='testName_0', password='12345678')
-        result = reqsess.get(self.URL + 'api_user/login', json=payload)
+        result = reqsess.get(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
 
         # json format correct no header
-        payload = {"jsonrpc": "2.0", "method": "api_questionary/assigned", "params": ""}
+        payload = {"jsonrpc": "2.0", "method": "apiQuestionary/assigned", "params": ""}
         r = reqsess.get(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 401, 'No header authorization assigned')
 
@@ -116,13 +117,45 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 401, 'Token is invalid')
 
         # json format correct
-        payload = {"jsonrpc": "2.0", "method": "api_questionary/assigned", "params": ""}
+        payload = {"jsonrpc": "2.0", "method": "apiQuestionary/assigned", "params": ""}
         string_token = "Bearer {t}".format(t=token)
         header = {'Authorization': string_token}
         r = reqsess.get(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
 
+    '''
+    Validate user access with the role of "candidate" to a
+    api that has that role.
+
+    Validate user access with the role of "admon" to a api
+    that has only the role of candiate
+    '''
+    def test_loginRolesCandidate(self):
+        path1 = '/apiQuestionary/assigned' #Only candidate role
+        path2 = '/apiAdmin/users'          #Only admon role
+
+        #Save session
+        reqsess = requests.Session()
+        # json format correct create user for test
+        payload = {'usermail': 'testName_0', 'password': '12345678', 'name_to_show': 'test name show 1'}
+        requests.post(self.URL + 'apiUser/newuser', json=payload)
+
+        # Login user testName_0 that has role candidate
+        payload = dict(usermail='testName_0', password='12345678')
+        result = reqsess.get(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+
+        # json format correct
+        payload = {"jsonrpc": "2.0", "method": "apiQuestionary/assigned", "params": ""}
+        string_token = "Bearer {t}".format(t=token)
+        header = {'Authorization': string_token}
+        r = reqsess.get(self.URL + path1, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Answer ok')
+
+        r = reqsess.get(self.URL + path2, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Do not have access to the resource')
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestApiUserRest)

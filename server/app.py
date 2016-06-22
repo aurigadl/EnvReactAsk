@@ -194,17 +194,17 @@ def index():
     return jsonify(items=ret_dict)
 
 
-@app.route('/api_questionary/assigned', methods=['GET'])
-@login_required
+@app.route('/apiQuestionary/assigned', methods=['GET'])
 @rbac.allow(['candidate'], methods=['GET'])
+@login_required
 def assigned_questionnaires():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
-@app.route('/api_admin/users', methods=['GET'])
-@login_required
+@app.route('/apiAdmin/users', methods=['GET'])
 @rbac.allow(['admon'], methods=['GET'])
-def api_admin_users():
+@login_required
+def apiadmin_users():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
@@ -214,10 +214,11 @@ def login():
         abort(400, 'does not have the correct json format')
     r_email = request.json.get('usermail')
     r_password = request.json.get('password')
-    if r_email is None or r_password is None or len(r_email) < 5 or len(r_password) < 5:
+    if r_email is None or r_password is None or len(r_email) < 5 or len(r_password) < 7:
         return abort(401, jsonify({"jsonrpc": "2.0", "result": False}))
     else:
-        user_logged = User.query.join(Role, User.roles).filter(User.email == r_email).first()
+        lower_user_mail = r_email.lower()
+        user_logged = User.query.join(Role, User.roles).filter(User.email == lower_user_mail).first()
         if not user_logged or not user_logged.check_password(r_password):
             return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
 
@@ -229,18 +230,19 @@ def login():
         return jsonify({"jsonrpc": "2.0", "result": True, "token": token}), 202
 
 
-@app.route('/api_user/newuser', methods=['POST'])
+@app.route('/apiUser/newuser', methods=['POST'])
 def new_user():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
     usermail = request.json.get('usermail')
     password = request.json.get('password')
     display_name = request.json.get('name_to_show')
-    if usermail is None or password is None or len(usermail) < 5 or len(password) < 5:
+    if usermail is None or password is None or len(usermail) < 5 or len(password) < 7:
         abort(400, 'missing arguments')
-    if User.query.filter_by(email=usermail).first() is not None:
+    lower_user_mail = usermail.lower()
+    if User.query.filter_by(email=lower_user_mail).first() is not None:
         abort(400, 'existing user')
-    new_user_db = User(email=usermail, password=password, display_name=display_name)
+    new_user_db = User(email=lower_user_mail, password=password, display_name=display_name)
     new_user_db.add_role(Role.get_by_name('candidate'))
     db.session.add(new_user_db)
     db.session.commit()
