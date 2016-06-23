@@ -111,13 +111,17 @@ class User(db.Model, UserMixin):
         backref=db.backref('roles', lazy='dynamic')
     )
 
-    def __init__(self, email=None, password=None, display_name=None):
+    def __init__(self, email=None, password=None, display_name=None, first_name=None, last_name=None):
         if email:
             self.email = email.lower()
         if password:
             self.set_password(password)
         if display_name:
             self.display_name = display_name
+        if first_name:
+            self.first_name = first_name
+        if last_name:
+            self.last_name = last_name
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -195,20 +199,6 @@ def index():
     return jsonify(items=ret_dict)
 
 
-@app.route('/apiQuestionary/assigned', methods=['GET'])
-@rbac.allow(['candidate'], methods=['GET'])
-@login_required
-def assigned_questionnaires():
-    return jsonify({"jsonrpc": "2.0", "result": True}), 200
-
-
-@app.route('/apiAdmin/users', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
-@login_required
-def apiadmin_users():
-    return jsonify({"jsonrpc": "2.0", "result": True}), 200
-
-
 @app.route('/apiUser/login', methods=['GET'])
 @rbac.allow(['anonymous'], methods=['GET'], with_children=False)
 def login():
@@ -250,6 +240,43 @@ def new_user():
     db.session.add(new_user_db)
     db.session.commit()
     return jsonify({"jsonrpc": "2.0", "result": True}), 201
+
+
+@app.route('/apiUser/updateUser', methods=['PUT'])
+@rbac.allow(['candidate'], methods=['PUT'])
+@login_required
+def update_user():
+    if not hasattr(request.json, 'get'):
+        abort(400, 'does not have the correct json format')
+    r_display_name = request.json.get('display_name')
+    r_first_name = request.json.get('first_name')
+    r_last_name = request.json.get('last_name')
+    if r_display_name is None or r_first_name is None or r_last_name is None or len(r_display_name) < 2 or len(
+            r_first_name) < 2 or len(r_last_name) < 2:
+        abort(400, 'missing arguments')
+    update_user_db = User.update. \
+        where(User.id == session.get('user_id')). \
+        values(display_name=r_display_name, \
+               first_name=r_first_name, \
+               last_name=r_last_name)
+    db.session.add(update_user_db)
+    db.session.commit()
+
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200
+
+
+@app.route('/apiQuestionary/assigned', methods=['GET'])
+@rbac.allow(['candidate'], methods=['GET'])
+@login_required
+def assigned_questionnaires():
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200
+
+
+@app.route('/apiAdmin/users', methods=['GET'])
+@rbac.allow(['admon'], methods=['GET'])
+@login_required
+def apiadmin_users():
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
 if __name__ == '__main__':

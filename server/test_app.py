@@ -96,33 +96,100 @@ class TestApiUserRest(unittest.TestCase):
         answer_json = json.loads(r.text)
         self.assertRegexpMatches(answer_json['token'], '.+[.].+[.].+', 'does not have correct format')
 
-    def test_questionary(self):
-        path = 'apiQuestionary/assigned'
+    def test_updateUser(self):
+        path = 'apiUser/updateUser'
+        #Save session
         reqsess = requests.Session()
+
+        # json format correct create user for test
+        payload = {'usermail': 'testName_0', 'password': '12345678', 'name_to_show': 'test name show 1'}
+        requests.post(self.URL + 'apiUser/newuser', json=payload)
+
         # Login user to get token
         payload = dict(usermail='testName_0', password='12345678')
         result = reqsess.get(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
-
-        # json format correct no header
-        payload = {"jsonrpc": "2.0", "method": "apiQuestionary/assigned", "params": ""}
-        r = reqsess.get(self.URL + path, json=payload)
-        self.assertEqual(r.status_code, 401, 'No header authorization assigned')
-
-        # json format correct with header but bad token
-        string_token = "Bearer untoken"
-        header = {'Authorization': string_token}
-        r = reqsess.get(self.URL + path, json=payload, headers=header)
-        self.assertEqual(r.status_code, 401, 'Token is invalid')
-
-        # json format correct
-        payload = {"jsonrpc": "2.0", "method": "apiQuestionary/assigned", "params": ""}
         string_token = "Bearer {t}".format(t=token)
         header = {'Authorization': string_token}
-        r = reqsess.get(self.URL + path, json=payload, headers=header)
-        self.assertEqual(r.status_code, 200, 'Answer ok')
 
+        #test api with diferent params
+        params = {}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 401, 'Error json format - not parameters')
+
+        #test api with diferent params
+        params = {'display_name':'', 'first_name':'', 'last_name':''}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 401, 'Error json format - empty parameters')
+
+        #test api with diferent params
+        params = {'display_name':''}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 401, 'Error json format - empty display_name parameters')
+
+        #test api with diferent params
+        params = {'first_name':''}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 401, 'Error json format - empty first_name parameters')
+
+        #test api with diferent params
+        params = {'last_name':''}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 401, 'Error json format - empty last_name parameters')
+
+        #test api with diferent params
+        params = {'display_name':'fa'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Error json format - require more bits display_name parameters')
+
+        #test api with diferent params
+        params = {'first_name':'re'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Error json format - require more bits first_name parameters')
+
+        #test api with diferent params
+        params = {'last_name':'sa'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Error json format - require more bits last_name parameters')
+
+        #test api with diferent params
+        params = {'display_name':'fan'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Save data - display_name parameters')
+
+        #test api with diferent params
+        params = {'first_name':'ren'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Save data - first_name parameters')
+
+        #test api with diferent params
+        params = {'last_name':'san'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Save data - last_name parameters')
+
+        #test api with diferent params
+        params = {'display_name':'gon', 'first_name':'', 'last_name':'ron'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 401, 'Error json format - empty parameters')
+
+        #test api with diferent params
+        params = {'display_name':'gon', 'first_name':'', 'last_name':'ron'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Save data - some parameters')
 
     '''
     Validate user access with the role of "candidate" to a
