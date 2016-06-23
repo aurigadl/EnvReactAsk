@@ -132,8 +132,8 @@ class TestApiUserRest(unittest.TestCase):
     that has only the role of candiate
     '''
     def test_loginRolesCandidate(self):
-        path1 = '/apiQuestionary/assigned' #Only candidate role
-        path2 = '/apiAdmin/users'          #Only admon role
+        path1 = 'apiQuestionary/assigned' #Only candidate role
+        path2 = 'apiAdmin/users'          #Only admon role
 
         #Save session
         reqsess = requests.Session()
@@ -155,7 +155,7 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
         r = reqsess.get(self.URL + path2, json=payload, headers=header)
-        self.assertEqual(r.status_code, 400, 'Do not have access to the resource')
+        self.assertEqual(r.status_code, 403, 'Do not have access to the resource')
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestApiUserRest)

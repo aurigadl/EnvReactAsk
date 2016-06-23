@@ -189,6 +189,7 @@ def get_current_user():
 
 # ------ Routes
 @app.route('/', methods=['GET'])
+@rbac.allow(['anonymous'], methods=['GET'], with_children=False)
 def index():
     ret_dict = {"Key1": "Value1", "Key2": "value2"}
     return jsonify(items=ret_dict)
@@ -209,6 +210,7 @@ def apiadmin_users():
 
 
 @app.route('/apiUser/login', methods=['GET'])
+@rbac.allow(['anonymous'], methods=['GET'], with_children=False)
 def login():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
@@ -231,6 +233,7 @@ def login():
 
 
 @app.route('/apiUser/newuser', methods=['POST'])
+@rbac.allow(['anonymous'], methods=['POST'], with_children=False)
 def new_user():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
