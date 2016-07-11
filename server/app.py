@@ -246,22 +246,20 @@ def new_user():
 @rbac.allow(['candidate'], methods=['PUT'])
 @login_required
 def update_user():
-    if not hasattr(request.json, 'get'):
-        abort(400, 'does not have the correct json format')
-    r_display_name = request.json.get('display_name')
-    r_first_name = request.json.get('first_name')
-    r_last_name = request.json.get('last_name')
-    if r_display_name is None or r_first_name is None or r_last_name is None or len(r_display_name) < 2 or len(
-            r_first_name) < 2 or len(r_last_name) < 2:
-        abort(400, 'missing arguments')
-    update_user_db = User.update. \
-        where(User.id == session.get('user_id')). \
-        values(display_name=r_display_name, \
-               first_name=r_first_name, \
-               last_name=r_last_name)
-    db.session.add(update_user_db)
-    db.session.commit()
+    json_data = request.get_json()
+    if json_data.has_key('params') and len(json_data.get('params')) != 0:
+        for key, value in json_data.get('params').items():
+            if len(value) < 3 :
+                del json_data['params'][key]
+        if len(json_data.get('params')) == 0:
+            return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+    else:
+        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
 
+    user_db = get_current_user()
+    User.query.filter(id==user_db.id).update(json_data['params'])
+    user_db.query.update(json_data['params'])
+    db.session.commit()
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
