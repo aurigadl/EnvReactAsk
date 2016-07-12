@@ -159,7 +159,7 @@ class TestApiUserRest(unittest.TestCase):
         #test api with diferent params
         params = {'display_name':'gon4', 'first_name':'', 'last_name':'ron4'}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
-        r = reqsess.get(self.URL + path, json=payload, headers=header)
+        r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - some parameters saved')
 
     '''

@@ -257,8 +257,7 @@ def update_user():
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
 
     user_db = get_current_user()
-    User.query.filter(id==user_db.id).update(json_data['params'])
-    user_db.query.update(json_data['params'])
+    User.query.filter(User.id==user_db.id).update(json_data['params'])
     db.session.commit()
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
