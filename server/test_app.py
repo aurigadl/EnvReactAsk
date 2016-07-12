@@ -55,7 +55,6 @@ class TestApiUserRest(unittest.TestCase):
         payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
-
         # login bad parameters
         payload = {}
         r = requests.get(self.URL + path, json=payload)
@@ -96,7 +95,47 @@ class TestApiUserRest(unittest.TestCase):
         answer_json = json.loads(r.text)
         self.assertRegexpMatches(answer_json['token'], '.+[.].+[.].+', 'does not have correct format')
 
-    def test_updateUser(self):
+
+    def test_apiSignOut(self):
+        path  = 'apiUser/login'
+        path2 = 'apiUser/updateUser'
+        path3 = 'apiUser/logout'
+        name_user = 'testName_0'
+        #Save session
+        reqsess = requests.Session()
+
+        # json format correct create user for test
+        payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        requests.post(self.URL + 'apiUser/newuser', json=payload)
+
+        # Login user to get token
+        payload = dict(usermail='testName_0', password='12345678')
+        result = reqsess.get(self.URL + path, json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+        string_token = "Bearer {t}".format(t=token)
+        header = {'Authorization': string_token}
+
+        #test api with diferent params
+        params = {'display_name':'fan1'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.put(self.URL + path2, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Save data - display_name parameters')
+
+        #test api with diferent params
+        payload = {"jsonrpc": "2.0", "method": path}
+        r = reqsess.put(self.URL + path3, json=payload, headers=header)
+        self.assertEqual(r.status_code, 423, 'Locked - users singout')
+
+        #test api with diferent params
+        params = {'display_name':'fan1'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.put(self.URL + path2, json=payload, headers=header)
+        self.assertEqual(r.status_code, 403, 'Do not have access to the resource')
+
+
+
+    def test_apiUpdateUser(self):
         path = 'apiUser/updateUser'
         #Save session
         reqsess = requests.Session()

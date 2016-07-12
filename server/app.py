@@ -3,7 +3,7 @@ import os
 import jwt
 import asklibs.sessionPickle as newSession
 from functools import wraps
-from flask import Flask, g, request, jsonify, abort, session, current_app
+from flask import Flask, request, jsonify, abort, session
 from flask.ext.sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.rbac import RBAC, RoleMixin, UserMixin
@@ -215,6 +215,7 @@ def login():
             return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
 
         # Loading importan information from user to used in other request
+        # TODO: update register user with the new information
         session['user_id'] = user_logged.id
         session['user_time_init'] = datetime.utcnow()
 
@@ -249,7 +250,7 @@ def update_user():
     json_data = request.get_json()
     if json_data.has_key('params') and len(json_data.get('params')) != 0:
         for key, value in json_data.get('params').items():
-            if len(value) < 3 :
+            if len(value) < 3:
                 del json_data['params'][key]
         if len(json_data.get('params')) == 0:
             return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
@@ -257,9 +258,21 @@ def update_user():
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
 
     user_db = get_current_user()
-    User.query.filter(User.id==user_db.id).update(json_data['params'])
+    User.query.filter(User.id == user_db.id).update(json_data['params'])
     db.session.commit()
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
+
+
+@app.route('/apiUser/logout', methods=['PUT'])
+@rbac.allow(['candidate', 'admon'], methods=['PUT'])
+@login_required
+def logout_user():
+    user_db = get_current_user()
+    # TODO: update register user
+    # User.query.filter(User.id==user_db.id).update(json_data['params'])
+    # db.session.commit()
+    session.clear()
+    return jsonify({"jsonrpc": "2.0", "result": True}), 423
 
 
 @app.route('/apiQuestionary/assigned', methods=['GET'])
