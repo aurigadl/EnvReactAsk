@@ -1,12 +1,15 @@
 from datetime import datetime, timedelta
 import os
-import jwt
-import asklibs.sessionPickle as newSession
 from functools import wraps
-from flask import Flask, request, jsonify, abort, session
-from flask.ext.sqlalchemy import SQLAlchemy
+
+import jwt
+from flask import Flask, request, jsonify, abort, session, Response
 from werkzeug.security import generate_password_hash, check_password_hash
+
+import asklibs.sessionPickle as newSession
+from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.rbac import RBAC, RoleMixin, UserMixin
+from flask_cors import CORS
 
 
 # Configuration
@@ -14,6 +17,7 @@ current_path = os.path.dirname(__file__)
 client_path = os.path.abspath(os.path.join(current_path, '..', '..', 'client'))
 
 app = Flask(__name__)
+CORS(app, resources=r'*', allow_headers='Content-Type')
 app.config.from_object('config')
 rbac = RBAC(app)
 db = SQLAlchemy(app)
@@ -143,7 +147,6 @@ class User(db.Model, UserMixin):
     def to_json(self):
         return dict(id=self.id, email=self.email, displayName=self.display_name)
 
-
 def create_token(user):
     payload = {
         'sub': user.id,
@@ -191,6 +194,16 @@ def get_current_user():
         return None
 
 
+@app.before_request
+def after_request():
+    if request.method == 'OPTIONS':
+        resp = Response(status=200, mimetype='application/json')
+        resp.headers['Access-Control-Allow-Origin']  = 'http://localhost:3001'
+        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        resp.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE'
+        return resp
+
+
 # ------ Routes
 @app.route('/', methods=['GET'])
 @rbac.allow(['anonymous'], methods=['GET'], with_children=False)
@@ -199,8 +212,8 @@ def index():
     return jsonify(items=ret_dict)
 
 
-@app.route('/apiUser/login', methods=['GET'])
-@rbac.allow(['anonymous'], methods=['GET'], with_children=False)
+@app.route('/apiUser/login', methods=['GET', 'OPTIONS'])
+@rbac.allow(['anonymous'], methods=['GET', 'OPTIONS'], with_children=False)
 def login():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')

@@ -1,3 +1,5 @@
+import {makeRequest as mReq} from './mrequest';
+
 module.exports = {
   login(email, pass, cb) {
     cb = arguments[arguments.length - 1]
@@ -32,18 +34,33 @@ module.exports = {
     return !!localStorage.token
   },
 
-  onChange: function () {}
+  onChange: function () {
+  }
 }
 
 function pretendRequest(email, pass, cb) {
-  setTimeout(() => {
-    if (email === 'joe@example.com' && pass === 'password1') {
-      cb({
-        authenticated: true,
-        token: Math.random().toString(36).substring(7)
-      })
-    } else {
-      cb({ authenticated: false })
-    }
-  }, 0)
+  var jsonData = {'usermail': email, 'password': pass};
+  var parreq = {
+      method: 'GET',
+      params: jsonData,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      url: 'http://0.0.0.0:5000/apiUser/login'
+  };
+
+  mReq(parreq)
+    .then(function (datums) {
+      if (datums) {
+        cb({
+          authenticated: true,
+          token: Math.random().toString(36).substring(7)
+        })
+      } else {
+        cb({authenticated: false})
+      }
+    })
+    .catch(function (err) {
+      console.error('Augh, there was an error!', err.statusText);
+    });
 }

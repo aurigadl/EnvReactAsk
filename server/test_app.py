@@ -47,6 +47,7 @@ class TestApiUserRest(unittest.TestCase):
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Create new user but it was created before')
 
+
     def test_apiLogin(self):
         path = 'apiUser/login'
         name_user = 'testName_0'
