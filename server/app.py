@@ -212,8 +212,8 @@ def index():
     return jsonify(items=ret_dict)
 
 
-@app.route('/apiUser/login', methods=['GET', 'OPTIONS'])
-@rbac.allow(['anonymous'], methods=['GET', 'OPTIONS'], with_children=False)
+@app.route('/apiUser/login', methods=['POST', 'OPTIONS'])
+@rbac.allow(['anonymous'], methods=['POST', 'OPTIONS'], with_children=False)
 def login():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')

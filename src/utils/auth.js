@@ -2,19 +2,19 @@ import {makeRequest as mReq} from './mrequest';
 
 module.exports = {
   login(email, pass, cb) {
-    cb = arguments[arguments.length - 1]
+    cb = arguments[arguments.length - 1];
     if (localStorage.token) {
-      if (cb) cb(true)
-      this.onChange(true)
+      if (cb) cb(true);
+      this.onChange(true);
       return
     }
     pretendRequest(email, pass, (res) => {
       if (res.authenticated) {
-        localStorage.token = res.token
-        if (cb) cb(true)
+        localStorage.token = res.token;
+        if (cb) cb(true);
         this.onChange(true)
       } else {
-        if (cb) cb(false)
+        if (cb) cb(false);
         this.onChange(false)
       }
     })
@@ -41,7 +41,7 @@ module.exports = {
 function pretendRequest(email, pass, cb) {
   var jsonData = {'usermail': email, 'password': pass};
   var parreq = {
-      method: 'GET',
+      method: 'POST',
       params: jsonData,
       headers: {
         'Content-Type': 'application/json'
