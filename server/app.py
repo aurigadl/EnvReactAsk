@@ -147,6 +147,7 @@ class User(db.Model, UserMixin):
     def to_json(self):
         return dict(id=self.id, email=self.email, displayName=self.display_name)
 
+
 def create_token(user):
     payload = {
         'sub': user.id,
@@ -158,50 +159,40 @@ def create_token(user):
 
 
 def parse_token(req):
-    token = req.headers.get('Authorization').split()[1]
-    return jwt.decode(token, app.config['TOKEN_SECRET'])
-
-
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if not request.headers.get('Authorization'):
-            response = jsonify(message='Missing authorization header')
-            response.status_code = 401
-            return response
-
-        try:
-            parse_token(request)
-        except jwt.DecodeError:
-            response = jsonify(message='Token is invalid')
-            response.status_code = 401
-            return response
-        except jwt.ExpiredSignature:
-            response = jsonify(message='Token has expired')
-            response.status_code = 401
-            return response
-        return f(*args, **kwargs)
-
-    return decorated_function
+    token = req.headers.get('Authorization')
+    return jwt.decode(token, app.config['TOKEN_SECRET'], 'unicode_escape')
 
 
 def get_current_user():
-    if session.get('user_id') is not None:
-        current_user = User.query.join(Role, User.roles).filter(User.id == session.get('user_id')).first()
-        return current_user
-    else:
-        # Return empty user used for anonymous register
+    if not request.headers.get('Authorization') or session.get('user_id') is None:
         return None
+    try:
+        token = parse_token(request)
+        session.get('user_id')
+        current_user = User.query.join(Role, User.roles).filter(User.id == token['sub']).first()
+        return current_user
+    except jwt.DecodeError:
+        response = jsonify(message='Token is invalid')
+        response.status_code = 401
+        return response
+    except jwt.ExpiredSignature:
+        response = jsonify(message='Token has expired')
+        response.status_code = 401
+        return response
 
 
-@app.before_request
-def after_request():
+@app.after_request
+def after_request(Response):
     if request.method == 'OPTIONS':
-        resp = Response(status=200, mimetype='application/json')
-        resp.headers['Access-Control-Allow-Origin']  = 'http://localhost:3001'
-        resp.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
-        resp.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE'
-        return resp
+        Response.status = '200'
+        Response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3001'
+        Response.headers['Access-Control-Allow-Credentials'] = 'true'
+        Response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+        Response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE'
+        Response.set_data('')
+        return Response
+    Response.headers['Access-Control-Allow-Credentials'] = 'true'
+    return Response
 
 
 # ------ Routes
@@ -231,7 +222,6 @@ def login():
         # TODO: update register user with the new information
         session['user_id'] = user_logged.id
         session['user_time_init'] = datetime.utcnow()
-
         token = create_token(user_logged)
         return jsonify({"jsonrpc": "2.0", "result": True, "token": token}), 202
 
@@ -258,7 +248,6 @@ def new_user():
 
 @app.route('/apiUser/updateUser', methods=['PUT'])
 @rbac.allow(['candidate'], methods=['PUT'])
-@login_required
 def update_user():
     json_data = request.get_json()
     if json_data.has_key('params') and len(json_data.get('params')) != 0:
@@ -276,28 +265,24 @@ def update_user():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
-@app.route('/apiUser/logout', methods=['PUT'])
-@rbac.allow(['candidate', 'admon'], methods=['PUT'])
-@login_required
+@app.route('/apiUser/logout', methods=['PUT', 'OPTIONS'])
+@rbac.allow(['candidate', 'admon'], methods=['PUT', 'OPTIONS'])
 def logout_user():
-    user_db = get_current_user()
     # TODO: update register user
     # User.query.filter(User.id==user_db.id).update(json_data['params'])
     # db.session.commit()
     session.clear()
-    return jsonify({"jsonrpc": "2.0", "result": True}), 423
+    return jsonify({"jsonrpc": "2.0", "result": True}), 202
 
 
 @app.route('/apiQuestionary/assigned', methods=['GET'])
 @rbac.allow(['candidate'], methods=['GET'])
-@login_required
 def assigned_questionnaires():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
 @app.route('/apiAdmin/users', methods=['GET'])
 @rbac.allow(['admon'], methods=['GET'])
-@login_required
 def apiadmin_users():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 

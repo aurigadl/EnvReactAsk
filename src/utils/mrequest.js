@@ -13,9 +13,10 @@ exports.makeRequest = function (opts) {
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest();
     xhr.open(opts.method, opts.url);
+    xhr.withCredentials = true;
     xhr.onload = function () {
       if (this.status >= 200 && this.status < 300) {
-        resolve(xhr.response);
+        resolve(JSON.parse(xhr.response));
       } else {
         reject({
           status: this.status,

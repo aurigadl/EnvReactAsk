@@ -104,6 +104,7 @@ class TestApiUserRest(unittest.TestCase):
         name_user = 'testName_0'
         #Save session
         reqsess = requests.Session()
+        reqsess.headers.update({'Content-Type': 'application/json'})
 
         # json format correct create user for test
         payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
@@ -114,24 +115,23 @@ class TestApiUserRest(unittest.TestCase):
         result = reqsess.post(self.URL + path, json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
-        string_token = "Bearer {t}".format(t=token)
-        header = {'Authorization': string_token}
+        reqsess.headers.update({'Authorization': token})
 
         #test api with diferent params
         params = {'display_name':'fan1'}
-        payload = {"jsonrpc": "2.0", "method": path, "params": params}
-        r = reqsess.put(self.URL + path2, json=payload, headers=header)
+        payload = {"jsonrpc": "2.0", "method": path2, "params": params}
+        r = reqsess.put(self.URL + path2, json=payload)
         self.assertEqual(r.status_code, 200, 'Save data - display_name parameters')
 
         #test api with diferent params
-        payload = {"jsonrpc": "2.0", "method": path}
-        r = reqsess.put(self.URL + path3, json=payload, headers=header)
-        self.assertEqual(r.status_code, 423, 'Locked - users singout')
+        payload = {"jsonrpc": "2.0", "method": path3}
+        r = reqsess.put(self.URL + path3, json=payload)
+        self.assertEqual(r.status_code, 202, 'Locked - users singout')
 
         #test api with diferent params
         params = {'display_name':'fan1'}
-        payload = {"jsonrpc": "2.0", "method": path, "params": params}
-        r = reqsess.put(self.URL + path2, json=payload, headers=header)
+        payload = {"jsonrpc": "2.0", "method": path2, "params": params}
+        r = reqsess.put(self.URL + path2, json=payload)
         self.assertEqual(r.status_code, 403, 'Do not have access to the resource')
 
 
@@ -150,8 +150,7 @@ class TestApiUserRest(unittest.TestCase):
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
-        string_token = "Bearer {t}".format(t=token)
-        header = {'Authorization': string_token}
+        header = {'Authorization': token}
 
         #test api with diferent params
         params = {}
@@ -227,8 +226,7 @@ class TestApiUserRest(unittest.TestCase):
 
         # json format correct
         payload = {"jsonrpc": "2.0", "method": "apiQuestionary/assigned", "params": ""}
-        string_token = "Bearer {t}".format(t=token)
-        header = {'Authorization': string_token}
+        header = {'Authorization': token}
         r = reqsess.get(self.URL + path1, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
