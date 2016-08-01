@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 import os
-from functools import wraps
 
 import jwt
 from flask import Flask, request, jsonify, abort, session, Response
@@ -27,11 +26,10 @@ def init_db():
     """Initializes the database."""
     if os.path.exists('app.db'):
         os.remove('app.db')
-
     db.create_all()
     new_role_basic = Role('candidate', 'They may present test')
     new_role_admon = Role('admon', 'They may to do anything')
-    new_user_admon = User(email='admonUser', password='qwerasdf', display_name='User admin system')
+    new_user_admon = User(email='admonUser', password='qwerasdf', display_name='User admin system', active=True)
     new_user_admon.add_role(new_role_admon)
     db.session.add(new_role_basic)
     db.session.add(new_role_admon)
@@ -101,13 +99,13 @@ class User(db.Model, UserMixin):
     display_name = db.Column(db.String(120))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
-    active = db.Column(db.Boolean())
+    active = db.Column(db.Boolean(), default=False)
     confirmed_at = db.Column(db.DateTime())
     last_login_at = db.Column(db.DateTime())
     current_login_at = db.Column(db.DateTime())
     last_login_ip = db.Column(db.String(45))
     current_login_ip = db.Column(db.String(45))
-    login_count = db.Column(db.Integer)
+    login_count = db.Column(db.Integer, default=0)
     # Other columns
     roles = db.relationship(
         'Role',
@@ -115,7 +113,7 @@ class User(db.Model, UserMixin):
         backref=db.backref('roles', lazy='dynamic')
     )
 
-    def __init__(self, email=None, password=None, display_name=None, first_name=None, last_name=None):
+    def __init__(self, email=None, password=None, display_name=None, first_name=None, last_name=None, active=False):
         if email:
             self.email = email.lower()
         if password:
@@ -126,6 +124,8 @@ class User(db.Model, UserMixin):
             self.first_name = first_name
         if last_name:
             self.last_name = last_name
+        if active:
+            self.active = active
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -206,6 +206,7 @@ def index():
 @app.route('/apiUser/login', methods=['POST', 'OPTIONS'])
 @rbac.allow(['anonymous'], methods=['POST', 'OPTIONS'], with_children=False)
 def login():
+    user_data = {}
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
     r_email = request.json.get('usermail')
@@ -218,10 +219,17 @@ def login():
         if not user_logged or not user_logged.check_password(r_password):
             return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
 
-        # Loading importan information from user to used in other request
-        # TODO: update register user with the new information
         session['user_id'] = user_logged.id
-        session['user_time_init'] = datetime.utcnow()
+
+        user_data['login_count'] = user_logged.login_count + 1
+        user_data['last_login_ip'] = user_logged.current_login_ip
+        user_data['current_login_ip'] = request.host
+        user_data['last_login_at'] = user_logged.current_login_at
+        user_data['current_login_at'] = datetime.utcnow()
+
+        User.query.filter(User.id == user_logged.id).update(user_data)
+        db.session.commit()
+
         token = create_token(user_logged)
         return jsonify({"jsonrpc": "2.0", "result": True, "token": token}), 202
 
