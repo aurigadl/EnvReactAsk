@@ -99,7 +99,8 @@ class User(db.Model, UserMixin):
     display_name = db.Column(db.String(120))
     first_name = db.Column(db.String(255))
     last_name = db.Column(db.String(255))
-    active = db.Column(db.Boolean(), default=False)
+    active = db.Column(db.Boolean(), default=True)
+    new_user = db.Column(db.Boolean(), default=True)
     confirmed_at = db.Column(db.DateTime())
     last_login_at = db.Column(db.DateTime())
     current_login_at = db.Column(db.DateTime())
@@ -219,19 +220,21 @@ def login():
         if not user_logged or not user_logged.check_password(r_password):
             return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
 
-        session['user_id'] = user_logged.id
+        if user_logged.active:
+            session['user_id'] = user_logged.id
+            user_data['login_count'] = user_logged.login_count + 1
+            user_data['last_login_ip'] = user_logged.current_login_ip
+            user_data['current_login_ip'] = request.host
+            user_data['last_login_at'] = user_logged.current_login_at
+            user_data['current_login_at'] = datetime.utcnow()
 
-        user_data['login_count'] = user_logged.login_count + 1
-        user_data['last_login_ip'] = user_logged.current_login_ip
-        user_data['current_login_ip'] = request.host
-        user_data['last_login_at'] = user_logged.current_login_at
-        user_data['current_login_at'] = datetime.utcnow()
+            User.query.filter(User.id == user_logged.id).update(user_data)
+            db.session.commit()
 
-        User.query.filter(User.id == user_logged.id).update(user_data)
-        db.session.commit()
-
-        token = create_token(user_logged)
-        return jsonify({"jsonrpc": "2.0", "result": True, "token": token}), 202
+            token = create_token(user_logged)
+            return jsonify({"jsonrpc": "2.0", "result": True, "token": token}), 202
+        else:
+            return abort(404, jsonify({"jsonrpc": "2.0", "result": False}))
 
 
 @app.route('/apiUser/newuser', methods=['POST'])
@@ -293,6 +296,14 @@ def assigned_questionnaires():
 @rbac.allow(['admon'], methods=['GET'])
 def apiadmin_users():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
+
+
+@app.route('/apiAdmin/allRoles', methods=['GET'])
+@rbac.allow(['admon'], methods=['GET'])
+def apiadmin_roles_all():
+    roles_all = Role.query.with_entities(Role.id,Role.name, Role.description).all()
+    dict_roles = [dict(zip(('id','nomb','description'), r)) for r in roles_all]
+    return jsonify(dict(jsonrpc="2.0", result=dict_roles)), 200
 
 
 if __name__ == '__main__':

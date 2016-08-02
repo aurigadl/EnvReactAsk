@@ -1,21 +1,16 @@
 import React from 'react'
 
 var AdminFormUsersCrud = React.createClass({
-  getInitialState: function() {
-    return {secondsElapsed: 0};
-  },
-  tick: function() {
-    this.setState({secondsElapsed: this.state.secondsElapsed + 1});
-  },
-  componentDidMount: function() {
-    this.interval = setInterval(this.tick, 1000);
-  },
-  componentWillUnmount: function() {
-    clearInterval(this.interval);
-  },
   render: function() {
     return (
-      <div>Seconds Elapsed: {this.state.secondsElapsed}</div>
+      <input
+    type="text"
+    value={this.state.value}
+    onChange={this.handleChange}
+    />
+    <button onClick={this.reset}>Borrar</button>
+    <button onClick={this.alertValue}>Enviar</button>
+      </div>
     );
   }
 });

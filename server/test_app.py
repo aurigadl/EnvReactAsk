@@ -47,7 +47,6 @@ class TestApiUserRest(unittest.TestCase):
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Create new user but it was created before')
 
-
     def test_apiLogin(self):
         path = 'apiUser/login'
         name_user = 'testName_0'
@@ -96,13 +95,12 @@ class TestApiUserRest(unittest.TestCase):
         answer_json = json.loads(r.text)
         self.assertRegexpMatches(answer_json['token'], '.+[.].+[.].+', 'does not have correct format')
 
-
     def test_apiSignOut(self):
-        path  = 'apiUser/login'
+        path = 'apiUser/login'
         path2 = 'apiUser/updateUser'
         path3 = 'apiUser/logout'
         name_user = 'testName_0'
-        #Save session
+        # Save session
         reqsess = requests.Session()
         reqsess.headers.update({'Content-Type': 'application/json'})
 
@@ -117,28 +115,26 @@ class TestApiUserRest(unittest.TestCase):
         token = answer_json['token']
         reqsess.headers.update({'Authorization': token})
 
-        #test api with diferent params
-        params = {'display_name':'fan1'}
+        # test api with diferent params
+        params = {'display_name': 'fan1'}
         payload = {"jsonrpc": "2.0", "method": path2, "params": params}
         r = reqsess.put(self.URL + path2, json=payload)
         self.assertEqual(r.status_code, 200, 'Save data - display_name parameters')
 
-        #test api with diferent params
+        # test api with diferent params
         payload = {"jsonrpc": "2.0", "method": path3}
         r = reqsess.put(self.URL + path3, json=payload)
         self.assertEqual(r.status_code, 202, 'Locked - users singout')
 
-        #test api with diferent params
-        params = {'display_name':'fan1'}
+        # test api with diferent params
+        params = {'display_name': 'fan1'}
         payload = {"jsonrpc": "2.0", "method": path2, "params": params}
         r = reqsess.put(self.URL + path2, json=payload)
         self.assertEqual(r.status_code, 403, 'Do not have access to the resource')
 
-
-
     def test_apiUpdateUser(self):
         path = 'apiUser/updateUser'
-        #Save session
+        # Save session
         reqsess = requests.Session()
 
         # json correct format create user for test
@@ -152,51 +148,51 @@ class TestApiUserRest(unittest.TestCase):
         token = answer_json['token']
         header = {'Authorization': token}
 
-        #test api with diferent params
+        # test api with diferent params
         params = {}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 400, 'Error json format - not parameters')
 
-        #test api with diferent params
-        params = {'display_name':'', 'first_name':'', 'last_name':''}
+        # test api with diferent params
+        params = {'display_name': '', 'first_name': '', 'last_name': ''}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 400, 'Error json format - empty parameters')
 
-        #test api with diferent params
-        params = {'display_name':''}
+        # test api with diferent params
+        params = {'display_name': ''}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 400, 'Error json format - empty display_name parameters')
 
-        #test api with diferent params
-        params = {'display_name':'fa'}
+        # test api with diferent params
+        params = {'display_name': 'fa'}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 400, 'Error json format - require more bits display_name parameters')
 
-        #test api with diferent params
-        params = {'display_name':'fan1'}
+        # test api with diferent params
+        params = {'display_name': 'fan1'}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - display_name parameters')
 
-        #test api with diferent params
-        params = {'last_name':'san2'}
+        # test api with diferent params
+        params = {'last_name': 'san2'}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - last_name parameters')
 
-        #test api with diferent params
-        params = {'display_name':'gon3', 'first_name':'san3', 'last_name':'ron3'}
+        # test api with diferent params
+        params = {'display_name': 'gon3', 'first_name': 'san3', 'last_name': 'ron3'}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - many parameters')
 
 
-        #test api with diferent params
-        params = {'display_name':'gon4', 'first_name':'', 'last_name':'ron4'}
+        # test api with diferent params
+        params = {'display_name': 'gon4', 'first_name': '', 'last_name': 'ron4'}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - some parameters saved')
@@ -208,11 +204,12 @@ class TestApiUserRest(unittest.TestCase):
     Validate user access with the role of "admon" to a api
     that has only the role of candiate
     '''
-    def test_loginRolesCandidate(self):
-        path1 = 'apiQuestionary/assigned' #Only candidate role
-        path2 = 'apiAdmin/users'          #Only admon role
 
-        #Save session
+    def test_loginRolesCandidate(self):
+        path1 = 'apiQuestionary/assigned'  # Only candidate role
+        path2 = 'apiAdmin/users'  # Only admon role
+
+        # Save session
         reqsess = requests.Session()
         # json format correct create user for test
         payload = {'usermail': 'testName_0', 'password': '12345678', 'name_to_show': 'test name show 1'}
@@ -232,6 +229,28 @@ class TestApiUserRest(unittest.TestCase):
 
         r = reqsess.get(self.URL + path2, json=payload, headers=header)
         self.assertEqual(r.status_code, 403, 'Do not have access to the resource')
+
+
+    '''Validate user access with the role of "admon"  and
+    get all roles from database
+    '''
+    def test_getAllRoles(self):
+        path1 = 'apiAdmin/allRoles'  # Only candidate role
+
+        # Save session
+        reqsess = requests.Session()
+
+        # Login user testName_0 that has role candidate
+        payload = dict(usermail='admonUser', password='qwerasdf')
+        result = reqsess.post(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+
+        # json format correct
+        payload = {"jsonrpc": "2.0", "method": path1, "params": ""}
+        header = {'Authorization': token}
+        r = reqsess.get(self.URL + path1, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Answer ok')
 
 
 suite = unittest.TestLoader().loadTestsFromTestCase(TestApiUserRest)
