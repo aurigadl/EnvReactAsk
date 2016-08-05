@@ -10,16 +10,16 @@ const Login = React.createClass({
   },
 
   handleSubmit(event) {
-    event.preventDefault()
+    event.preventDefault();
 
-    const email = this.refs.email.value
-    const pass = this.refs.pass.value
+    const email = this.refs.email.value;
+    const pass = this.refs.pass.value;
 
     auth.login(email, pass, (loggedIn) => {
       if (!loggedIn)
-        return this.setState({ error: true })
+        return this.setState({ error: true });
 
-      const { location } = this.props
+      const { location } = this.props;
 
       if (location.state && location.state.nextPathname) {
         this.props.router.replace(location.state.nextPathname)
@@ -42,6 +42,6 @@ const Login = React.createClass({
     )
   }
 
-})
+});
 
 export default withRouter(Login)

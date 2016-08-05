@@ -25,8 +25,7 @@ module.exports = {
   },
 
   logout: function (cb) {
-
-    logOutRequest(localStorage.token, (res) => {
+    logOutRequest((res) => {
       if (res) {
         delete localStorage.token;
         if (cb) cb();
@@ -48,9 +47,6 @@ function pretendRequest(email, pass, cb) {
   var parreq = {
       method: 'POST',
       params: jsonData,
-      headers: {
-        'Content-Type': 'application/json'
-      },
       url: 'http://0.0.0.0:5000/apiUser/login'
   };
 
@@ -66,18 +62,14 @@ function pretendRequest(email, pass, cb) {
       }
     })
     .catch(function (err) {
-      console.error('Augh, there was an error!', err.statusText);
+      console.error('login Augh, there was an error!', err.statusText);
     });
 }
 
-function logOutRequest(token, cb) {
+function logOutRequest(cb) {
   var parreq = {
     method: 'PUT',
     params: {},
-    headers: {
-      'Authorization': token,
-      'Content-Type': 'application/json'
-    },
     url: 'http://0.0.0.0:5000/apiUser/logout'
   };
 

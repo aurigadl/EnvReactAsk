@@ -14,6 +14,7 @@ exports.makeRequest = function (opts) {
     var xhr = new XMLHttpRequest();
     xhr.open(opts.method, opts.url);
     xhr.withCredentials = true;
+
     xhr.onload = function () {
       if (this.status >= 200 && this.status < 300) {
         resolve(JSON.parse(xhr.response));
@@ -24,17 +25,23 @@ exports.makeRequest = function (opts) {
         });
       }
     };
+
     xhr.onerror = function () {
       reject({
         status: this.status,
         statusText: xhr.statusText
       });
     };
+
     if (opts.headers) {
       Object.keys(opts.headers).forEach(function (key) {
         xhr.setRequestHeader(key, opts.headers[key]);
       });
     }
+    if (localStorage.token) {
+      xhr.setRequestHeader('Authorization', localStorage.token);
+    }
+    xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(JSON.stringify(opts.params));
   });
 };

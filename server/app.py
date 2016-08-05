@@ -6,10 +6,9 @@ from flask import Flask, request, jsonify, abort, session, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
 import asklibs.sessionPickle as newSession
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.rbac import RBAC, RoleMixin, UserMixin
+from flask_sqlalchemy import SQLAlchemy
+from flask_rbac import RBAC, RoleMixin, UserMixin
 from flask_cors import CORS
-
 
 # Configuration
 current_path = os.path.dirname(__file__)
@@ -169,7 +168,6 @@ def get_current_user():
         return None
     try:
         token = parse_token(request)
-        session.get('user_id')
         current_user = User.query.join(Role, User.roles).filter(User.id == token['sub']).first()
         return current_user
     except jwt.DecodeError:
