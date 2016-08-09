@@ -26,7 +26,7 @@ var AdminFormUsersCrud = React.createClass({
           onChange={this.changeHandler}
         />
 
-        <h1>.!.(- -)</h1>
+        <h1>.!.(- -) (o)(o)  </h1>
 
       </div>
     )

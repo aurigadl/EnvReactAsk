@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router'
 import auth from '../utils/auth'
+require ('./menu.css');
 
 const App = React.createClass({
 
@@ -24,24 +25,33 @@ const App = React.createClass({
   render() {
     return (
       <div>
-        <ul>
-          <li>
+
+        <header className="header">
+
+          <h1 className="headline">Formato Único De Extracto Del Contrato <small> FUEC </small></h1>
+          <ul className="header-subnav">
+            <li>
+              {this.state.loggedIn ? (
+                <Link to="/logout">Salir</Link>
+              ) : (
+                <Link to="/login">Ingresar</Link>
+              )}
+            </li>
+
+            <li><Link to="/">Inicio</Link></li>
+
             {this.state.loggedIn ? (
-              <Link to="/logout">Log out</Link>
-            ) : (
-              <Link to="/login">Sign in</Link>
-            )}
-          </li>
-          <li><Link to="/about">About</Link></li>
-          <li><Link to="/">Home</Link> (changes depending on auth status)</li>
-          <li><Link to="/page2">Page Two</Link> (authenticated)</li>
-          <li><Link to="/user/foo">User: Foo</Link> (authenticated)</li>
-        </ul>
+              <li><Link to="/page2">Administración</Link></li>
+            ): null}
+          </ul>
+
+        </header>
+
         {this.props.children}
+
       </div>
     )
   }
-
-})
+});
 
 export default App

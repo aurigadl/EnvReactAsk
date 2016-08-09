@@ -57,11 +57,10 @@ function pretendRequest(email, pass, cb) {
           authenticated: true,
           token: datums.token
         })
-      } else {
-        cb({authenticated: false})
       }
     })
     .catch(function (err) {
+      cb({authenticated: false})
       console.error('login Augh, there was an error!', err.statusText);
     });
 }

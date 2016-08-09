@@ -1,6 +1,7 @@
 import React from 'react'
 import { withRouter } from 'react-router'
 import auth from '../utils/auth.js'
+require ('./login.css');
 
 const Login = React.createClass({
   getInitialState() {
@@ -31,17 +32,30 @@ const Login = React.createClass({
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <label><input ref="email" placeholder="email" defaultValue="admonuser" /></label>
-        <label><input ref="pass" placeholder="password" defaultValue="qwerasdf" type="password"/></label> (hint: password1)<br />
-        <button type="submit">login</button>
-        {this.state.error && (
-          <p>Bad login information</p>
-        )}
-      </form>
+      <div className="row">
+        <div className="medium-6 medium-centered large-4 large-centered columns">
+
+          <form onSubmit={this.handleSubmit}>
+            <div className="row column log-in-form">
+              <h4 className="text-center">Ingresa con el correo electronico</h4>
+              <label>Correo
+                <input type="text"  ref="email" defaultValue="admonuser" placeholder="micorreo@ejemplo.com" />
+              </label>
+              <label>Contraseña
+                <input defaultValue="qwerasdf" type="password" ref="pass" placeholder="Contraseña" />
+              </label>
+                <button className="button expanded" type="submit">Ingresar</button>
+            </div>
+            {this.state.error && (
+              <p>Bad login information</p>
+            )}
+          </form>
+
+        </div>
+      </div>
     )
   }
 
 });
 
-export default withRouter(Login)
+export default withRouter(Login);

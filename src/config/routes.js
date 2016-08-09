@@ -25,14 +25,6 @@ export default {
         })
       }
     },
-    { path: '/about',
-      getComponent: (nextState, cb) => {
-        require.ensure([], (require) => {
-          cb(null, require('../components/About').default)
-        })
-      }
-    },
-
     { onEnter: redirectToDashboard,
       childRoutes: [
         // Unauthenticated routes
@@ -44,24 +36,8 @@ export default {
             })
           }
         }
-        // ...
       ]
     },
-
-    { onEnter: redirectToLogin,
-      childRoutes: [
-        // Protected routes that don't share the dashboard UI
-        { path: '/user/:id',
-          getComponent: (nextState, cb) => {
-            require.ensure([], (require) => {
-              cb(null, require('../components/User').default)
-            })
-          }
-        }
-        // ...
-      ]
-    },
-
     { path: '/',
       getComponent: (nextState, cb) => {
         // Share the path
@@ -97,7 +73,6 @@ export default {
                 })
               }
             }
-            // ...
           ]
         }
       ]

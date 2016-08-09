@@ -6,14 +6,12 @@ const Dashboard = React.createClass({
     const token = auth.getToken()
 
     return (
-      <div>
-        <h1>Dashboard</h1>
-        <p>You made it!</p>
-        <p>{token}</p>
+      <div class="row">
+        <br />
         {this.props.children}
       </div>
     )
   }
-})
+});
 
 export default Dashboard
