@@ -47,7 +47,7 @@ function pretendRequest(email, pass, cb) {
   var parreq = {
       method: 'POST',
       params: jsonData,
-      url: 'http://0.0.0.0:5000/apiUser/login'
+      url: 'apiUser/login'
   };
 
   mReq(parreq)
@@ -69,7 +69,7 @@ function logOutRequest(cb) {
   var parreq = {
     method: 'PUT',
     params: {},
-    url: 'http://0.0.0.0:5000/apiUser/logout'
+    url: 'apiUser/logout'
   };
 
   mReq(parreq)

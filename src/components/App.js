@@ -41,7 +41,7 @@ const App = React.createClass({
             <li><Link to="/">Inicio</Link></li>
 
             {this.state.loggedIn ? (
-              <li><Link to="/page2">Administración</Link></li>
+              <li><Link to="/page2">Fuec</Link></li>
             ): null}
           </ul>
 

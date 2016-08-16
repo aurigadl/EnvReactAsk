@@ -20,7 +20,7 @@ var AdminFormUsersCrud = React.createClass({
       <div>
 
         <SelectInput
-          url="http://0.0.0.0:5000/apiAdmin/allRoles"
+          url="apiAdmin/allRoles"
           name="admin_roles"
           value={this.state.childSelectValue}
           onChange={this.changeHandler}

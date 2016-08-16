@@ -1,0 +1,6 @@
+# For security reasons, Option followsymlinks cannot be overridden.
+Options +SymLinksIfOwnerMatch +ExecCGI
+AddHandler fcgid-script .fcgi
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ apiflask.fcgi/$1 [QSA,L]

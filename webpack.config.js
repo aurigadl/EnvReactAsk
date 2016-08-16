@@ -18,7 +18,7 @@ module.exports = {
     modulesDirectories: ['node_modules', 'src']
   },
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'server/dist'),
     publicPath: '',
     filename: '[name].js',
     library: ['Example', '[name]'],
