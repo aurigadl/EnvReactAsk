@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 import os
-
+import config as config
 import jwt
 from flask import Flask, request, jsonify, abort, session, Response
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -13,8 +13,8 @@ from flask_rbac import RBAC, RoleMixin, UserMixin
 current_path = os.path.dirname(__file__)
 client_path = os.path.abspath(os.path.join(current_path, '..', '..', 'client'))
 
-app = Flask(__name__, static_folder='dist', static_url_path='')
-app.config.from_object('config')
+app = Flask(__name__, static_folder='./dist', static_url_path='')
+app.config.from_object(config)
 rbac = RBAC(app)
 db = SQLAlchemy(app)
 

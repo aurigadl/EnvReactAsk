@@ -7,3 +7,4 @@ dist/
 env/
 server/app_session
 *.pyc
+*.db
