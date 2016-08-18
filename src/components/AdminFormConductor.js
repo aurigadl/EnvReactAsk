@@ -1,22 +1,15 @@
 import React from 'react'
+require ('./formsPanels.css');
 
 var AdminFormConductor = React.createClass({
 
-  getInitialState: function() {
-    return {
-      childSelectValue: undefined
-    }
-  },
-
-  changeHandler: function(e) {
-    this.setState({
-      childSelectValue: e.target.value
-    })
-  },
-
   render: function() {
     return (
-      <div>
+      <div className="header callout secondary">
+
+        <div className="sign">
+          <h1>new products</h1>
+        </div>
 
         <label>Placa
           <input name="autoPlaca" type="text" placeholder="large-12.columns" />
@@ -39,7 +32,6 @@ var AdminFormConductor = React.createClass({
         </select>
 
         <input type="submit" />
-
 
       </div>
     )

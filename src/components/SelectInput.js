@@ -41,7 +41,7 @@ var SelectInput = React.createClass({
 
   render: function() {
     return (
-      <select name={this.props.name}>{this.state.options}</select>
+      <select className={this.props.class} name={this.props.name}>{this.state.options}</select>
     )
   }
 

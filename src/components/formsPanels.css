@@ -1,0 +1,31 @@
+.header.callout {
+  margin: 3rem auto;
+  border: 2px solid #054d67;
+  background: #fff; }
+.header.callout p {
+  text-align: left;
+  line-height: initial;
+  margin-top: -1.25rem; }
+.header.callout p span {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 75%;
+  font-weight: bold; }
+.header.callout .sign {
+  background: #fff;
+  width: 311px;
+  height: 2.4rem;
+  border: 2px solid #054d67;
+  position: relative;
+  top: -2.5rem;
+  margin-left: auto; }
+.header.callout .sign h1 {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #666;
+  font-size: 70%;
+  line-height: 2rem; }
+
+.header label {
+  text-align: left;
+}
