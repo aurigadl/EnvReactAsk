@@ -5,13 +5,22 @@ import SelectInput from './SelectInput.js'
 var FormMarcaAuto = React.createClass({
 
   getInitialState: function () {
-    return {childSelectValue: undefined};
+    return {
+      childSelectValue: undefined,
+      childSelectText: '',
+      inputValue: ''
+    };
   },
 
-  handleChange: function (event) {
+  handleUserSelect: function (childSelectValue, childSelectText) {
     this.setState({
-      childSelectValue: event.target.value
-    })
+      childSelectValue: childSelectValue,
+      inputValue: childSelectText
+    });
+  },
+
+  onChange(e) {
+    this.setState({inputValue: e.target.value});
   },
 
   render: function () {
@@ -28,21 +37,27 @@ var FormMarcaAuto = React.createClass({
         <form>
           <div className="input-group">
 
-              <SelectInput
-                class="input-group-field"
-                url="apiAdmin/allRoles"
-                name="marcaName"
-                value={this.state.childSelectValue}
-                onChange={this.handleChange}
-              />
+            <SelectInput
+              class="input-group-field"
+              url="apiAdmin/allRoles"
+              name="marcaName"
+              onUserSelect={this.handleUserSelect}
+            />
 
-              <div className="input-group-button">
-                <input type="submit" className="alert button" value="Borrar"/>
-              </div>
+            <div className="input-group-button">
+              <input type="submit" className="alert button" value="Borrar"/>
+            </div>
           </div>
 
           <div className="input-group">
-            <input name="marcaEdit" className="input-group-field" type="text" value={this.state.childSelectValue}/>
+
+            <input name="marcaEdit"
+                   placeholder="Editar o crear..."
+                   className="input-group-field"
+                   type="text"
+                   onChange={this.onChange}
+                   value={this.state.inputValue}/>
+
             <div className="input-group-button">
               <button type="button" className="success button">Grabar</button>
               <button type="button" className="alert button">Editar</button>
@@ -51,8 +66,8 @@ var FormMarcaAuto = React.createClass({
         </form>
       </div>
     )
-    }
+  }
 
-    });
+});
 
-    export default FormMarcaAuto;
+export default FormMarcaAuto;

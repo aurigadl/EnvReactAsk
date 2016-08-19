@@ -149,6 +149,16 @@ class User(db.Model, UserMixin):
 rbac.set_user_model(User)
 
 
+class Marcas(db.Model):
+    __tablename__ = 'marcas'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False, unique=True)
+
+    def __init__(self, name=None):
+        if name:
+            self.email = name.lower()
+
+
 def create_token(user):
     payload = {
         'sub': user.id,
@@ -297,6 +307,15 @@ def apiadmin_roles_all():
     roles_all = Role.query.with_entities(Role.id,Role.name, Role.description).all()
     dict_roles = [dict(zip(('id','nomb','description'), r)) for r in roles_all]
     return jsonify(dict(jsonrpc="2.0", result=dict_roles)), 200
+
+
+# Method for App FUEC
+@app.route('/apiFuec/allMarcas', methods=['GET'])
+@rbac.allow(['admon', 'candidate'], methods=['GET'])
+def apiafuec_marcas_all():
+    marcas_all = Marcas.query.with_entities(Marcas.id,Marcas.name).all()
+    dict_marcas = [dict(zip(('id','nomb'), r)) for r in marcas_all]
+    return jsonify(dict(jsonrpc="2.0", result=dict_marcas)), 200
 
 
 if __name__ == '__main__':
