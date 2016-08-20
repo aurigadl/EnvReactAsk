@@ -253,5 +253,28 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
 
+    '''Validate user access with the role of "candidate"  and
+    get all Marcas from database
+    '''
+    def test_getAllMarcas(self):
+        path1 = 'apiFuec/allMarcas'  # Only candidate role
+
+        # Save session
+        reqsess = requests.Session()
+
+        # Login user testName_0 that has role candidate
+        payload = dict(usermail='admonUser', password='qwerasdf')
+        result = reqsess.post(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+
+        # json format correct
+        payload = {"jsonrpc": "2.0", "method": path1, "params": ""}
+        header = {'Authorization': token}
+        r = reqsess.get(self.URL + path1, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Answer ok')
+
+
+
 suite = unittest.TestLoader().loadTestsFromTestCase(TestApiUserRest)
 unittest.TextTestRunner(verbosity=2).run(suite)

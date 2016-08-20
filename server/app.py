@@ -5,14 +5,11 @@ import jwt
 from flask import Flask, request, jsonify, abort, session, Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
-import asklibs.sessionPickle as newSession
+import libs.sessionPickle as newSession
 from flask_sqlalchemy import SQLAlchemy
 from flask_rbac import RBAC, RoleMixin, UserMixin
 
 # Configuration
-current_path = os.path.dirname(__file__)
-client_path = os.path.abspath(os.path.join(current_path, '..', '..', 'client'))
-
 app = Flask(__name__, static_folder='./dist', static_url_path='')
 app.config.from_object(config)
 rbac = RBAC(app)
@@ -311,7 +308,7 @@ def apiadmin_roles_all():
 
 # Method for App FUEC
 @app.route('/apiFuec/allMarcas', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['admon'], methods=['GET'])
 def apiafuec_marcas_all():
     marcas_all = Marcas.query.with_entities(Marcas.id,Marcas.name).all()
     dict_marcas = [dict(zip(('id','nomb'), r)) for r in marcas_all]
@@ -320,7 +317,7 @@ def apiafuec_marcas_all():
 
 if __name__ == '__main__':
 
-    path = './app_session'
+    path = './tmp_app_session'
     if not os.path.exists(path):
         os.mkdir(path)
         os.chmod(path, int('700', 8))
