@@ -9,11 +9,6 @@ class TestApiUserRest(unittest.TestCase):
     def setUp(self):
         self.URL = 'http://localhost:5000/'
 
-    def test_root(self):
-        path = 'api'
-        r = requests.get(self.URL + path)
-        self.assertEqual(r.status_code, 200)
-
     def test_apiNewUser(self):
         path = 'apiUser/newuser'
         payload = {}
@@ -197,43 +192,10 @@ class TestApiUserRest(unittest.TestCase):
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - some parameters saved')
 
-    '''
-    Validate user access with the role of "candidate" to a
-    api that has that role.
-
-    Validate user access with the role of "admon" to a api
-    that has only the role of candiate
-    '''
-
-    def test_loginRolesCandidate(self):
-        path1 = 'apiQuestionary/assigned'  # Only candidate role
-        path2 = 'apiAdmin/users'  # Only admon role
-
-        # Save session
-        reqsess = requests.Session()
-        # json format correct create user for test
-        payload = {'usermail': 'testName_0', 'password': '12345678', 'name_to_show': 'test name show 1'}
-        requests.post(self.URL + 'apiUser/newuser', json=payload)
-
-        # Login user testName_0 that has role candidate
-        payload = dict(usermail='testName_0', password='12345678')
-        result = reqsess.post(self.URL + 'apiUser/login', json=payload)
-        answer_json = json.loads(result.text)
-        token = answer_json['token']
-
-        # json format correct
-        payload = {"jsonrpc": "2.0", "method": "apiQuestionary/assigned", "params": ""}
-        header = {'Authorization': token}
-        r = reqsess.get(self.URL + path1, json=payload, headers=header)
-        self.assertEqual(r.status_code, 200, 'Answer ok')
-
-        r = reqsess.get(self.URL + path2, json=payload, headers=header)
-        self.assertEqual(r.status_code, 403, 'Do not have access to the resource')
-
-
-    '''Validate user access with the role of "admon"  and
+    ''' Validate user access with the role of "admon"  and
     get all roles from database
     '''
+
     def test_getAllRoles(self):
         path1 = 'apiAdmin/allRoles'  # Only candidate role
 
@@ -252,10 +214,10 @@ class TestApiUserRest(unittest.TestCase):
         r = reqsess.get(self.URL + path1, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
-
     '''Validate user access with the role of "candidate"  and
     get all Marcas from database
     '''
+
     def test_getAllMarcas(self):
         path1 = 'apiFuec/allMarcas'  # Only candidate role
 

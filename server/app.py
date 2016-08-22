@@ -69,25 +69,6 @@ def root():
     return app.send_static_file('index.html')
 
 
-@app.route('/api', methods=['GET'])
-@rbac.allow(['anonymous'], methods=['GET'], with_children=False)
-def index():
-    ret_dict = {"ip": request.remote_addr, "scheme": request.scheme}
-    return jsonify(items=ret_dict)
-
-
-@app.route('/apiQuestionary/assigned', methods=['GET'])
-@rbac.allow(['candidate'], methods=['GET'])
-def assigned_questionnaires():
-    return jsonify({"jsonrpc": "2.0", "result": True}), 200
-
-
-@app.route('/apiAdmin/users', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
-def apiadmin_users():
-    return jsonify({"jsonrpc": "2.0", "result": True}), 200
-
-
 if __name__ == '__main__':
 
     rbac.set_user_loader(get_current_user)
