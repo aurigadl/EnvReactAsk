@@ -4,16 +4,16 @@ import {makeRequest as mReq} from '../utils/mrequest';
 var SelectInput = React.createClass({
   propTypes: {
     url: React.PropTypes.string.isRequired,
-    name:React.PropTypes.string.isRequired
+    name: React.PropTypes.string.isRequired
   },
 
-  getInitialState: function() {
+  getInitialState: function () {
     return {
       options: []
     }
   },
 
-  componentDidMount: function() {
+  componentDidMount: function () {
 
     var parreq = {
       method: 'GET',
@@ -21,7 +21,7 @@ var SelectInput = React.createClass({
     };
 
     mReq(parreq)
-      .then(function(response) {
+      .then(function (response) {
         this.successHandler(response.result)
       }.bind(this))
       .catch(function (err) {
@@ -29,7 +29,7 @@ var SelectInput = React.createClass({
       });
   },
 
-  successHandler: function(data) {
+  successHandler: function (data) {
     this.state.options.push(<option key='' value=''></option>);
     for (var i = 0; i < data.length; i++) {
       var option = data[i];
@@ -40,22 +40,23 @@ var SelectInput = React.createClass({
     this.forceUpdate();
   },
 
-  handleChange: function(e) {
+  handleChange: function (e) {
     var index = e.nativeEvent.target.selectedIndex;
-    var text  = e.nativeEvent.target[index].text;
-    this.props.onUserSelect(
-      index, text
-    );
+    var text = e.nativeEvent.target[index].text;
+    if (typeof this.props.onUserSelect === "function")
+      this.props.onUserSelect(
+        index, text
+      );
   },
 
-  render: function() {
+  render: function () {
     return (
       <select
         className={this.props.class}
         onChange={this.handleChange}
         ref="selectValue"
         name={this.props.name}>
-          {this.state.options}
+        {this.state.options}
       </select>
     )
   }
