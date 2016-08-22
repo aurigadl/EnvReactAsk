@@ -7,8 +7,9 @@ import libs.sessionPickle as newSession
 
 from shared.models import db, rbac,g_data
 from apiUser.models import Role, User
-from apiMarcas.models import Marcas
 from apiUser.apiUser import apiUser
+from apiRole.apiRole import apiRole
+from apiMarcas.apiMarca import apiMarca
 
 # Configuration
 app = Flask(__name__, static_folder='./static', static_url_path='')
@@ -18,6 +19,8 @@ db.init_app(app)
 rbac.init_app(app)
 
 app.register_blueprint(apiUser)
+app.register_blueprint(apiRole)
+app.register_blueprint(apiMarca)
 
 
 def init_db():
@@ -83,23 +86,6 @@ def assigned_questionnaires():
 @rbac.allow(['admon'], methods=['GET'])
 def apiadmin_users():
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
-
-
-@app.route('/apiAdmin/allRoles', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
-def apiadmin_roles_all():
-    roles_all = Role.query.with_entities(Role.id, Role.name, Role.description).all()
-    dict_roles = [dict(zip(('id', 'nomb', 'description'), r)) for r in roles_all]
-    return jsonify(dict(jsonrpc="2.0", result=dict_roles)), 200
-
-
-# Method for App FUEC
-@app.route('/apiFuec/allMarcas', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
-def apiafuec_marcas_all():
-    marcas_all = Marcas.query.with_entities(Marcas.id, Marcas.name).all()
-    dict_marcas = [dict(zip(('id', 'nomb'), r)) for r in marcas_all]
-    return jsonify(dict(jsonrpc="2.0", result=dict_marcas)), 200
 
 
 if __name__ == '__main__':

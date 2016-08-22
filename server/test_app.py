@@ -275,6 +275,5 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
 
-
 suite = unittest.TestLoader().loadTestsFromTestCase(TestApiUserRest)
 unittest.TextTestRunner(verbosity=2).run(suite)
