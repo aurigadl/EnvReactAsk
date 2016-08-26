@@ -1,5 +1,6 @@
-from shared.models import rbac, db
 from flask import Blueprint, jsonify, request, abort
+
+from shared.models import rbac, db
 from apiUser.models import Role, User
 
 apiRole = Blueprint('apiRole', __name__)
@@ -29,7 +30,7 @@ def api_admin_user_roles_update():
     d = {}
     if json_data.has_key('params') and len(value_data) != 0:
         for key, value in value_data:
-            d[key]= value
+            d[key] = value
         if len(d) == 0 or 'user_id' not in d or 'role_id' not in d:
             return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
         user_id = d['user_id']
@@ -46,7 +47,7 @@ def api_admin_user_roles_update():
                 db.session.add(update_user)
                 db.session.commit()
         else:
-            for role_id  in list_role_id:
+            for role_id in list_role_id:
                 id_r2 = role_id[0]
                 if not User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r2).count():
                     update_user = User.query.filter(User.id == user_id).first()
@@ -63,11 +64,14 @@ def api_admin_user_roles_update():
 @rbac.allow(['admon'], methods=['DELETE'])
 def api_admin_user_roles_delete():
     json_data = request.get_json()
-    value_data = json_data.get('params').items()
+    if json_data.has_key('params') and 'items' in dir(json_data.get('params')):
+        value_data = json_data.get('params').items()
+    else:
+        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
     d = {}
-    if json_data.has_key('params') and len(value_data) != 0:
+    if len(value_data) != 0:
         for key, value in value_data:
-            d[key]= value
+            d[key] = value
         if len(d) == 0 or 'user_id' not in d or 'role_id' not in d:
             return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
         user_id = d['user_id']
@@ -79,13 +83,15 @@ def api_admin_user_roles_delete():
             id_r = list_role_id[0]
             if User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r).count():
                 if User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r).count():
-                    db.session.delete(User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r).first())
+                    db.session.delete(
+                        User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r).first())
                     db.session.commit()
         else:
-            for role_id  in list_role_id:
+            for role_id in list_role_id:
                 id_r2 = role_id[0]
                 if User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r2).count():
-                    db.session.delete(User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r2).first())
+                    db.session.delete(
+                        User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r2).first())
                     db.session.commit()
     else:
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))

@@ -36,6 +36,9 @@ class TestApiUserRest(unittest.TestCase):
         payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 201, 'Create new user')
+        answer_json = json.loads(r.text)
+        id = answer_json['id']
+        self.assertTrue(str(id).isdigit(), 'Create new user')
 
         # json format correct with previous user
         payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
@@ -294,13 +297,39 @@ class TestApiUserRest(unittest.TestCase):
         path1 = 'apiAdmin/delUserRole'  # Only candidate role
 
         # Save session
+        # Create name user
         reqsess = requests.Session()
+        digits = "".join([random.choice(string.digits) for i in xrange(10)])
+        name_user = "testName_{x}".format(x=digits)
 
-        # Login user testName_0 that has role candidate
+        # get id new user
+        payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        r = reqsess.post(self.URL + 'apiUser/newuser', json=payload)
+        self.assertEqual(r.status_code, 201, 'Create new user')
+        answer_json = json.loads(r.text)
+        id = answer_json['id']
+        self.assertTrue(str(id).isdigit(), 'Create new user')
+
+        # Login user admonUser that has role candidate
         payload = dict(usermail='admonUser', password='qwerasdf')
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
+
+        # Get all roles
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": ""}
+        header = {'Authorization': token}
+        r = reqsess.get(self.URL + 'apiAdmin/allRoles', json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Answer ok')
+        answer_json = json.loads(r.text)
+        ids = ', '.join([str(x['id']) for x in answer_json['result']])
+
+        # update roles with new user ...
+        params = {'role_id': ids, 'user_id': id}
+        payload = {"jsonrpc": "2.0", "method": path1, "params": params}
+        header = {'Authorization': token}
+        r = reqsess.put(self.URL + 'apiAdmin/setUserRole', json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Answer ok')
 
         # json format correct
         params = {'role_id': ''}
@@ -309,16 +338,14 @@ class TestApiUserRest(unittest.TestCase):
         r = reqsess.delete(self.URL + path1, json=payload, headers=header)
         self.assertEqual(r.status_code, 400, 'Error json format')
 
-        # json format correct with role tuple
-        params = {'role_id': '2, 1', 'user_id': '2'}
-        payload = {"jsonrpc": "2.0", "method": path1, "params": params}
+        # json format correct get roles
+        payload = {"jsonrpc": "2.0", "method": path1, "params": ""}
         header = {'Authorization': token}
         r = reqsess.delete(self.URL + path1, json=payload, headers=header)
-        self.assertEqual(r.status_code, 200, 'Answer ok')
+        self.assertEqual(r.status_code, 400, 'Answer ok')
 
-
-        # json format correct
-        params = {'role_id': '2', 'user_id': '2'}
+        # json format correct with role tuple
+        params = {'role_id': ids, 'user_id': id}
         payload = {"jsonrpc": "2.0", "method": path1, "params": params}
         header = {'Authorization': token}
         r = reqsess.delete(self.URL + path1, json=payload, headers=header)

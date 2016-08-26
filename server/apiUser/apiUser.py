@@ -68,7 +68,7 @@ def new_user():
     new_user_db.add_role(Role.get_by_name('candidate'))
     db.session.add(new_user_db)
     db.session.commit()
-    return jsonify({"jsonrpc": "2.0", "result": True}), 201
+    return jsonify({"jsonrpc": "2.0", "result": True, "id": new_user_db.id}), 201
 
 
 @apiUser.route('/apiUser/updateUser', methods=['PUT'])
