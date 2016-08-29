@@ -1,16 +1,34 @@
 import React from 'react'
-import AdminFormConductor from './AdminFormConductor.js'
+import FormConductor from './FormConductor.js'
+import FormContrato from './FormContrato.js'
+import FormPersona from './FormPersona.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
+
+
 
 const PageTwo = React.createClass({
   render: function(){
     return (
     <div className="row">
-      <div className="large-7 columns">
-        <FormMarcaAuto />
+      <div className="row">
+        <div className="large-4 columns">
+          <FormMarcaAuto />
+        </div>
+        <div className="large-4 columns">
+          <FormConductor />
+        </div>
+        <div className="large-4 columns">
+          <FormContrato />
+        </div>
       </div>
-      <div className="large-5 columns">
-        <AdminFormConductor />
+      <div className="row">
+        <div className="large-4 columns">
+          <FormPersona />
+        </div>
+        <div className="large-4 columns">
+        </div>
+        <div className="large-4 columns">
+        </div>
       </div>
     </div>
     );
