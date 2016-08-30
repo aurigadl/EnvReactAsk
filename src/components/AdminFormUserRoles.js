@@ -2,7 +2,7 @@ import React from 'react'
 import SelectInput from './SelectInput.js'
 require('./formsPanels.css');
 
-var AdminFormUsersCrud = React.createClass({
+var AdminFormUserRoles = React.createClass({
 
   getInitialState: function() {
     return {
@@ -16,17 +16,27 @@ var AdminFormUsersCrud = React.createClass({
     })
   },
 
+  componentDidMount: function() {
+    this.serverRequest = $.get(this.props.source, function (result) {
+      var lastGist = result[0];
+      this.setState({
+        username: lastGist.owner.login,
+        lastGistUrl: lastGist.html_url
+      });
+    }.bind(this));
+  },
+
   render: function() {
     return (
       <div className="header callout secondary">
 
         <div className="sign">
-          <h1>Roles</h1>
+          <h1>Usuario Role</h1>
         </div>
 
         <SelectInput
-          url="apiAdmin/allRoles"
-          name="admin_roles"
+          url="apiUser/allUser"
+          name="Usuario"
           value={this.state.childSelectValue}
           onChange={this.changeHandler}
         />
@@ -37,4 +47,4 @@ var AdminFormUsersCrud = React.createClass({
 
 });
 
-export default AdminFormUsersCrud
+export default AdminFormUserRoles

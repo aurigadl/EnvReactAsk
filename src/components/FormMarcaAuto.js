@@ -63,6 +63,7 @@ var FormMarcaAuto = React.createClass({
               <button type="button" className="alert button">Editar</button>
             </div>
           </div>
+
         </form>
       </div>
     )

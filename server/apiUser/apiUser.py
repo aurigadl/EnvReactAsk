@@ -71,8 +71,16 @@ def new_user():
     return jsonify({"jsonrpc": "2.0", "result": True, "id": new_user_db.id}), 201
 
 
+@apiUser.route('/apiUser/allUser', methods=['GET'])
+@rbac.allow(['admon'], methods=['GET'])
+def user_all():
+    user_all = User.query.with_entities(User.id, User.email).all()
+    dict_users = [dict(zip(('id', 'nomb'), r)) for r in user_all]
+    return jsonify(dict(jsonrpc="2.0", result=dict_users)), 200
+
+
 @apiUser.route('/apiUser/updateUser', methods=['PUT'])
-@rbac.allow(['candidate'], methods=['PUT'])
+@rbac.allow(['candidate', 'admon'], methods=['PUT'])
 def update_user():
     json_data = request.get_json()
     if json_data.has_key('params') and len(json_data.get('params')) != 0:
@@ -93,8 +101,5 @@ def update_user():
 @apiUser.route('/apiUser/logout', methods=['PUT', 'OPTIONS'])
 @rbac.allow(['candidate', 'admon'], methods=['PUT', 'OPTIONS'])
 def logout_user():
-    # TODO: update register user
-    # User.query.filter(User.id==user_db.id).update(json_data['params'])
-    # db.session.commit()
     session.clear()
     return jsonify({"jsonrpc": "2.0", "result": True}), 202
