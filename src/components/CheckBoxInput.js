@@ -1,4 +1,6 @@
-let Checkbox = React.createClass({
+import React from 'react'
+
+var CheckBoxInput = React.createClass({
   getInitialState: function () {
     return {
       isChecked: false
@@ -9,15 +11,13 @@ let Checkbox = React.createClass({
     this.setState({
       isChecked: ! this.state.isChecked
     });
-
-    this.props.handleCheckboxChange(this.props.label);
   },
 
   render: function () {
     return (
       <div>
         <input type="checkbox"
-               value={this.props.label}
+               value={this.props.id}
                checked={this.state.isChecked}
                onChange={this.toggleCheckbox} />
           <label for="checkbox2">{this.props.label}</label>
@@ -25,3 +25,5 @@ let Checkbox = React.createClass({
     );
   }
 });
+
+export default CheckBoxInput

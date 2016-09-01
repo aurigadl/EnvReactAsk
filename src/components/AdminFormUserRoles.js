@@ -1,5 +1,6 @@
 import React from 'react'
 import SelectInput from './SelectInput.js'
+import CheckBoxInputs from './CheckBoxInputs.js'
 require('./formsPanels.css');
 
 var AdminFormUserRoles = React.createClass({
@@ -16,16 +17,6 @@ var AdminFormUserRoles = React.createClass({
     })
   },
 
-  componentDidMount: function() {
-    this.serverRequest = $.get(this.props.source, function (result) {
-      var lastGist = result[0];
-      this.setState({
-        username: lastGist.owner.login,
-        lastGistUrl: lastGist.html_url
-      });
-    }.bind(this));
-  },
-
   render: function() {
     return (
       <div className="header callout secondary">
@@ -34,12 +25,21 @@ var AdminFormUserRoles = React.createClass({
           <h1>Usuario Role</h1>
         </div>
 
-        <SelectInput
-          url="apiUser/allUser"
-          name="Usuario"
-          value={this.state.childSelectValue}
-          onChange={this.changeHandler}
-        />
+        <label>Usuarios del sistema
+          <SelectInput
+            url="apiUser/allUser"
+            name="Usuario"
+            value={this.state.childSelectValue}
+            onChange={this.changeHandler}
+          />
+        </label>
+
+        <label>Perfiles de acceso
+          <CheckBoxInputs
+            url="apiAdmin/allRoles"
+            ck_name="Roles"
+          />
+        </label>
 
       </div>
     )
