@@ -236,6 +236,27 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
     # Validate user access with the role of "admon"  and
+    # get all roles from database
+    def test_getIdUsersRoles(self):
+        path1 = 'apiAdmin/idUserRole'  # Only candidate role
+
+        # Save session
+        reqsess = requests.Session()
+
+        # Login user testName_0 that has role candidate
+        payload = dict(usermail='admonUser', password='qwerasdf')
+        result = reqsess.post(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+
+        # json format correct
+        params = {'id': '1'}
+        payload = {"jsonrpc": "2.0", "method": path1, "params": params}
+        header = {'Authorization': token}
+        r = reqsess.get(self.URL + path1, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'Answer ok')
+
+    # Validate user access with the role of "admon"  and
     # get all users from database
     def test_getAllUsers(self):
         path1 = 'apiUser/allUser'  # Only candidate role

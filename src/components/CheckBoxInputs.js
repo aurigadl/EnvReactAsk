@@ -3,6 +3,14 @@ import {makeRequest as mReq} from '../utils/mrequest';
 require('./formsPanels.css');
 
 var CheckboxInputs = React.createClass({
+
+  getDefaultProps: function() {
+    return {
+      idsCheckSelected: []
+    };
+  },
+
+
   getInitialState: function () {
     return {
       globalCheckbox: false,
@@ -10,19 +18,36 @@ var CheckboxInputs = React.createClass({
     }
   },
 
-  linkGlobalCheckbox: function () {
-    var newVal = !this.state.globalCheckbox
-    this.state({
-      globalCheckbox: newVal,
+
+  componentWillReceiveProps: function(nextProps) {
+    this.replaceState({
       dataList: this.state.dataList.map(function (d) {
-        return {value: d.value, selected: newVal, label: d.label};
+        var newSelected = ((nextProps.idsCheckSelected.indexOf(d.value) != -1) ? true : false);
+        return {
+          value: d.value,
+          label: d.label,
+          selected: newSelected
+        };
       })
     });
-    this.forceUpdate();
+  },
+
+
+  linkGlobalCheckbox: function () {
+    var newVal = !this.state.globalCheckbox;
+    this.replaceState({
+      globalCheckbox: newVal,
+      dataList: this.state.dataList.map(function (d) {
+        return {
+          value: d.value,
+          label: d.label,
+          selected: newVal};
+      })
+    });
   },
 
   linkCheckbox: function (e) {
-    this.state({
+    this.replaceState({
       dataList: this.state.dataList.map(function (d) {
         var newSelected = (e.target.value == d.value ? !d.selected : d.selected);
         return {
@@ -32,7 +57,6 @@ var CheckboxInputs = React.createClass({
         };
       })
     });
-    this.forceUpdate();
   },
 
   componentDidMount: function () {
@@ -62,8 +86,7 @@ var CheckboxInputs = React.createClass({
         selected: false
       });
     }
-    this.state({dataList: arrayData})
-    this.forceUpdate();
+    this.setState({dataList: arrayData})
   },
 
   render_Checkbox: function (result , i) {
@@ -71,6 +94,7 @@ var CheckboxInputs = React.createClass({
       <input type="checkbox"
              key={i}
              name={this.props.ck_name}
+             checked={result.selected}
              onChange={this.linkCheckbox}
              value={result.value}/>
       {result.label}
@@ -79,9 +103,10 @@ var CheckboxInputs = React.createClass({
 
   render: function () {
     var list = this.state.dataList;
+    var listCheck = list.map(this.render_Checkbox);
     return (<div>
         <label>Todos <input type="checkbox" onChange={this.linkGlobalCheckbox}/></label>
-        {list.map(this.render_Checkbox)}
+        {listCheck}
       </div>
     );
   }

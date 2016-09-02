@@ -22,6 +22,29 @@ def api_admin_user_roles_all():
     return jsonify(dict(jsonrpc="2.0", result=dict_roles)), 200
 
 
+@apiRole.route('/apiAdmin/idUserRole', methods=['GET'])
+@rbac.allow(['admon'], methods=['GET'])
+def api_admin_user_roles_id():
+    json_data = request.get_json()
+
+    if json_data.has_key('params') and 'items' in dir(json_data.get('params')):
+        value_data = json_data.get('params').items()
+    else:
+        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+    d = {}
+    if len(value_data) != 0:
+        for key, value in value_data:
+            d[key] = value
+        if len(d) == 0 or 'id' not in d:
+            return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+        user_id = d['id']
+        roles_user = User.query.with_entities(Role.id, Role.name).join(Role, User.roles).filter(User.id == user_id).all()
+        dict_roles = [dict(zip(('role_id', 'role_name'), r)) for r in roles_user]
+        return jsonify(dict(jsonrpc="2.0", result=dict_roles)), 200
+    else:
+        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+
+
 @apiRole.route('/apiAdmin/setUserRole', methods=['PUT'])
 @rbac.allow(['admon'], methods=['PUT'])
 def api_admin_user_roles_update():

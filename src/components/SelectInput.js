@@ -30,23 +30,25 @@ var SelectInput = React.createClass({
   },
 
   successHandler: function (data) {
-    this.state.options.push(<option key='' value=''></option>);
+    var arrayData = [];
+    arrayData.push(<option key='' value=''></option>);
     for (var i = 0; i < data.length; i++) {
       var option = data[i];
-      this.state.options.push(
+      arrayData.push(
         <option key={i} value={option.id}>{option.nomb}</option>
       );
     }
-    this.forceUpdate();
+    this.setState({options: arrayData})
   },
 
   handleChange: function (e) {
     var index = e.nativeEvent.target.selectedIndex;
     var text = e.nativeEvent.target[index].text;
-    if (typeof this.props.onUserSelect === "function")
+    if (typeof this.props.onUserSelect === "function"){
       this.props.onUserSelect(
         index, text
       );
+    }
   },
 
   render: function () {

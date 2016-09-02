@@ -9,7 +9,6 @@
 
 exports.makeRequest = function (opts) {
 
-
   return new Promise(function (resolve, reject) {
     var xhr = new XMLHttpRequest();
     xhr.open(opts.method, opts.url);
