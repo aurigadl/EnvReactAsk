@@ -250,10 +250,16 @@ class TestApiUserRest(unittest.TestCase):
         token = answer_json['token']
 
         # json format correct
-        params = {'id': '1'}
-        payload = {"jsonrpc": "2.0", "method": path1, "params": params}
+        payload = {"jsonrpc": "2.0", "method": path1}
         header = {'Authorization': token}
         r = reqsess.get(self.URL + path1, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Answer ok')
+
+        # json format correct
+        params = '?id=1'
+        payload = {"jsonrpc": "2.0", "method": path1}
+        header = {'Authorization': token}
+        r = reqsess.get(self.URL + path1 + params, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Answer ok')
 
     # Validate user access with the role of "admon"  and

@@ -4,12 +4,11 @@ require('./formsPanels.css');
 
 var CheckboxInputs = React.createClass({
 
-  getDefaultProps: function() {
+  getDefaultProps: function () {
     return {
       idsCheckSelected: []
     };
   },
-
 
   getInitialState: function () {
     return {
@@ -18,9 +17,9 @@ var CheckboxInputs = React.createClass({
     }
   },
 
-
-  componentWillReceiveProps: function(nextProps) {
+  componentWillReceiveProps: function (nextProps) {
     this.replaceState({
+      globalCheckbox: false,
       dataList: this.state.dataList.map(function (d) {
         var newSelected = ((nextProps.idsCheckSelected.indexOf(d.value) != -1) ? true : false);
         return {
@@ -32,7 +31,6 @@ var CheckboxInputs = React.createClass({
     });
   },
 
-
   linkGlobalCheckbox: function () {
     var newVal = !this.state.globalCheckbox;
     this.replaceState({
@@ -41,7 +39,8 @@ var CheckboxInputs = React.createClass({
         return {
           value: d.value,
           label: d.label,
-          selected: newVal};
+          selected: newVal
+        };
       })
     });
   },
@@ -60,7 +59,6 @@ var CheckboxInputs = React.createClass({
   },
 
   componentDidMount: function () {
-
     var parreq = {
       method: 'GET',
       url: this.props.url
@@ -73,7 +71,6 @@ var CheckboxInputs = React.createClass({
       .catch(function (err) {
         console.error('CheckBoxInputs, there was an error!', err.statusText);
       });
-
   },
 
   successHandler: function (data) {
@@ -89,7 +86,7 @@ var CheckboxInputs = React.createClass({
     this.setState({dataList: arrayData})
   },
 
-  render_Checkbox: function (result , i) {
+  render_Checkbox: function (result, i) {
     return <label for="checkbox2" key={i}>
       <input type="checkbox"
              key={i}
@@ -105,7 +102,14 @@ var CheckboxInputs = React.createClass({
     var list = this.state.dataList;
     var listCheck = list.map(this.render_Checkbox);
     return (<div>
-        <label>Todos <input type="checkbox" onChange={this.linkGlobalCheckbox}/></label>
+        <label>
+          <input
+            type="checkbox"
+            checked={this.state.globalCheckbox}
+            onChange={this.linkGlobalCheckbox}
+          />
+          Todos
+        </label>
         {listCheck}
       </div>
     );

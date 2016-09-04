@@ -13,10 +13,10 @@ var AdminFormUserRoles = React.createClass({
   },
 
   handleUserSelect: function (childSelectValue) {
-    console.log(childSelectValue);
-    var params = {'id': childSelectValue};
-    var jsonData = {'params': params};
-    this.getRemoteData(jsonData, 'apiAdmin/idUserRole');
+    if(childSelectValue != 0){
+      var params = {'id': childSelectValue};
+      this.getRemoteData(params, 'apiAdmin/idUserRole');
+    }
   },
 
   getRemoteData: function (jsonData, url) {
@@ -37,16 +37,22 @@ var AdminFormUserRoles = React.createClass({
 
   successHandler: function (data) {
     var arrayData = [];
-    arrayData.push(<option key='' value=''></option>);
     for (var i = 0; i < data.length; i++) {
-      var option = data[i];
-      arrayData.push(
-        <option key={i} value={option.id}>{option.nomb}</option>
-      );
+      arrayData.push(data[i].role_id);
     }
-    this.setState({options: arrayData})
+    this.setState({childSelectValue: arrayData})
   },
 
+  handleSubmit: function(e) {
+    e.preventDefault();
+    var author = this.state.author.trim();
+    var text = this.state.text.trim();
+    if (!text || !author) {
+      return;
+    }
+    // TODO: send request to the server
+    this.setState({author: '', text: ''});
+  },
 
   render: function() {
     return (
@@ -56,24 +62,31 @@ var AdminFormUserRoles = React.createClass({
           <h1>Usuario Role</h1>
         </div>
 
-        <label>Usuarios del sistema
-          <SelectInput
-            url="apiUser/allUser"
-            name="Usuario"
-            onUserSelect={this.handleUserSelect}
-          />
-        </label>
+        <div class="callout secondary">
+          <h5>This is a secondary callout</h5>
+          <p>It has an easy to override visual style, and is appropriately subdued.</p>
+          <a href="#">It's dangerous to go alone, take this.</a>
+        </div>
 
-        <label>Perfiles de acceso
-          <CheckBoxInputs
-            url="apiAdmin/allRoles"
-            ck_name="Roles"
-            idsCheckSelected={this.state.childSelectValue}
-          />
-        </label>
+        <form onSubmit={this.handleSubmit}>
+          <label>Usuarios del sistema
+            <SelectInput
+              url="apiUser/allUser"
+              name="Usuario"
+              onUserSelect={this.handleUserSelect}
+            />
+          </label>
 
-        <button type="button" className="success button">Grabar</button>
+          <label>Perfiles de acceso
+            <CheckBoxInputs
+              url="apiAdmin/allRoles"
+              ck_name="Roles"
+              idsCheckSelected={this.state.childSelectValue}
+            />
+          </label>
 
+          <input type="submit" className="success button" value="Grabar"/>
+        </form>
       </div>
     )
   }
