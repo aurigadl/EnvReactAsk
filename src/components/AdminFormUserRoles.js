@@ -8,27 +8,27 @@ var AdminFormUserRoles = React.createClass({
 
   getInitialState: function(){
     return {
-      childSelectValue: undefined
+      childSelectValue: undefined,
+      checkBoxSelectToSend: []
     };
   },
 
   handleUserSelect: function (childSelectValue) {
     if(childSelectValue != 0){
       var params = {'id': childSelectValue};
-      this.getRemoteData(params, 'apiAdmin/idUserRole');
+      var parreq = {
+        method: 'GET',
+        url: 'apiAdmin/idUserRole',
+        params: params
+      };
+      this.getRemoteData(parreq, this.successHandler);
     }
   },
 
-  getRemoteData: function (jsonData, url) {
-    var parreq = {
-      method: 'GET',
-      url: url,
-      params: jsonData
-    };
-
+  getRemoteData: function (parreq, cb) {
     mReq(parreq)
       .then(function (response) {
-        this.successHandler(response.result)
+        cb(response.result)
       }.bind(this))
       .catch(function (err) {
         console.error('AdminSelectRoles, there was an error!', err.statusText);
@@ -43,15 +43,21 @@ var AdminFormUserRoles = React.createClass({
     this.setState({childSelectValue: arrayData})
   },
 
-  handleSubmit: function(e) {
+  handleUserCheckbox: function (checkValue) {
+    this.setState({
+      checkBoxSelectToSend: checkValue
+    });
+  },
+
+  handleSubmitForm: function(e) {
     e.preventDefault();
-    var author = this.state.author.trim();
-    var text = this.state.text.trim();
-    if (!text || !author) {
-      return;
-    }
-    // TODO: send request to the server
-    this.setState({author: '', text: ''});
+    var params = {'id': childSelectValue};
+    var parreq = {
+      method: 'PUT',
+      url: 'apiAdmin/setUserRole',
+      params: params
+    };
+    this.getRemoteData(parreq, this.successHandler);
   },
 
   render: function() {
@@ -62,13 +68,7 @@ var AdminFormUserRoles = React.createClass({
           <h1>Usuario Role</h1>
         </div>
 
-        <div class="callout secondary">
-          <h5>This is a secondary callout</h5>
-          <p>It has an easy to override visual style, and is appropriately subdued.</p>
-          <a href="#">It's dangerous to go alone, take this.</a>
-        </div>
-
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmitForm}>
           <label>Usuarios del sistema
             <SelectInput
               url="apiUser/allUser"
@@ -82,6 +82,7 @@ var AdminFormUserRoles = React.createClass({
               url="apiAdmin/allRoles"
               ck_name="Roles"
               idsCheckSelected={this.state.childSelectValue}
+              onUserCheckbox={this.handleUserCheckbox}
             />
           </label>
 

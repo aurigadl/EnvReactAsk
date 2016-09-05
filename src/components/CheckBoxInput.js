@@ -13,15 +13,23 @@ var CheckBoxInput = React.createClass({
     });
   },
 
+  componentWillReceiveProps: function (nextProps) {
+    console.log('tons que mi pex ' + nextProps.checked);
+    this.replaceState({
+      isChecked: nextProps.checked
+    });
+  },
+
   render: function () {
     return (
-      <div>
+      <label for="checkbox2">
         <input type="checkbox"
-               value={this.props.id}
+               value={this.props.value}
+               name={this.props.name}
                checked={this.state.isChecked}
                onChange={this.toggleCheckbox} />
-          <label for="checkbox2">{this.props.label}</label>
-      </div>
+          {this.props.label}
+      </label>
     );
   }
 });
