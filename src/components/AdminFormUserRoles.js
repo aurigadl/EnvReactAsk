@@ -43,11 +43,6 @@ var AdminFormUserRoles = React.createClass({
     this.setState({childSelectValue: arrayData})
   },
 
-  handleUserCheckbox: function (checkValue) {
-    this.setState({
-      checkBoxSelectToSend: checkValue
-    });
-  },
 
   handleSubmitForm: function(e) {
     e.preventDefault();
@@ -82,7 +77,6 @@ var AdminFormUserRoles = React.createClass({
               url="apiAdmin/allRoles"
               ck_name="Roles"
               idsCheckSelected={this.state.childSelectValue}
-              onUserCheckbox={this.handleUserCheckbox}
             />
           </label>
 

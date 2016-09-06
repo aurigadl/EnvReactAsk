@@ -6,7 +6,7 @@ const Dashboard = React.createClass({
     const token = auth.getToken()
 
     return (
-      <div class="row">
+      <div className="row">
         <br />
         {this.props.children}
       </div>

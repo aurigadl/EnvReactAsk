@@ -10,17 +10,16 @@ var CheckboxInputs = React.createClass({
     };
   },
 
-
-
   getInitialState: function () {
     return {
       globalCheckbox: false,
-      dataList: []
+      dataList: [],
+      done: false
     }
   },
 
   componentWillReceiveProps: function (nextProps) {
-    this.replaceState({
+    this.setState({
       globalCheckbox: false,
       dataList: this.state.dataList.map(function (d) {
         var newSelected = ((nextProps.idsCheckSelected.indexOf(d.value) != -1) ? true : false);
@@ -42,7 +41,7 @@ var CheckboxInputs = React.createClass({
         selected: newVal
       };
     });
-    this.replaceState({
+    this.setState({
       globalCheckbox: newVal,
       dataList: data
     });
@@ -59,10 +58,10 @@ var CheckboxInputs = React.createClass({
       };
     });
 
-    this.replaceState({
+    this.setState({
       dataList: data
     });
-    
+
   },
 
   componentDidMount: function () {
@@ -70,7 +69,6 @@ var CheckboxInputs = React.createClass({
       method: 'GET',
       url: this.props.url
     };
-
     mReq(parreq)
       .then(function (response) {
         this.successHandler(response.result)
@@ -95,11 +93,11 @@ var CheckboxInputs = React.createClass({
 
   render_Checkbox: function (result, i) {
     return(
-    <label for="checkbox2" key={i}>
+    <label key={i}>
       <input type="checkbox"
              key={i}
              name={this.props.ck_name}
-             checked={result.selected }
+             checked={result.selected}
              onChange={this.linkCheckbox}
              value={result.value}/>
       {result.label}
@@ -122,7 +120,6 @@ var CheckboxInputs = React.createClass({
       </div>
     );
   }
-
 });
 
 export default CheckboxInputs;
