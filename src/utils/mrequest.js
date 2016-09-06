@@ -59,7 +59,7 @@ exports.makeRequest = function (opts) {
       xhr.send();
     }
 
-    if(method === 'POST'){
+    if(method === 'POST' || method === 'PUT'){
       xhr.send(JSON.stringify(params));
     }
 

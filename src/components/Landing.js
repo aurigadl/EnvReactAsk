@@ -3,7 +3,7 @@ import React from 'react'
 const Landing = React.createClass({
   render() {
     return (
-      <div class="row">
+      <div className="row">
         <br />
         <div className="medium-6 columns">
           <p className="text-justify">

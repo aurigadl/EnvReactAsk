@@ -111,6 +111,7 @@ var CheckboxInputs = React.createClass({
         <label>
           <input
             type="checkbox"
+            name={'all' + this.props.ck_name}
             checked={this.state.globalCheckbox}
             onChange={this.linkGlobalCheckbox}
           />

@@ -37,10 +37,13 @@ def api_admin_user_roles_id():
 @apiRole.route('/apiAdmin/setUserRole', methods=['PUT'])
 @rbac.allow(['admon'], methods=['PUT'])
 def api_admin_user_roles_update():
-    json_data = request.get_json()
-    value_data = json_data.get('params').items()
     d = {}
-    if json_data.has_key('params') and len(value_data) != 0:
+    json_data = request.get_json()
+    if json_data.has_key('params'):
+        value_data = json_data.get('params').items()
+    else:
+        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+    if len(value_data) != 0:
         for key, value in value_data:
             d[key] = value
         if len(d) == 0 or 'user_id' not in d or 'role_id' not in d:
