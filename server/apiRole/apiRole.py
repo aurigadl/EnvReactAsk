@@ -55,9 +55,9 @@ def api_admin_user_roles_update():
         roles_obj = User.query.join(Role, User.roles).filter(User.id == user_id).first()
         # if have id user but dont have id_roles all the roles are deleted
         if len(roles_obj.roles) > 0:
-            for role_obj in roles_obj.roles:
-                roles_obj.roles.remove(role_obj)
-            db.session.commit()
+            while roles_obj.roles:
+                roles_obj.roles.remove(roles_obj.roles[0])
+                db.session.commit()
 
         if len(list_role_id) == 1:
             id_r = list_role_id[0]
@@ -74,43 +74,6 @@ def api_admin_user_roles_update():
                 update_user.add_role(update_role)
                 db.session.add(update_user)
                 db.session.commit()
-    else:
-        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
-    return jsonify({"jsonrpc": "2.0", "result": True}), 200
-
-
-@apiRole.route('/apiAdmin/delUserRole', methods=['DELETE'])
-@rbac.allow(['admon'], methods=['DELETE'])
-def api_admin_user_roles_delete():
-    json_data = request.get_json()
-    if json_data.has_key('params') and 'items' in dir(json_data.get('params')):
-        value_data = json_data.get('params').items()
-    else:
-        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
-    d = {}
-    if len(value_data) != 0:
-        for key, value in value_data:
-            d[key] = value
-        if len(d) == 0 or 'user_id' not in d or 'role_id' not in d:
-            return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
-        user_id = d['user_id']
-        list_role_id = [s for s in d['role_id'] if s.isdigit()]
-        if len(list_role_id) == 0:
-            return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
-
-        if 1 == len(list_role_id):
-            id_r = list_role_id[0]
-            if User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r).count():
-                db.session.delete(
-                    User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r).first())
-                db.session.commit()
-        else:
-            for role_id in list_role_id:
-                id_r2 = role_id[0]
-                if User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r2).count():
-                    db.session.delete(
-                        User.query.join(Role, User.roles).filter(User.id == user_id, Role.id == id_r2).first())
-                    db.session.commit()
     else:
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
