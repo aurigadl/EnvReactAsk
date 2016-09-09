@@ -79,6 +79,18 @@ def user_all():
     return jsonify(dict(jsonrpc="2.0", result=dict_users)), 200
 
 
+@apiUser.route('/apiUser/idUser', methods=['GET'])
+@rbac.allow(['admon'], methods=['GET'])
+def user_id():
+    user_id = request.args.get('id')
+    if user_id and user_id.isdigit() and len(user_id) != 0:
+        user = User.query.with_entities(User.id, User.email, User.active, User.new_user, User.first_name, User.last_name).filter(User.id == user_id ).first()
+        dict_user = dict(zip(('id', 'email', 'active', 'new_user', 'first_name', 'last_name'), user))
+        return jsonify(dict(jsonrpc="2.0", result=dict_user)), 200
+    else:
+        return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+
+
 @apiUser.route('/apiUser/updateUser', methods=['PUT'])
 @rbac.allow(['candidate', 'admon'], methods=['PUT'])
 def update_user():

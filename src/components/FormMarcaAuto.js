@@ -60,7 +60,6 @@ var FormMarcaAuto = React.createClass({
 
             <div className="input-group-button">
               <button type="button" className="success button">Grabar</button>
-              <button type="button" className="alert button">Editar</button>
             </div>
           </div>
 

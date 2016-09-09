@@ -19,17 +19,19 @@ var CheckboxInputs = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    this.setState({
-      globalCheckbox: false,
-      dataList: this.state.dataList.map(function (d) {
-        var newSelected = ((nextProps.idsCheckSelected.indexOf(d.value) != -1) ? true : false);
-        return {
-          value: d.value,
-          label: d.label,
-          selected: newSelected
-        };
-      })
-    });
+    if(nextProps.idsCheckSelected != this.props.idsCheckSelected){
+      this.setState({
+        globalCheckbox: false,
+        dataList: this.state.dataList.map(function (d) {
+          var newSelected = ((nextProps.idsCheckSelected.indexOf(d.value) != -1) ? true : false);
+          return {
+            value: d.value,
+            label: d.label,
+            selected: newSelected
+          };
+        })
+      });
+    }
   },
 
   linkGlobalCheckbox: function () {
@@ -61,7 +63,6 @@ var CheckboxInputs = React.createClass({
     this.setState({
       dataList: data
     });
-
   },
 
   componentDidMount: function () {

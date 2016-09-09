@@ -26,6 +26,8 @@ var AdminFormUserRoles = React.createClass({
         params: params
       };
       this.getRemoteData(parreq, this.successHandler);
+    }else{
+      this.setState({childSelectValue: []})
     }
   },
 
