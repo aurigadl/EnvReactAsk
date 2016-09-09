@@ -39,7 +39,7 @@ const Login = React.createClass({
             <div className="row column log-in-form">
               <h4 className="text-center">Ingresa con el correo electronico</h4>
               <label>Correo
-                <input type="text"  ref="email" defaultValue="admonuser" placeholder="micorreo@ejemplo.com" />
+                <input type="text"  ref="email" defaultValue="admon@midominio.co" placeholder="micorreo@ejemplo.com" />
               </label>
               <label>Contraseña
                 <input defaultValue="qwerasdf" type="password" ref="pass" placeholder="Contraseña" />
