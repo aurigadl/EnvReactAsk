@@ -12,6 +12,7 @@ var AdminFormUser = React.createClass({
       email: undefined,
       first_name: undefined,
       last_name: undefined,
+      display_name: undefined,
       new_user: false,
       showHide: false
     };
@@ -33,20 +34,23 @@ var AdminFormUser = React.createClass({
         new_user: false,
         active: false,
         email: undefined,
+        display_name: undefined,
         showHide: false
       });
       this.refs.first_name.value = '';
       this.refs.last_name.value = '';
       this.refs.email.value = '';
+      this.refs.display_name = '';
     }
   },
 
-  getRemoteData: function (parreq, cb) {
+  getRemoteData: function (parreq, cb_success, cb_error) {
     mReq(parreq)
       .then(function (response) {
-        cb(response.result)
+        cb_success(response.result)
       }.bind(this))
       .catch(function (err) {
+        cb_error(err);
         console.error('AdminFormUser, there was an error!', err.statusText);
       });
   },
@@ -61,6 +65,7 @@ var AdminFormUser = React.createClass({
       new_user: data.new_user,
       active: data.active,
       email: email,
+      display_name: data.display_name,
       showHide: true
     });
   },
@@ -78,8 +83,7 @@ var AdminFormUser = React.createClass({
   },
 
   onChangeInputEmail: function (e) {
-    console.log(e);
-    if(!this.state.showHide){
+    if (!this.state.showHide) {
       this.setState({
         email: e.target.value
       });
@@ -98,6 +102,62 @@ var AdminFormUser = React.createClass({
     });
   },
 
+  onChangeInputDisplayName: function (e) {
+    this.setState({
+      display_name: e.target.value
+    });
+  },
+
+  handleSubmitForm: function (e) {
+    e.preventDefault();
+    var ref = e.target.elements;
+    var user = ref.usuario.value;
+    var email = ref.email.value;
+    var first_name = ref.first_name.value;
+    var last_name = ref.last_name.value;
+    var active = ref.active.checked;
+    var display_name = ref.display_name.value;
+    var new_user = ref.new_user.checked;
+
+    if (user === "") {
+      var params = {
+        email: email,
+        first_name: first_name,
+        last_name: last_name,
+        active: active,
+        display_name: display_name
+      };
+
+      var parreq = {
+        method: 'POST',
+        url: 'apiUser/newuser',
+        params: {'params': params}
+      };
+
+      this.getRemoteData(parreq, this.successFormCreate);
+
+    } else {
+
+      var params = {
+        id: user,
+        email: email,
+        first_name: first_name,
+        last_name: last_name,
+        active: active,
+        display_name: display_name,
+        new_user: new_user
+      };
+
+      var parreq = {
+        method: 'PUT',
+        url: 'apiUser/updateUser',
+        params: {'params': params}
+      };
+
+      this.getRemoteData(parreq, this.successFormUpdate);
+    }
+  },
+
   render: function () {
 
     var showClass = this.state.showHide ? 'show' : 'invisible';
@@ -112,7 +172,7 @@ var AdminFormUser = React.createClass({
           o llena los campos sin seleccionar elemento
           para crear uno nuevo</p>
 
-        <form>
+        <form onSubmit={this.handleSubmitForm}>
 
           <label>Usuarios del sistema</label>
 
@@ -135,6 +195,7 @@ var AdminFormUser = React.createClass({
               required
             />
           </label>
+
           <p className={"help-text " + showClass} id="emailHelpText">
             No modificable.
           </p>
@@ -146,7 +207,9 @@ var AdminFormUser = React.createClass({
               ref="first_name"
               value={this.state.first_name || ""}
               onChange={this.onChangeInputFirstName}
-              placeholder="Nombres para el usuario"/>
+              placeholder="Nombres para el usuario"
+              required
+            />
           </label>
 
           <label>Apellidos
@@ -156,7 +219,20 @@ var AdminFormUser = React.createClass({
               ref="last_name"
               value={this.state.last_name || ""}
               onChange={this.onChangeInputLastName}
-              placeholder="Apellidos para el usuario"/>
+              placeholder="Apellidos para el usuario"
+            />
+          </label>
+
+          <label>Nombre a mostrar
+            <input
+              type="text"
+              name="display_name"
+              ref="display_name"
+              value={this.state.display_name || ""}
+              onChange={this.onChangeInputDisplayName}
+              placeholder="Un alias o el mismo nombre"
+              required
+            />
           </label>
 
           <input
@@ -164,16 +240,23 @@ var AdminFormUser = React.createClass({
             type="checkbox"
             name="active"
             checked={this.state.active }
-            onClick={this.clickActive}/><label>Activo</label>
+            onClick={this.clickActive}
+          />
+          <label>Activo</label>
 
           <input
             id="checkbox2"
             type="checkbox"
             checked={this.state.new_user}
             onClick={this.clickNewUser}
-            name="new_user"/><label>Nuevo</label>
+            name="new_user"
+          />
+          <label>Nuevo</label>
 
-          <button type="submit" className="success button">Grabar</button>
+          <button type="submit" className="success button">
+            Grabar
+          </button>
+
         </form>
       </div>
     )
