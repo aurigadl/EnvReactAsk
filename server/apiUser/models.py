@@ -79,7 +79,7 @@ class User(db.Model, UserMixin):
         backref=db.backref('roles', lazy='dynamic')
     )
 
-    def __init__(self, email=None, password=None, display_name=None, first_name=None, last_name=None, active=False):
+    def __init__(self, email=None, password=None, display_name=None, first_name=None, last_name=None, active=False, new_user=False):
         if email:
             self.email = email.lower()
         if password:
@@ -92,6 +92,8 @@ class User(db.Model, UserMixin):
             self.last_name = last_name
         if active:
             self.active = active
+        if new_user:
+            self.new_user = new_user
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

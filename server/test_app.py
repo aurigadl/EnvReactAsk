@@ -21,22 +21,22 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 400, 'Error json format')
 
         # One element in json data
-        payload = {'usermail': name_user}
+        payload = {'email': name_user}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Error json format')
 
         # json data without any value
-        payload = {'usermail': '', 'password': '', 'name_to_show': ''}
+        payload = {'email': '', 'password': '', 'name_to_show': ''}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Error json format')
 
         # json data password without size lenght => 8
-        payload = {'usermail': name_user, 'password': '1234', 'name_to_show': 'test name show 1'}
+        payload = {'email': name_user, 'password': '1234', 'name_to_show': 'test name show 1'}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Error json password size less that 8 bytes')
 
         # json format correct
-        payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        payload = {'email': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 201, 'Create new user')
         answer_json = json.loads(r.text)
@@ -44,7 +44,7 @@ class TestApiUserRest(unittest.TestCase):
         self.assertTrue(str(id).isdigit(), 'Create new user')
 
         # json format correct with previous user
-        payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        payload = {'email': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Create new user but it was created before')
 

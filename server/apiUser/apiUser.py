@@ -56,15 +56,28 @@ def login():
 def new_user():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
-    usermail = request.json.get('usermail')
-    password = request.json.get('password')
-    display_name = request.json.get('name_to_show')
-    if usermail is None or password is None or len(usermail) < 5 or len(password) < 7:
+
+    email = request.json.get('email')
+    display_name = request.json.get('display_name')
+    first_name = request.json.get('first_name')
+    last_name = request.json.get('last_name')
+    active = request.json.get('active')
+    new_user = request.json.get('new_user')
+    password = None;
+
+    if email is None or len(email) < 5:
         abort(400, 'missing arguments')
-    lower_user_mail = usermail.lower()
+    lower_user_mail = email.lower()
     if User.query.filter_by(email=lower_user_mail).first() is not None:
-        abort(400, 'existing user')
-    new_user_db = User(email=lower_user_mail, password=password, display_name=display_name)
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'Ya existe este usuario'}), 400
+    new_user_db = User(email,
+                       password,
+                       display_name,
+                       first_name,
+                       last_name,
+                       active,
+                       new_user)
+
     new_user_db.add_role(Role.get_by_name('candidate'))
     db.session.add(new_user_db)
     db.session.commit()

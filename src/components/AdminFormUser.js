@@ -1,20 +1,27 @@
 import React from 'react'
-require('./formsPanels.css');
+import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
+require('./formsPanels.css');
 
 var AdminFormUser = React.createClass({
 
   getInitialState: function () {
     return {
       childSelectValue: [],
+      
       active: false,
       email: undefined,
       first_name: undefined,
       last_name: undefined,
       display_name: undefined,
       new_user: false,
-      showHide: false
+      
+      showHide: false,
+      
+      showMessage: false,
+      typeMess: '',
+      contextText: ''
     };
   },
 
@@ -111,7 +118,7 @@ var AdminFormUser = React.createClass({
   handleSubmitForm: function (e) {
     e.preventDefault();
     var ref = e.target.elements;
-    var user = ref.usuario.value;
+    var user = ref.user.value;
     var email = ref.email.value;
     var first_name = ref.first_name.value;
     var last_name = ref.last_name.value;
@@ -134,7 +141,10 @@ var AdminFormUser = React.createClass({
         params: {'params': params}
       };
 
-      this.getRemoteData(parreq, this.successFormCreate);
+      this.getRemoteData(parreq,
+        this.successFormCreate,
+        this.errorFormCreate
+      );
 
     } else {
 
@@ -154,10 +164,74 @@ var AdminFormUser = React.createClass({
         params: {'params': params}
       };
 
-      this.getRemoteData(parreq, this.successFormUpdate);
+      this.getRemoteData(parreq,
+        this.successFormUpdate,
+        this.errorFormUpdate
+      );
     }
   },
 
+  successFormCreate: function (data){
+    this.setState({
+      showMessage: true,
+      contextText: 'Se Creo el usuario',
+      typeMess: 'success'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormCreate: function (err){
+    this.setState({
+      showMessage: true,
+      contextText: 'No se Creo el usuario',
+      typeMess: 'alert'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+  successFormUpdate: function (data){
+    this.setState({
+      showMessage: true,
+      contextText: 'Se Actualizo el usuario',
+      typeMess: 'success'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormUpdate: function (err){
+    this.setState({
+      showMessage: true,
+      contextText: 'No se Actualizo el usuario',
+      typeMess: 'alert'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+  
   render: function () {
 
     var showClass = this.state.showHide ? 'show' : 'invisible';
@@ -179,7 +253,7 @@ var AdminFormUser = React.createClass({
           <SelectInput
             class="input-group-field"
             url="apiUser/allUser"
-            name="usuario"
+            name="user"
             onUserSelect={this.handleUserSelect}
           />
 
