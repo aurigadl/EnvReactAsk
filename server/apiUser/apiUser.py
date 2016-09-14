@@ -72,7 +72,7 @@ def login():
 
 
 @apiUser.route('/apiUser/newuser', methods=['POST'])
-@rbac.allow(['anonymous'], methods=['POST'], with_children=False)
+@rbac.allow(['admon'], methods=['POST'], with_children=False)
 def new_user():
     if not hasattr(request.json, 'get'):
         abort(400, 'does not have the correct json format')
@@ -119,7 +119,7 @@ def user_id():
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
 
 
-@apiUser.route('/apiUser/updateUser', methods=['PUT'])
+@apiUser.route('/apiUser/updateMyUser', methods=['PUT'])
 @rbac.allow(['candidate', 'admon'], methods=['PUT'])
 def update_user():
     json_data = request.get_json()
@@ -135,6 +135,37 @@ def update_user():
     user_db = getattr(g_data, '_user_obj', None)
     User.query.filter(User.id == user_db.id).update(json_data['params'])
     db.session.commit()
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200
+
+
+@apiUser.route('/apiUser/updateIdUser', methods=['PUT'])
+@rbac.allow(['admon'], methods=['PUT'])
+def update_user_id():
+    user_data = {}
+
+    if not hasattr(request.json, 'get'):
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 401
+
+    active = request.json.get('active')
+    user_id = request.args.get('id')
+    new_user = request.json.get('new_user')
+    last_name = request.json.get('last_name')
+    first_name = request.json.get('first_name')
+    display_name = request.json.get('display_name')
+
+    if user_id and user_id.isdigit() and len(user_id) != 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 401
+
+    user_data['id'] = id
+    user_data['active'] = active
+    user_data['new_user'] = new_user
+    user_data['last_name'] = last_name
+    user_data['first_name'] = first_name
+    user_data['display_name'] = display_name
+
+    User.query.filter(User.id == user_id).update(user_data)
+    db.session.commit()
+
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 

@@ -239,7 +239,7 @@ var AdminFormUser = React.createClass({
       <div className="header callout secondary">
 
         <div className="sign">
-          <h1>Marcas de Carros y Camiones</h1>
+          <h1>Crea y edita usuarios</h1>
         </div>
         <p>Selecciona un Usuario para editarlo
           o llena los campos sin seleccionar elemento

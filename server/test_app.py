@@ -122,8 +122,8 @@ class TestApiUserRest(unittest.TestCase):
         r = reqsess.put(self.URL + path2, json=payload)
         self.assertEqual(r.status_code, 403, 'Do not have access to the resource')
 
-    def test_apiUpdateUser(self):
-        path = 'apiUser/updateUser'
+    def test_apiUpdateMyUser(self):
+        path = 'apiUser/updateMyUser'
         # Save session
         reqsess = requests.Session()
 
