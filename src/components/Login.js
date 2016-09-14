@@ -6,7 +6,8 @@ require ('./login.css');
 const Login = React.createClass({
   getInitialState() {
     return {
-      error: false
+      error: false,
+      showHide: false
     }
   },
 
@@ -15,22 +16,37 @@ const Login = React.createClass({
 
     const email = this.refs.email.value;
     const pass = this.refs.pass.value;
+    var pass_c = undefined;
 
-    auth.login(email, pass, (loggedIn) => {
-      if (!loggedIn)
-        return this.setState({ error: true });
+    if(this.state.showHide){
+      pass_c = this.refs.pass_c.value;
+    }
 
-      const { location } = this.props;
+    auth.login(email, pass, pass_c,this.callbackFormLogin)
+  },
 
-      if (location.state && location.state.nextPathname) {
-        this.props.router.replace(location.state.nextPathname)
-      } else {
-        this.props.router.replace('/')
-      }
-    })
+  callbackFormLogin: function (result){
+    if(result.error != null && result.error.status === 423){
+      this.refs.pass.value = '';
+      this.refs.pass_c.value = '';
+      return this.setState({showHide: true});
+    }
+    if (!result.authenticated)
+      return this.setState({ error: true });
+
+    const { location } = this.props;
+
+    if (location.state && location.state.nextPathname) {
+      this.props.router.replace(location.state.nextPathname)
+    } else {
+      this.props.router.replace('/')
+    }
   },
 
   render() {
+
+    var showClass = this.state.showHide ? 'show' : 'hide';
+
     return (
       <div className="row">
         <div className="medium-6 medium-centered large-4 large-centered columns">
@@ -42,12 +58,30 @@ const Login = React.createClass({
                 <input type="text"  ref="email" defaultValue="admon@midominio.co" placeholder="micorreo@ejemplo.com" />
               </label>
               <label>Contraseña
-                <input defaultValue="qwerasdf" type="password" ref="pass" placeholder="Contraseña" />
+                <input defaultValue="Abcd1234"
+                       aria-describedby="pass"
+                       pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
+                       type="password"
+                       ref="pass"
+                       placeholder="Contraseña"
+                       required/>
               </label>
-                <button className="button expanded" type="submit">Ingresar</button>
+              <p className={"help-text "} id="pass">
+                Contraseña minimo 8 caracteres y debe contener mayusculas, minusculas y numeros.
+              </p>
+
+              <label className={showClass}>Repetir nueva Contraseña
+                <input defaultValue=""
+                       pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
+                       type="password"
+                       ref="pass_c"
+                       placeholder="Contraseña"/>
+              </label>
+
+              <button className="button expanded" type="submit">Ingresar</button>
             </div>
             {this.state.error && (
-              <p>Bad login information</p>
+              <p>Los datos no son correctos :(</p>
             )}
           </form>
 

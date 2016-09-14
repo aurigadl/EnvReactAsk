@@ -9,16 +9,16 @@ var AdminFormUser = React.createClass({
   getInitialState: function () {
     return {
       childSelectValue: [],
-      
+
       active: false,
       email: undefined,
       first_name: undefined,
       last_name: undefined,
       display_name: undefined,
       new_user: false,
-      
+
       showHide: false,
-      
+
       showMessage: false,
       typeMess: '',
       contextText: ''
@@ -58,7 +58,7 @@ var AdminFormUser = React.createClass({
       }.bind(this))
       .catch(function (err) {
         cb_error(err);
-        console.error('AdminFormUser, there was an error!', err.statusText);
+        console.log('AdminFormUser, there was an error!', err.statusText);
       });
   },
 
@@ -131,7 +131,6 @@ var AdminFormUser = React.createClass({
         email: email,
         first_name: first_name,
         last_name: last_name,
-        active: active,
         display_name: display_name
       };
 
@@ -231,7 +230,7 @@ var AdminFormUser = React.createClass({
     }.bind(this), 3000);
   },
 
-  
+
   render: function () {
 
     var showClass = this.state.showHide ? 'show' : 'invisible';

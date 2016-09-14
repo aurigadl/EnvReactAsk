@@ -11,6 +11,8 @@ class TestApiUserRest(unittest.TestCase):
         self.URL = 'http://localhost:5000/'
         self.admon = 'admon@' + self.domain
         self.test = 'test@' + self.domain
+        self.password = '1234Abcd'
+        self.passAdmin = 'Abcd1234'
 
     def test_apiNewUser(self):
         path = 'apiUser/newuser'
@@ -23,28 +25,15 @@ class TestApiUserRest(unittest.TestCase):
         # One element in json data
         payload = {'email': name_user}
         r = requests.post(self.URL + path, json=payload)
-        self.assertEqual(r.status_code, 400, 'Error json format')
+        self.assertEqual(r.status_code, 201, 'Create new user')
 
         # json data without any value
-        payload = {'email': '', 'password': '', 'name_to_show': ''}
+        payload = {'email': '', 'password': '', 'display_name': ''}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Error json format')
 
-        # json data password without size lenght => 8
-        payload = {'email': name_user, 'password': '1234', 'name_to_show': 'test name show 1'}
-        r = requests.post(self.URL + path, json=payload)
-        self.assertEqual(r.status_code, 400, 'Error json password size less that 8 bytes')
-
-        # json format correct
-        payload = {'email': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
-        r = requests.post(self.URL + path, json=payload)
-        self.assertEqual(r.status_code, 201, 'Create new user')
-        answer_json = json.loads(r.text)
-        id = answer_json['id']
-        self.assertTrue(str(id).isdigit(), 'Create new user')
-
         # json format correct with previous user
-        payload = {'email': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        payload = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Create new user but it was created before')
 
@@ -53,7 +42,7 @@ class TestApiUserRest(unittest.TestCase):
         name_user = self.test
 
         # json format correct create user for test
-        payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        payload = {'email': name_user, 'password': self.password,  'display_name': 'test name show 1'}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # login bad parameters
@@ -62,32 +51,32 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 401, 'Error json format - not parameters')
 
         # One element in json data
-        payload = {'usermail': name_user}
+        payload = {'email': name_user}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 401, 'Error json format - only email ')
 
         # One element in json data
-        payload = {'password': '12345678'}
+        payload = {'password': self.password}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 401, 'Error json format - only password')
 
         # Element in json empty
-        payload = {'usermail': '', 'password': ''}
+        payload = {'email': '', 'password': ''}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 401, 'Error json format - empty')
 
         # Json complete but user doesnt exist
-        payload = {'usermail': 'test2@'+self.domain, 'password': '1234567'}
+        payload = {'email': 'test2@'+self.domain, 'password': self.password}
         r = requests.post(self.URL + path, json=payload)
-        self.assertEqual(r.status_code, 404, 'Error json format - empty')
+        self.assertEqual(r.status_code, 401, 'Error usuario no existe')
 
         # Json complete but user password wrong
-        payload = {'usermail': name_user, 'password': '1234567'}
+        payload = {'email': name_user, 'password': '1234567'}
         r = requests.post(self.URL + path, json=payload)
-        self.assertEqual(r.status_code, 404, 'Error json format - empty')
+        self.assertEqual(r.status_code, 401, 'Error json format - empty')
 
         # Json complete user password is true
-        payload = {'usermail': name_user, 'password': '12345678'}
+        payload = {'email': name_user, 'password': self.password}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 202, 'User accepted')
         self.assertEqual(r.headers['content-type'], 'application/json', 'Header json')
@@ -106,11 +95,11 @@ class TestApiUserRest(unittest.TestCase):
         reqsess.headers.update({'Content-Type': 'application/json'})
 
         # json format correct create user for test
-        payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        payload = {'email': name_user,'display_name': 'test name show 1'}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # Login user to get token
-        payload = dict(usermail=self.test, password='12345678')
+        payload = dict(email=self.test, password=self.password, password_c=self.password)
         result = reqsess.post(self.URL + path, json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -139,11 +128,11 @@ class TestApiUserRest(unittest.TestCase):
         reqsess = requests.Session()
 
         # json correct format create user for test
-        payload = {'usermail': self.test, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        payload = {'email': self.test, 'password': self.password, 'display_name': 'test name show 1'}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # Login user to get token
-        payload = dict(usermail=self.test, password='12345678')
+        payload = dict(email=self.test, password=self.password, password_c=self.password)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -191,7 +180,6 @@ class TestApiUserRest(unittest.TestCase):
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - many parameters')
 
-
         # test api with diferent params
         params = {'display_name': 'gon4', 'first_name': '', 'last_name': 'ron4'}
         payload = {"jsonrpc": "2.0", "method": path, "params": params}
@@ -207,7 +195,7 @@ class TestApiUserRest(unittest.TestCase):
         reqsess = requests.Session()
 
         # Login user testName_0 that has role candidate
-        payload = dict(usermail=self.admon, password='qwerasdf')
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -227,7 +215,7 @@ class TestApiUserRest(unittest.TestCase):
         reqsess = requests.Session()
 
         # Login user testName_0 that has role candidate
-        payload = dict(usermail=self.admon, password='qwerasdf')
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -247,7 +235,7 @@ class TestApiUserRest(unittest.TestCase):
         reqsess = requests.Session()
 
         # Login user testName_0 that has role candidate
-        payload = dict(usermail=self.admon, password='qwerasdf')
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -274,7 +262,7 @@ class TestApiUserRest(unittest.TestCase):
         reqsess = requests.Session()
 
         # Login user testName_0 that has role candidate
-        payload = dict(usermail=self.admon, password='qwerasdf')
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -297,7 +285,7 @@ class TestApiUserRest(unittest.TestCase):
         reqsess = requests.Session()
 
         # Login user testName_0 that has role candidate
-        payload = dict(usermail=self.admon, password='qwerasdf')
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -319,7 +307,7 @@ class TestApiUserRest(unittest.TestCase):
         name_user = "test_{x}@{y}".format(x=digits,y=self.domain)
 
         # get id new user
-        payload = {'usermail': name_user, 'password': '12345678', 'name_to_show': 'test name show 1'}
+        payload = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
         r = reqsess.post(self.URL + 'apiUser/newuser', json=payload)
         self.assertEqual(r.status_code, 201, 'Create new user')
         answer_json = json.loads(r.text)
@@ -327,7 +315,7 @@ class TestApiUserRest(unittest.TestCase):
         self.assertTrue(str(id).isdigit(), 'Create new user')
 
         # Login user admonUser that has role candidate
-        payload = dict(usermail=self.admon, password='qwerasdf')
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
@@ -371,7 +359,6 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(len(result), 1, 'Return onlyone role_id')
         self.assertEqual(r.json()['result'][0]['role_id'], 1, 'Answer ok')
 
-
     # Validate user access with the role of "candidate" and
     # get all Marcas from database
     def test_getIdUser(self):
@@ -380,7 +367,7 @@ class TestApiUserRest(unittest.TestCase):
         # Save session
         reqsess = requests.Session()
         # Login user admonUser that has role candidate
-        payload = dict(usermail=self.admon, password='qwerasdf')
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']

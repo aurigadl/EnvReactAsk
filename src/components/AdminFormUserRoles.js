@@ -37,7 +37,7 @@ var AdminFormUserRoles = React.createClass({
         cb(response.result)
       }.bind(this))
       .catch(function (err) {
-        console.error('AdminSelectRoles, there was an error!', err.statusText);
+        console.log('AdminSelectRoles, there was an error!', err.statusText);
       });
   },
 

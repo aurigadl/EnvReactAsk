@@ -75,7 +75,7 @@ var CheckboxInputs = React.createClass({
         this.successHandler(response.result)
       }.bind(this))
       .catch(function (err) {
-        console.error('CheckBoxInputs, there was an error!', err.statusText);
+        console.log('CheckBoxInputs, there was an error!', err.statusText);
       });
   },
 

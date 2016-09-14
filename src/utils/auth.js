@@ -1,22 +1,19 @@
 import {makeRequest as mReq} from './mrequest';
 
 module.exports = {
-  login(email, pass, cb) {
+  login(email, pass, pass_c, cb) {
     cb = arguments[arguments.length - 1];
     if (localStorage.token) {
-      if (cb) cb(true);
+      if (cb) cb({authenticated:true});
       this.onChange(true);
       return
     }
-    pretendRequest(email, pass, (res) => {
+    pretendRequest(email, pass, pass_c, (res) => {
       if (res.authenticated) {
         localStorage.token = res.token;
-        if (cb) cb(true);
-        this.onChange(true)
-      } else {
-        if (cb) cb(false);
-        this.onChange(false)
       }
+      cb(res);
+      this.onChange(res.authenticated)
     })
   },
 
@@ -25,25 +22,31 @@ module.exports = {
   },
 
   logout: function (cb) {
-    delete localStorage.token;
     logOutRequest((res) => {
       if (res) {
         if (cb) cb();
         this.onChange(false);
       }
-    })
+      delete localStorage.token;
+    });
+    delete localStorage.token;
   },
 
   loggedIn: function () {
     return !!localStorage.token
   },
 
-  onChange: function () {
-  }
+  //It will be replace in App.js
+  onChange: function(){}
 };
 
-function pretendRequest(email, pass, cb) {
-  var jsonData = {'usermail': email, 'password': pass};
+function pretendRequest(email, pass, pass_c ,cb) {
+  var jsonData = {
+    'email': email,
+    'password': pass,
+    'password_c': pass_c
+  };
+
   var parreq = {
       method: 'POST',
       params: jsonData,
@@ -60,8 +63,8 @@ function pretendRequest(email, pass, cb) {
       }
     })
     .catch(function (err) {
-      cb({authenticated: false})
-      console.error('login Augh, there was an error!', err.statusText);
+      cb({authenticated: false, error: err});
+      console.log('login Augh, there was an error!', err.statusText);
     });
 }
 
@@ -74,11 +77,9 @@ function logOutRequest(cb) {
 
   mReq(parreq)
     .then(function (datums) {
-      cb({
-        authenticated: false
-      })
+      cb({authenticated: false})
     })
     .catch(function (err) {
-      console.error('logout Augh, there was an error!', err.statusText);
+      console.log('logout Augh, there was an error!', err.statusText);
     });
 }
