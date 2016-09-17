@@ -13,8 +13,7 @@ var SelectInput = React.createClass({
     }
   },
 
-  componentDidMount: function () {
-
+  loadOptionFromServer: function () {
     var parreq = {
       method: 'GET',
       url: this.props.url
@@ -28,6 +27,19 @@ var SelectInput = React.createClass({
         console.log('AdminSelectRoles, there was an error!', err.statusText);
       });
   },
+
+  componentDidMount: function () {
+    this.loadOptionFromServer();
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    var next = nextProps.newOption;
+    var prev = this.props.newOption;
+    if ( next == false  && next != prev){
+      this.loadOptionFromServer();
+    }
+  },
+
 
   successHandler: function (data) {
     var arrayData = [];
@@ -44,9 +56,10 @@ var SelectInput = React.createClass({
   handleChange: function (e) {
     var index = e.nativeEvent.target.selectedIndex;
     var text = e.nativeEvent.target[index].text;
+    var user = this.refs.selectValue.value;
     if (typeof this.props.onUserSelect === "function"){
       this.props.onUserSelect(
-        index, text
+        user, text
       );
     }
   },

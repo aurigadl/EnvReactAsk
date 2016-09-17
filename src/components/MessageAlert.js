@@ -4,7 +4,7 @@ var MessageAlert = React.createClass({
 
   render: function () {
     var { showHide, type, contextText, onclickMessage } = this.props;
-    var showClass = showHide ? 'show' : 'invisible';
+    var showClass = showHide ? 'show' : 'hide';
 
     return (
       <div className={type + " callout " + showClass} data-closable="slide-out-right">

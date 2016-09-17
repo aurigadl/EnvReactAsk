@@ -9,6 +9,7 @@ var AdminFormUser = React.createClass({
   getInitialState: function () {
     return {
       childSelectValue: [],
+      newOptionSelectA: false,
 
       active: false,
       email: undefined,
@@ -33,7 +34,7 @@ var AdminFormUser = React.createClass({
         url: 'apiUser/idUser',
         params: params
       };
-      this.getRemoteData(parreq, this.successHandler);
+      this.getRemoteData(parreq, this.successHandlerSelect, this.errorHandlerSelect);
     } else {
       this.setState({
         first_name: undefined,
@@ -54,7 +55,7 @@ var AdminFormUser = React.createClass({
   getRemoteData: function (parreq, cb_success, cb_error) {
     mReq(parreq)
       .then(function (response) {
-        cb_success(response.result)
+        cb_success(response)
       }.bind(this))
       .catch(function (err) {
         cb_error(err);
@@ -62,7 +63,8 @@ var AdminFormUser = React.createClass({
       });
   },
 
-  successHandler: function (data) {
+  successHandlerSelect: function (remoteData) {
+    var data = remoteData.result;
     var email = (data.email) ? data.email : undefined;
     var first_name = (data.first_name) ? data.first_name : undefined;
     var last_name = (data.last_name) ? data.last_name : undefined;
@@ -75,6 +77,21 @@ var AdminFormUser = React.createClass({
       display_name: data.display_name,
       showHide: true
     });
+  },
+
+  errorHandlerSelect: function(remoteData){
+    this.setState({
+      showMessage: true,
+      contextText: 'Conexion rechazada',
+      typeMess: 'alert'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
   },
 
   clickNewUser: function () {
@@ -159,7 +176,7 @@ var AdminFormUser = React.createClass({
 
       var parreq = {
         method: 'PUT',
-        url: 'apiUser/updateUser',
+        url: 'apiUser/updateIdUser',
         params: {'params': params}
       };
 
@@ -174,13 +191,15 @@ var AdminFormUser = React.createClass({
     this.setState({
       showMessage: true,
       contextText: 'Se Creo el usuario',
-      typeMess: 'success'
+      typeMess: 'success',
+      newOptionSelectA: true
     });
     setTimeout(function(){
       this.setState({
         showMessage: false,
         contextText: '',
-        typeMess: ''
+        typeMess: '',
+        newOptionSelectA: false
       })
     }.bind(this), 3000);
   },
@@ -188,7 +207,7 @@ var AdminFormUser = React.createClass({
   errorFormCreate: function (err){
     this.setState({
       showMessage: true,
-      contextText: 'No se Creo el usuario',
+      contextText: 'No se Creo el usuario. El correo electronico ya esta registrado',
       typeMess: 'alert'
     });
     setTimeout(function(){
@@ -230,6 +249,12 @@ var AdminFormUser = React.createClass({
     }.bind(this), 3000);
   },
 
+  onClickMessage: function(event) {
+    this.setState({
+      showMessage: false,
+      contextText: ''
+    })
+  },
 
   render: function () {
 
@@ -253,6 +278,7 @@ var AdminFormUser = React.createClass({
             class="input-group-field"
             url="apiUser/allUser"
             name="user"
+            newOption={this.state.newOptionSelectA}
             onUserSelect={this.handleUserSelect}
           />
 
@@ -326,9 +352,19 @@ var AdminFormUser = React.createClass({
           />
           <label>Nuevo</label>
 
-          <button type="submit" className="success button">
-            Grabar
-          </button>
+          <div className="row">
+            <div className="shrink columns">
+              <input type="submit" className="success button" value="Grabar"/>
+            </div>
+            <div className="columns">
+              <MessageAlert
+                showHide={this.state.showMessage}
+                type={this.state.typeMess}
+                contextText={this.state.contextText}
+                onclickMessage={this.onClickMessage}
+              />
+            </div>
+          </div>
 
         </form>
       </div>

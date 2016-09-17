@@ -30,7 +30,7 @@ def init_db():
     db.create_all()
     new_role_basic = Role('candidate', 'They may present test')
     new_role_admon = Role('admon', 'They may to do anything')
-    new_user_admon = User(email='admon@midominio.co',
+    new_user_admon = User(email='admon@mi.co',
                           password='Abcd1234',
                           display_name='User admin system',
                           active=True,

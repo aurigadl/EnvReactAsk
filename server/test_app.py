@@ -7,7 +7,7 @@ import string
 
 class TestApiUserRest(unittest.TestCase):
     def setUp(self):
-        self.domain = 'midominio.co'
+        self.domain = 'mi.co'
         self.URL = 'http://localhost:5000/'
         self.admon = 'admon@' + self.domain
         self.test = 'test@' + self.domain
@@ -16,7 +16,7 @@ class TestApiUserRest(unittest.TestCase):
 
     def test_apiNewUser(self):
         path = 'apiUser/newuser'
-        payload = {}
+        payload = {"jsonrpc": "2.0", "method": 'apiUser/newuser', "params": ""}
         digits = "".join([random.choice(string.digits) for i in xrange(10)])
         name_user = "test_{x}@{y}".format(x=digits, y=self.domain)
         r = requests.post(self.URL + path, json=payload)
@@ -42,7 +42,8 @@ class TestApiUserRest(unittest.TestCase):
         name_user = self.test
 
         # json format correct create user for test
-        payload = {'email': name_user, 'password': self.password,  'display_name': 'test name show 1'}
+        params = {'email': name_user, 'password': self.password,  'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # login bad parameters
@@ -95,7 +96,8 @@ class TestApiUserRest(unittest.TestCase):
         reqsess.headers.update({'Content-Type': 'application/json'})
 
         # json format correct create user for test
-        payload = {'email': name_user,'display_name': 'test name show 1'}
+        params = {'email': name_user,'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # Login user to get token
@@ -128,7 +130,8 @@ class TestApiUserRest(unittest.TestCase):
         reqsess = requests.Session()
 
         # json correct format create user for test
-        payload = {'email': self.test, 'password': self.password, 'display_name': 'test name show 1'}
+        params = {'email': self.test, 'password': self.password, 'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # Login user to get token
@@ -307,7 +310,8 @@ class TestApiUserRest(unittest.TestCase):
         name_user = "test_{x}@{y}".format(x=digits,y=self.domain)
 
         # get id new user
-        payload = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
+        params = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
         r = reqsess.post(self.URL + 'apiUser/newuser', json=payload)
         self.assertEqual(r.status_code, 201, 'Create new user')
         answer_json = json.loads(r.text)

@@ -74,16 +74,21 @@ def login():
 @apiUser.route('/apiUser/newuser', methods=['POST'])
 @rbac.allow(['admon'], methods=['POST'], with_children=False)
 def new_user():
-    if not hasattr(request.json, 'get'):
-        abort(400, 'does not have the correct json format')
+
+    json_data = request.get_json()
+
+    if not json_data.has_key('params') and len(json_data.get('params')) == 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    params = request.json.get('params')
 
     active = True
     new_user = True
     password = datetime.now().strftime('%Y%m%d%H%M%S')
-    email = request.json.get('email')
-    last_name = request.json.get('last_name')
-    first_name = request.json.get('first_name')
-    display_name = request.json.get('display_name')
+    email = params['email']
+    last_name = params['last_name']
+    first_name = params['first_name']
+    display_name = params['display_name']
 
     if email is None or len(email) < 5:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'Email no cumple'}), 400
@@ -141,29 +146,18 @@ def update_user():
 @apiUser.route('/apiUser/updateIdUser', methods=['PUT'])
 @rbac.allow(['admon'], methods=['PUT'])
 def update_user_id():
-    user_data = {}
+    json_data = request.get_json()
 
-    if not hasattr(request.json, 'get'):
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 401
+    if not json_data.has_key('params') and len(json_data.get('params')) == 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    active = request.json.get('active')
-    user_id = request.args.get('id')
-    new_user = request.json.get('new_user')
-    last_name = request.json.get('last_name')
-    first_name = request.json.get('first_name')
-    display_name = request.json.get('display_name')
+    params = request.json.get('params')
+    user_id = params['id']
 
-    if user_id and user_id.isdigit() and len(user_id) != 0:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 401
+    if not user_id and not user_id.isdigit() and not len(user_id) != 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    user_data['id'] = id
-    user_data['active'] = active
-    user_data['new_user'] = new_user
-    user_data['last_name'] = last_name
-    user_data['first_name'] = first_name
-    user_data['display_name'] = display_name
-
-    User.query.filter(User.id == user_id).update(user_data)
+    User.query.filter(User.id == user_id).update(params)
     db.session.commit()
 
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
