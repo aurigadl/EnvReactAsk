@@ -9,32 +9,49 @@ class TestApiUserRest(unittest.TestCase):
     def setUp(self):
         self.domain = 'mi.co'
         self.URL = 'http://localhost:5000/'
-        self.admon = 'admon@' + self.domain
+
         self.test = 'test@' + self.domain
         self.password = '1234Abcd'
+
+        self.admon = 'admon@' + self.domain
         self.passAdmin = 'Abcd1234'
 
     def test_apiNewUser(self):
+
+        reqsess = requests.Session()
+        reqsess.headers.update({'Content-Type': 'application/json'})
+
+        # Login user admonUser that has role candidate
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
+        result = reqsess.post(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+        reqsess.headers.update({'Authorization': token})
+
         path = 'apiUser/newuser'
-        payload = {"jsonrpc": "2.0", "method": 'apiUser/newuser', "params": ""}
-        digits = "".join([random.choice(string.digits) for i in xrange(10)])
-        name_user = "test_{x}@{y}".format(x=digits, y=self.domain)
-        r = requests.post(self.URL + path, json=payload)
+        payload = {"jsonrpc": "2.0", "method": path, "params": ""}
+        r = reqsess.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Error json format')
 
+        digits = "".join([random.choice(string.digits) for i in xrange(10)])
+        name_user = "test_{x}@{y}".format(x=digits, y=self.domain)
+
         # One element in json data
-        payload = {'email': name_user}
-        r = requests.post(self.URL + path, json=payload)
+        params = {'email': name_user}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 201, 'Create new user')
 
         # json data without any value
-        payload = {'email': '', 'password': '', 'display_name': ''}
-        r = requests.post(self.URL + path, json=payload)
+        params = {'email': '', 'password': '', 'display_name': ''}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Error json format')
 
         # json format correct with previous user
-        payload = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
-        r = requests.post(self.URL + path, json=payload)
+        params = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Create new user but it was created before')
 
     def test_apiLogin(self):
@@ -43,7 +60,7 @@ class TestApiUserRest(unittest.TestCase):
 
         # json format correct create user for test
         params = {'email': name_user, 'password': self.password,  'display_name': 'test name show 1'}
-        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/newuser', "params": params}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # login bad parameters
@@ -77,7 +94,7 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 401, 'Error json format - empty')
 
         # Json complete user password is true
-        payload = {'email': name_user, 'password': self.password}
+        payload = {'email': name_user, 'password': self.password, 'password_c':self.password}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 202, 'User accepted')
         self.assertEqual(r.headers['content-type'], 'application/json', 'Header json')
@@ -88,18 +105,24 @@ class TestApiUserRest(unittest.TestCase):
 
     def test_apiSignOut(self):
         path = 'apiUser/login'
-        path2 = 'apiUser/updateUser'
+        path2 = 'apiUser/updateMyUser'
         path3 = 'apiUser/logout'
         name_user = self.test
-        # Save session
+
+        # Login user admonUser that has role candidate
+        reqsess2 = requests.Session()
+        reqsess2.headers.update({'Content-Type': 'application/json'})
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
+        result = reqsess2.post(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+        reqsess2.headers.update({'Authorization': token})
+        params = {'email': name_user,'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/newuser', "params": params}
+        reqsess2.post(self.URL + 'apiUser/newuser', json=payload)
+
         reqsess = requests.Session()
         reqsess.headers.update({'Content-Type': 'application/json'})
-
-        # json format correct create user for test
-        params = {'email': name_user,'display_name': 'test name show 1'}
-        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
-        requests.post(self.URL + 'apiUser/newuser', json=payload)
-
         # Login user to get token
         payload = dict(email=self.test, password=self.password, password_c=self.password)
         result = reqsess.post(self.URL + path, json=payload)
@@ -131,7 +154,7 @@ class TestApiUserRest(unittest.TestCase):
 
         # json correct format create user for test
         params = {'email': self.test, 'password': self.password, 'display_name': 'test name show 1'}
-        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/newuser', "params": params}
         requests.post(self.URL + 'apiUser/newuser', json=payload)
 
         # Login user to get token
@@ -309,24 +332,24 @@ class TestApiUserRest(unittest.TestCase):
         digits = "".join([random.choice(string.digits) for i in xrange(10)])
         name_user = "test_{x}@{y}".format(x=digits,y=self.domain)
 
-        # get id new user
-        params = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
-        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": params}
-        r = reqsess.post(self.URL + 'apiUser/newuser', json=payload)
-        self.assertEqual(r.status_code, 201, 'Create new user')
-        answer_json = json.loads(r.text)
-        id = answer_json['id']
-        self.assertTrue(str(id).isdigit(), 'Create new user')
-
         # Login user admonUser that has role candidate
         payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
         result = reqsess.post(self.URL + 'apiUser/login', json=payload)
         answer_json = json.loads(result.text)
         token = answer_json['token']
+        header = {'Authorization': token}
+
+        # get id new user
+        params = {'email': name_user, 'password': self.password, 'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/newuser', "params": params}
+        r = reqsess.post(self.URL + 'apiUser/newuser', json=payload, headers=header)
+        self.assertEqual(r.status_code, 201, 'Create new user')
+        answer_json = json.loads(r.text)
+        id = answer_json['id']
+        self.assertTrue(str(id).isdigit(), 'Create new user')
 
         # Get all roles
         payload = {"jsonrpc": "2.0", "method": 'apiAdmin/allRoles', "params": ""}
-        header = {'Authorization': token}
         r = reqsess.get(self.URL + 'apiAdmin/allRoles', json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Answer ok')
         answer_json = json.loads(r.text)

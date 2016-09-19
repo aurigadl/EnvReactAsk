@@ -74,10 +74,9 @@ def login():
 @apiUser.route('/apiUser/newuser', methods=['POST'])
 @rbac.allow(['admon'], methods=['POST'], with_children=False)
 def new_user():
-
     json_data = request.get_json()
 
-    if not json_data.has_key('params') and len(json_data.get('params')) == 0:
+    if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
     params = request.json.get('params')
@@ -85,10 +84,26 @@ def new_user():
     active = True
     new_user = True
     password = datetime.now().strftime('%Y%m%d%H%M%S')
-    email = params['email']
-    last_name = params['last_name']
-    first_name = params['first_name']
-    display_name = params['display_name']
+
+    if params.has_key('email') and len(params['email']) != 0:
+        email = params['email']
+    else:
+        email = None
+
+    if params.has_key('last_name') and len(params['last_name']) != 0:
+        last_name = params['last_name']
+    else:
+        last_name = None
+
+    if params.has_key('first_name') and len(params['first_name']) != 0:
+        first_name = params['first_name']
+    else:
+        first_name = None
+
+    if params.has_key('display_name') and len(params['display_name']) != 0:
+        display_name = params['display_name']
+    else:
+        display_name = None
 
     if email is None or len(email) < 5:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'Email no cumple'}), 400
