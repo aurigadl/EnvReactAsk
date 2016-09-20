@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask_rbac import RBAC
+from rbac import RBAC
 from flask import g
 
 db = SQLAlchemy()
