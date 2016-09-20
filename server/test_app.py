@@ -212,6 +212,55 @@ class TestApiUserRest(unittest.TestCase):
         r = reqsess.put(self.URL + path, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Save data - some parameters saved')
 
+    # Update parameters with id
+    def test_apiUpdateIdUser(self):
+        path = 'apiUser/updateIdUser'
+
+        # Save session
+        reqsess = requests.Session()
+        digits = "".join([random.choice(string.digits) for i in xrange(10)])
+        name_user = "test_{x}@{y}".format(x=digits,y=self.domain)
+
+        # Login user admonUser that has role candidate
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
+        result = reqsess.post(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+        header = {'Authorization': token}
+
+        # get id new user
+        params = {'email': name_user, 'display_name': 'test name show 1'}
+        payload = {"jsonrpc": "2.0", "method": 'apiAdmin/newuser', "params": params}
+        r = reqsess.post(self.URL + 'apiUser/newuser', json=payload, headers=header)
+        self.assertEqual(r.status_code, 201, 'Create new user')
+        answer_json = json.loads(r.text)
+        id = answer_json['id']
+        self.assertTrue(str(id).isdigit(), 'User id create')
+
+        # test api with different params
+        params = {}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.put(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Error json format - not parameters')
+
+        # test api with different params, without id
+        params = {'display_name': '', 'first_name': '', 'last_name': ''}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.put(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Error json format - empty parameters')
+
+        # test api with different params
+        params = {'id': '1000', 'display_name': '', 'first_name': '', 'last_name': ''}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.put(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 400, 'Error json format - empty parameters')
+
+        # test api with different params
+        params = {'id': str(id), 'display_name': 'Test ' + name_user, 'first_name': 'Test first_name', 'last_name': 'Test Last_name'}
+        payload = {"jsonrpc": "2.0", "method": path, "params": params}
+        r = reqsess.put(self.URL + path, json=payload, headers=header)
+        self.assertEqual(r.status_code, 200, 'User update ok')
+
     # Validate user access with the role of "admon"  and
     # get all roles from database
     def test_getAllRoles(self):

@@ -163,18 +163,24 @@ def update_user():
 def update_user_id():
     json_data = request.get_json()
 
-    if not json_data.has_key('params') and len(json_data.get('params')) == 0:
+    if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
     params = request.json.get('params')
-    user_id = params['id']
 
-    if not user_id and not user_id.isdigit() and not len(user_id) != 0:
+    if params.has_key('id') and len(params['id']) != 0:
+        user_id = params['id']
+    else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    User.query.filter(User.id == user_id).update(params)
-    db.session.commit()
+    if not user_id or not user_id.isdigit() or not len(user_id) != 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
+    if User.query.filter(User.id == user_id).first() is not None:
+        User.query.filter(User.id == user_id).update(params)
+        db.session.commit()
+    else:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'User does not exist'}), 400
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
