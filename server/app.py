@@ -1,9 +1,8 @@
 import os
 import jwt
 from flask import Flask, request, jsonify, session
-
-import config as config
 import libs.sessionPickle as newSession
+import config.config as conf
 
 from shared.models import db, rbac,g_data
 from apiUser.models import Role, User
@@ -13,7 +12,7 @@ from apiMarcas.apiMarca import apiMarca
 
 # Configuration
 app = Flask(__name__, static_folder='./static', static_url_path='')
-app.config.from_object(config)
+app.config.from_object(conf.devConfig1)
 db.app = app
 db.init_app(app)
 rbac.init_app(app)

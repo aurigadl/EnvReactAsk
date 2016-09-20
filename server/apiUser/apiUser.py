@@ -5,7 +5,7 @@ import jwt
 
 from shared.models import db, rbac, g_data
 from models import Role, User
-import config
+from config.config import config
 
 apiUser = Blueprint('apiUser', __name__)
 
