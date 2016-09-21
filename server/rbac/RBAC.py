@@ -1,0 +1,342 @@
+from model import RoleMixin, UserMixin, anonymous
+import itertools
+from accessControl import AccessControlList
+from flask import request, abort
+
+
+from flask import request, abort, _request_ctx_stack
+
+try:
+    from flask import _app_ctx_stack
+except ImportError:
+    _app_ctx_stack = None
+
+try:
+    from flask.ext.login import current_user
+except ImportError:
+    current_user = None
+
+connection_stack = _app_ctx_stack or _request_ctx_stack
+
+current_user = None
+
+class _RBACState(object):
+    '''Records configuration for Flask-RBAC'''
+    def __init__(self, rbac, app):
+        self.rbac = rbac
+        self.app = app
+
+class RBAC(object):
+    """This class implements role-based access control module in Flask.
+    There are two way to initialize Flask-RBAC::
+
+        app = Flask(__name__)
+        rbac = RBAC(app)
+
+    or::
+
+        rbac = RBAC
+        def create_app():
+            app = Flask(__name__)
+            rbac.init_app(app)
+            return app
+
+    :param app: the Flask object
+    :param role_model: custom role model
+    :param user_model: custom user model
+    :param user_loader: custom user loader, used to load current user
+    :param permission_failed_hook: called when permission denied.
+    """
+
+    def __init__(self, app=None, **kwargs):
+        """Initialize with app."""
+        self.acl = AccessControlList()
+        self.before_acl = {'allow': [], 'deny': []}
+
+        self._role_model = kwargs.get('role_model', RoleMixin)
+        self._user_model = kwargs.get('user_model', UserMixin)
+        self._user_loader = kwargs.get('user_loader', lambda: current_user)
+        self.permission_failed_hook = kwargs.get('permission_failed_hook')
+
+        if app is not None:
+            self.app = app
+            self.init_app(app)
+        else:
+            self.app = None
+
+    def init_app(self, app):
+        """Initialize application in Flask-RBAC.
+        Adds (RBAC, app) to flask extensions.
+        Adds hook to authenticate permission before request.
+
+        :param app: Flask object
+        """
+
+        app.config.setdefault('RBAC_USE_WHITE', False)
+        self.use_white = app.config['RBAC_USE_WHITE']
+
+        if not hasattr(app, 'extensions'):
+            app.extensions = {}
+        app.extensions['rbac'] = _RBACState(self, app)
+
+        self.acl.allow(anonymous, 'GET', app.view_functions['static'])
+        app.before_first_request(self._setup_acl)
+
+        app.before_request(self._authenticate)
+
+    def as_role_model(self, model_cls):
+        """A decorator to set custom model or role.
+
+        :param model_cls: Model of role.
+        """
+        self._role_model = model_cls
+        return model_cls
+
+    def as_user_model(self, model_cls):
+        """A decorator to set custom model or user.
+
+        :param model_cls: Model of user.
+        """
+        self._user_model = model_cls
+        return model_cls
+
+    def set_role_model(self, model):
+        """Set custom model of role.
+
+        :param model: Model of role.
+        """
+        self._role_model = model
+
+    def set_user_model(self, model):
+        """Set custom model of User
+
+        :param model: Model of user
+        """
+        self._user_model = model
+
+    def set_user_loader(self, loader):
+        """Set user loader, which is used to load current user.
+        An example::
+
+            from flask.ext.login import current_user
+            rbac.set_user_loader(lambda: current_user)
+
+        :param loader: Current user function.
+        """
+        self._user_loader = loader
+
+    def set_hook(self, hook):
+        """Set hook which called when permission is denied
+        If you haven't set any hook, Flask-RBAC will call::
+
+            abort(403)
+
+        :param hook: Hook function
+        """
+        self.permission_failed_hook = hook
+
+    def has_permission(self, method, endpoint, user=None):
+        """Return does the current user can access the resource.
+        Example::
+
+            @app.route('/some_url', methods=['GET', 'POST'])
+            @rbac.allow(['anonymous'], ['GET'])
+            def a_view_func():
+                return Response('Blah Blah...')
+
+        If you are not logged.
+
+        `rbac.has_permission('GET', 'a_view_func')` return True.
+        `rbac.has_permission('POST', 'a_view_func')` return False.
+
+        :param method: The method wait to check.
+        :param endpoint: The application endpoint.
+        :param user: user who you need to check. Current user by default.
+        """
+        app = self.get_app()
+        _user = user or self._user_loader()
+        if not hasattr(_user, 'get_roles'):
+            roles = [anonymous]
+        else:
+            roles = _user.get_roles()
+        view_func = app.view_functions[endpoint]
+        return self._check_permission(roles, method, view_func)
+
+    def check_perm(self, role, method, callback=None):
+        def decorator(view_func):
+            if not self._check_permission([role], method, view_func):
+                if callable(callback):
+                    callback()
+                else:
+                    self._deny_hook()
+            return view_func
+        return decorator
+
+    def user_loader(self, loader):
+        self._user_loader = loader
+        return loader
+
+    def allow(self, roles, methods, with_children=True):
+        """This is a decorator function.
+
+        You can allow roles to access the view func with it.
+
+        An example::
+
+            @app.route('/website/setting', methods=['GET', 'POST'])
+            @rbac.allow(['administrator', 'super_user'], ['GET', 'POST'])
+            def website_setting():
+                return Response('Setting page.')
+
+        :param roles: List, each name of roles. Please note that,
+                      `anonymous` is refered to anonymous.
+                      If you add `anonymous` to the rule,
+                      everyone can access the resource,
+                      unless you deny other roles.
+        :param methods: List, each name of methods.
+                        methods is valid in ['GET', 'POST', 'PUT', 'DELETE']
+        :param with_children: Whether allow children of roles as well.
+                              True by default.
+        """
+        def decorator(view_func):
+            _methods = [m.upper() for m in methods]
+            for r, m, v in itertools.product(roles, _methods, [view_func]):
+                self.before_acl['allow'].append((r, m, v, with_children))
+            return view_func
+        return decorator
+
+    def deny(self, roles, methods, with_children=False):
+        """This is a decorator function.
+
+        You can deny roles to access the view func with it.
+
+        An example::
+
+            @app.route('/article/post', methods=['GET', 'POST'])
+            @rbac.deny(['anonymous', 'unactivated_role'], ['GET', 'POST'])
+            def article_post():
+                return Response('post page.')
+
+        :param roles: List, each name of roles.
+        :param methods: List, each name of methods.
+                        methods is valid in ['GET', 'POST', 'PUT', 'DELETE']
+        :param with_children: Whether allow children of roles as well.
+                              True by default.
+        """
+        def decorator(view_func):
+            _methods = [m.upper() for m in methods]
+            for r, m, v in itertools.product(roles, _methods, [view_func]):
+                self.before_acl['deny'].append((r, m, v, with_children))
+            return view_func
+        return decorator
+
+    def exempt(self, view_func):
+        """Exempt a view function from being checked permission.
+        It is useful when you are using white list checking.
+
+        Example::
+
+            @app.route('/everyone/can/access')
+            @rbac.exempt
+            def everyone_can_access():
+                return 'Hello~'
+
+        :param view_func: The view function going to be exempted.
+        """
+        self.acl.exempt(view_func)
+        return view_func
+
+    def get_app(self, reference_app=None):
+        """Helper method that implements the logic to look up an application.
+        """
+        if reference_app is not None:
+            return reference_app
+        if self.app is not None:
+            return self.app
+        ctx = connection_stack.top
+        if ctx is not None:
+            return ctx.app
+        raise RuntimeError('application not registered on rbac '
+                           'instance and no application bound '
+                           'to current context')
+
+    def _authenticate(self):
+        app = self.get_app()
+        assert app, "Please initialize your application into Flask-RBAC."
+        assert self._role_model, "Please set role model before authenticate."
+        assert self._user_model, "Please set user model before authenticate."
+        assert self._user_loader, "Please set user loader before authenticate."
+
+        current_user = self._user_loader()
+        if current_user is not None and not isinstance(current_user, self._user_model):
+            raise TypeError(
+                "%s is not an instance of %s" %
+                (current_user, self._user_model.__class__))
+
+        endpoint = request.endpoint
+        resource = app.view_functions.get(endpoint, None)
+
+        if not resource:
+            abort(404)
+
+        method = request.method
+
+        if not hasattr(current_user, 'get_roles'):
+            roles = [anonymous]
+        else:
+            roles = current_user.get_roles()
+
+        permit = self._check_permission(roles, method, resource)
+
+        if not permit:
+            return self._deny_hook()
+
+    def _check_permission(self, roles, method, resource):
+        if self.acl.is_exempt(resource):
+            return True
+
+        _roles = set()
+        _methods = set(['*', method])
+        _resources = set([None, resource])
+
+        if self.use_white:
+            _roles.add(anonymous)
+
+        is_allowed = None
+        _roles.update(roles)
+
+        if not self.acl.seted:
+            self._setup_acl()
+
+        for r, m, res in itertools.product(_roles, _methods, _resources):
+            if self.acl.is_denied(r.get_name(), m, res):
+                return False
+
+            if self.acl.is_allowed(r.get_name(), m, res):
+                is_allowed = True
+
+        if self.use_white:
+            permit = (is_allowed == True)
+        else:
+            permit = (is_allowed != False)
+
+        return permit
+
+    def _deny_hook(self):
+        if self.permission_failed_hook:
+            return self.permission_failed_hook()
+        else:
+            abort(403)
+
+    def _setup_acl(self):
+        for rn, method, resource, with_children in self.before_acl['allow']:
+            role = self._role_model.get_by_name(rn)
+            if rn == 'anonymous':
+                role = rn
+            else:
+                role = self._role_model.get_by_name(rn)
+            self.acl.allow(role, method, resource, with_children)
+        for rn, method, resource, with_children in self.before_acl['deny']:
+            role = self._role_model.get_by_name(rn)
+            self.acl.deny(role, method, resource, with_children)
+        self.acl.seted = True

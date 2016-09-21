@@ -1,6 +1,6 @@
 from shared.models import db
 from werkzeug.security import generate_password_hash, check_password_hash
-from rbac import RoleMixin, UserMixin
+from rbac.model import RoleMixin, UserMixin
 
 
 roles_parents = db.Table('roles_parents',
