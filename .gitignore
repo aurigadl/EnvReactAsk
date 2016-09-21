@@ -4,6 +4,6 @@ npm-debug.log
 .babelrc
 .editorconfig
 env/
-server/tmp_app_session
+tmp_app_session
 *.pyc
 *.db

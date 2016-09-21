@@ -1,31 +1,14 @@
 import os
 import jwt
-from flask import Flask, request, jsonify, session
-import libs.sessionPickle as newSession
-import config.config as conf
-
-from shared.models import db, rbac,g_data
-from apiUser.models import Role, User
-from apiUser.apiUser import apiUser
-from apiRole.apiRole import apiRole
-from apiMarcas.apiMarca import apiMarca
-
-# Configuration
-app = Flask(__name__, static_folder='./static', static_url_path='')
-app.config.from_object(conf.devConfig1)
-db.app = app
-db.init_app(app)
-rbac.init_app(app)
-
-app.register_blueprint(apiUser)
-app.register_blueprint(apiRole)
-app.register_blueprint(apiMarca)
+from server import app, rbac, db, Role, User, g_data
+from flask import request, jsonify, session
+import server.libs.sessionPickle as newSession
 
 
 def init_db():
     """Initializes the database."""
-    if os.path.exists('app.db'):
-        os.remove('app.db')
+    if os.path.exists('server/app.db'):
+        os.remove('server/app.db')
     db.create_all()
     new_role_basic = Role('candidate', 'They may present test')
     new_role_admon = Role('admon', 'They may to do anything')

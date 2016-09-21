@@ -1,5 +1,4 @@
-from shared.models import db
-
+from server import db
 
 class Marca(db.Model):
     __tablename__ = 'marca'

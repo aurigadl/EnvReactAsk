@@ -1,7 +1,5 @@
 from flask import Blueprint, jsonify, request, abort
-
-from shared.models import rbac, db
-from apiUser.models import Role, User
+from server import rbac, db, Role, User
 
 apiRole = Blueprint('apiRole', __name__)
 

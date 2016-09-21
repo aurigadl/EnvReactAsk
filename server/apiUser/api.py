@@ -1,11 +1,8 @@
 from datetime import datetime, timedelta
-
 from flask import Blueprint, request, abort, jsonify, session
 import jwt
-
-from shared.models import db, rbac, g_data
-from models import Role, User
-from config.config import config
+from server.config import config
+from server import db, rbac, User, Role, g_data
 
 apiUser = Blueprint('apiUser', __name__)
 

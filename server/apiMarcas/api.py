@@ -1,4 +1,4 @@
-from shared.models import rbac
+from server import rbac
 from flask import Blueprint, jsonify
 from models import Marca
 
