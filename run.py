@@ -54,16 +54,15 @@ def get_current_user():
 def root():
     return app.send_static_file('index.html')
 
+rbac.set_user_loader(get_current_user)
+path = './tmp_app_session'
+if not os.path.exists(path):
+    os.mkdir(path)
+    os.chmod(path, int('700', 8))
+rbac.set_role_model(Role)
+rbac.set_user_model(User)
+init_db()
+app.session_interface = newSession.PickleSessionInterface(path)
 
 if __name__ == '__main__':
-
-    rbac.set_user_loader(get_current_user)
-    path = './tmp_app_session'
-    if not os.path.exists(path):
-        os.mkdir(path)
-        os.chmod(path, int('700', 8))
-    rbac.set_role_model(Role)
-    rbac.set_user_model(User)
-    init_db()
-    app.session_interface = newSession.PickleSessionInterface(path)
     app.run()

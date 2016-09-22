@@ -54,14 +54,23 @@ class TestApiUserRest(unittest.TestCase):
         r = reqsess.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 400, 'Create new user but it was created before')
 
+    # create user and login with this
     def test_apiLogin(self):
         path = 'apiUser/login'
         name_user = self.test
 
         # json format correct create user for test
-        params = {'email': name_user, 'password': self.password,  'display_name': 'test name show 1'}
+        # Login user admonUser that has role candidate
+        reqsess2 = requests.Session()
+        reqsess2.headers.update({'Content-Type': 'application/json'})
+        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
+        result = reqsess2.post(self.URL + 'apiUser/login', json=payload)
+        answer_json = json.loads(result.text)
+        token = answer_json['token']
+        reqsess2.headers.update({'Authorization': token})
+        params = {'email': name_user,'display_name': 'test name show 1'}
         payload = {"jsonrpc": "2.0", "method": 'apiAdmin/newuser', "params": params}
-        requests.post(self.URL + 'apiUser/newuser', json=payload)
+        reqsess2.post(self.URL + 'apiUser/newuser', json=payload)
 
         # login bad parameters
         payload = {}
@@ -89,7 +98,7 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 401, 'Error usuario no existe')
 
         # Json complete but user password wrong
-        payload = {'email': name_user, 'password': '1234567'}
+        payload = {'email': name_user, 'password': '123456'}
         r = requests.post(self.URL + path, json=payload)
         self.assertEqual(r.status_code, 401, 'Error json format - empty')
 
