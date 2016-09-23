@@ -2,7 +2,7 @@ import React from 'react'
 require('./formsPanels.css');
 import SelectInput from './SelectInput.js'
 
-var FormMarcaAuto = React.createClass({
+var FormRuta = React.createClass({
 
   getInitialState: function () {
     return {
@@ -28,7 +28,7 @@ var FormMarcaAuto = React.createClass({
       <div className="header callout secondary">
 
         <div className="sign">
-          <h1>Marcas de Carros y Camiones</h1>
+          <h1>Rutas</h1>
         </div>
         <p>Selecciona un elemento para editarlo o eliminarlo
           o llena el campo inferior sin seleccionar elemento
@@ -40,7 +40,7 @@ var FormMarcaAuto = React.createClass({
             <SelectInput
               class="input-group-field"
               url="apiAdmin/allRoles"
-              name="selectMarca"
+              name="selectRuta"
               onUserSelect={this.handleUserSelect}
             />
 
@@ -51,7 +51,7 @@ var FormMarcaAuto = React.createClass({
 
           <div className="input-group">
 
-            <input name="marcaEdit"
+            <textarea name="rutaEdit"
                    placeholder="Editar o crear..."
                    className="input-group-field"
                    type="text"
@@ -70,4 +70,4 @@ var FormMarcaAuto = React.createClass({
 
 });
 
-export default FormMarcaAuto;
+export default FormRuta;

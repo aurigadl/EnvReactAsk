@@ -194,6 +194,9 @@ var AdminFormUser = React.createClass({
       typeMess: 'success',
       newOptionSelectA: true
     });
+    
+    this.props.onItemNew(true);
+    
     setTimeout(function(){
       this.setState({
         showMessage: false,

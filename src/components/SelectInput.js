@@ -35,7 +35,7 @@ var SelectInput = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     var next = nextProps.newOption;
     var prev = this.props.newOption;
-    if ( next == false  && next != prev){
+    if ( next == true  && next != prev){
       this.loadOptionFromServer();
     }
   },

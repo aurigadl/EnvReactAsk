@@ -2,7 +2,7 @@ import React from 'react'
 require('./formsPanels.css');
 import SelectInput from './SelectInput.js'
 
-var FormMarcaAuto = React.createClass({
+var FormPersonaCarro = React.createClass({
 
   getInitialState: function () {
     return {
@@ -28,40 +28,37 @@ var FormMarcaAuto = React.createClass({
       <div className="header callout secondary">
 
         <div className="sign">
-          <h1>Marcas de Carros y Camiones</h1>
+          <h1>Personas de Carros y Camiones</h1>
         </div>
         <p>Selecciona un elemento para editarlo o eliminarlo
           o llena el campo inferior sin seleccionar elemento
           para crear uno nuevo</p>
 
         <form>
+
+          <SelectInput
+            class="input-group-field"
+            url="apiAdmin/allRoles"
+            name="carro"
+            onUserSelect={this.handleUserSelect}
+          />
+
           <div className="input-group">
 
             <SelectInput
               class="input-group-field"
               url="apiAdmin/allRoles"
-              name="selectMarca"
+              name="selectPersonaCarro"
               onUserSelect={this.handleUserSelect}
             />
 
             <div className="input-group-button">
-              <input type="submit" className="alert button" value="Borrar"/>
+              <input type="submit" className="alert button" value="Agregar"/>
             </div>
+
           </div>
 
-          <div className="input-group">
-
-            <input name="marcaEdit"
-                   placeholder="Editar o crear..."
-                   className="input-group-field"
-                   type="text"
-                   onChange={this.onChange}
-                   value={this.state.inputValue}/>
-
-            <div className="input-group-button">
-              <button type="button" className="success button">Grabar</button>
-            </div>
-          </div>
+          <button type="button" className="success button">Grabar</button>
 
         </form>
       </div>
@@ -70,4 +67,4 @@ var FormMarcaAuto = React.createClass({
 
 });
 
-export default FormMarcaAuto;
+export default FormPersonaCarro;

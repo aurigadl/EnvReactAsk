@@ -14,13 +14,11 @@
   "author": "aurigadl",
   "license": "MIT",
   "dependencies": {
-    "alt": "^0.18.4",
     "babel-runtime": "^6.9.2",
     "react": "^15.3.1",
     "react-router": "^2.4.1"
   },
   "devDependencies": {
-    "alt-utils": "^1.0.0",
     "babel-core": "^6.9.1",
     "babel-loader": "^6.2.4",
     "babel-plugin-syntax-decorators": "^6.8.0",

@@ -1,5 +1,6 @@
 import React from 'react'
 require('./formsPanels.css');
+import SelectInput from './SelectInput.js'
 
 var FormPersona = React.createClass({
 
@@ -10,7 +11,24 @@ var FormPersona = React.createClass({
         <div className="sign">
           <h1>Persona</h1>
         </div>
+
+        <p>Selecciona un elemento para editarlo o eliminarlo
+          o llena el campo inferior sin seleccionar elemento
+          para crear uno nuevo</p>
+
         <form>
+          <div className="input-group">
+            <SelectInput
+              class="input-group-field"
+              url="apiAdmin/allRoles"
+              name="selectPersona"
+              onUserSelect={this.handleUserSelect}
+            />
+            <div className="input-group-button">
+              <input type="submit" className="alert button" value="Borrar"/>
+            </div>
+          </div>
+
           <label> Nombre
             <input name="autoPlaca" type="text" placeholder=""/>
           </label>

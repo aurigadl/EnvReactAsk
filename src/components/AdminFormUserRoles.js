@@ -10,11 +10,24 @@ var AdminFormUserRoles = React.createClass({
   getInitialState: function () {
     return {
       childSelectValue: undefined,
+      newOptionSelectA: false,
       checkBoxSelectToSend: [],
+
       showMessage: false,
       typeMess: 'success',
       contextText: 'Transaccion exitosa'
     };
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    var next = nextProps.newOption;
+    var prev = this.props.newOption;
+    if ( next == true  && next != prev){
+      this.setState({
+        newOptionSelectA: true
+      });
+      this.props.onItemNew(false);
+    }
   },
 
   handleUserSelect: function (childSelectValue) {
@@ -111,8 +124,10 @@ var AdminFormUserRoles = React.createClass({
           <form onSubmit={this.handleSubmitForm}>
             <label>Usuarios del sistema
               <SelectInput
+                class="input-group-field"
                 url="apiUser/allUser"
                 name="usuario"
+                newOption={this.state.newOptionSelectA}
                 onUserSelect={this.handleUserSelect}
               />
             </label>

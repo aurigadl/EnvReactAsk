@@ -2,7 +2,7 @@ import React from 'react'
 require('./formsPanels.css');
 import SelectInput from './SelectInput.js'
 
-var FormMarcaAuto = React.createClass({
+var FormTipoContrato = React.createClass({
 
   getInitialState: function () {
     return {
@@ -28,7 +28,7 @@ var FormMarcaAuto = React.createClass({
       <div className="header callout secondary">
 
         <div className="sign">
-          <h1>Marcas de Carros y Camiones</h1>
+          <h1>Tipo de Contrato</h1>
         </div>
         <p>Selecciona un elemento para editarlo o eliminarlo
           o llena el campo inferior sin seleccionar elemento
@@ -40,18 +40,19 @@ var FormMarcaAuto = React.createClass({
             <SelectInput
               class="input-group-field"
               url="apiAdmin/allRoles"
-              name="selectMarca"
+              name="selectTipoContrato"
               onUserSelect={this.handleUserSelect}
             />
 
             <div className="input-group-button">
               <input type="submit" className="alert button" value="Borrar"/>
             </div>
+
           </div>
 
           <div className="input-group">
 
-            <input name="marcaEdit"
+            <input name="contratoEdit"
                    placeholder="Editar o crear..."
                    className="input-group-field"
                    type="text"
@@ -70,4 +71,4 @@ var FormMarcaAuto = React.createClass({
 
 });
 
-export default FormMarcaAuto;
+export default FormTipoContrato;

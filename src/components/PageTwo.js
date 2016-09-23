@@ -1,26 +1,46 @@
 import React from 'react'
-import FormConductor from './FormConductor.js'
-import FormContrato from './FormContrato.js'
+import FormRuta from './FormRuta.js'
+import FormCarro from './FormCarro.js'
 import FormPersona from './FormPersona.js'
+import FormEmpresa from './FormEmpresa.js'
+import FormContrato from './FormContrato.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
-
-
+import FormPersonaCarro from './FormPersonaCarro.js'
+import FormTipoContrato from './FormTipoContrato.js'
 
 const PageTwo = React.createClass({
-  render: function(){
+  render: function () {
     return (
-      <div className="row">
-        <div className="large-4 columns">
-          <FormMarcaAuto />
+      <div>
+        <div className="row">
+          <div className="small-4 columns">
+            <FormTipoContrato />
+          </div>
+          <div className="small-4 columns">
+            <FormPersonaCarro />
+          </div>
         </div>
-        <div className="large-4 columns">
-          <FormConductor />
+        <div className="row">
+          <div className="small-4 columns">
+            <FormRuta />
+          </div>
+          <div className="small-4 columns">
+            <FormEmpresa />
+          </div>
+          <div className="small-4 columns">
+            <FormMarcaAuto />
+          </div>
         </div>
-        <div className="large-4 columns">
-          <FormContrato />
-        </div>
-        <div className="large-4 columns">
-          <FormPersona />
+        <div className="row">
+          <div className="small-4 columns">
+            <FormCarro />
+          </div>
+          <div className="small-4 columns">
+            <FormContrato />
+          </div>
+          <div className="small-4 columns">
+            <FormPersona />
+          </div>
         </div>
       </div>
     );

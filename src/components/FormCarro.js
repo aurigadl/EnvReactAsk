@@ -1,7 +1,8 @@
 import React from 'react'
 require('./formsPanels.css');
+import SelectInput from './SelectInput.js'
 
-var AdminFormConductor = React.createClass({
+var FormCarro = React.createClass({
 
   render: function () {
     return (
@@ -11,7 +12,25 @@ var AdminFormConductor = React.createClass({
           <h1>Carro</h1>
         </div>
 
+        <p>Selecciona un elemento para editarlo o eliminarlo
+          o llena el campo inferior sin seleccionar elemento
+          para crear uno nuevo</p>
+
         <form>
+          <div className="input-group">
+
+            <SelectInput
+              class="input-group-field"
+              url="apiAdmin/allRoles"
+              name="selectCarro"
+              onUserSelect={this.handleUserSelect}
+            />
+
+            <div className="input-group-button">
+              <input type="submit" className="alert button" value="Borrar"/>
+            </div>
+          </div>
+
           <label>Placa
             <input name="autoPlaca" type="text" placeholder=""/>
           </label>
@@ -40,4 +59,4 @@ var AdminFormConductor = React.createClass({
 
 });
 
-export default AdminFormConductor;
+export default FormCarro;
