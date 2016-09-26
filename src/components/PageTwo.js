@@ -11,36 +11,31 @@ import FormTipoContrato from './FormTipoContrato.js'
 const PageTwo = React.createClass({
   render: function () {
     return (
-      <div>
-        <div className="row">
-          <div className="small-4 columns">
-            <FormTipoContrato />
-          </div>
-          <div className="small-4 columns">
-            <FormPersonaCarro />
-          </div>
+      <div className="row small-up-1 medium-up-2 large-up-3">
+        <div className="columns">
+          <FormTipoContrato />
         </div>
-        <div className="row">
-          <div className="small-4 columns">
-            <FormRuta />
-          </div>
-          <div className="small-4 columns">
-            <FormEmpresa />
-          </div>
-          <div className="small-4 columns">
-            <FormMarcaAuto />
-          </div>
+        <div className="columns">
+          <FormPersonaCarro />
         </div>
-        <div className="row">
-          <div className="small-4 columns">
-            <FormCarro />
-          </div>
-          <div className="small-4 columns">
-            <FormContrato />
-          </div>
-          <div className="small-4 columns">
-            <FormPersona />
-          </div>
+        <div className="columns">
+          <FormRuta />
+        </div>
+        <div className="columns">
+          <FormEmpresa />
+        </div>
+        <div className="columns">
+          <FormMarcaAuto />
+        </div>
+
+        <div className="columns">
+          <FormCarro />
+        </div>
+        <div className="columns">
+          <FormContrato />
+        </div>
+        <div className="columns">
+          <FormPersona />
         </div>
       </div>
     );

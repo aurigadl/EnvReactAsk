@@ -1,5 +1,6 @@
 from server import db
 
+
 class Marca(db.Model):
     __tablename__ = 'marca'
     id = db.Column(db.Integer, primary_key=True)
@@ -7,4 +8,4 @@ class Marca(db.Model):
 
     def __init__(self, name=None):
         if name:
-            self.email = name.lower()
+            self.name = name.lower()

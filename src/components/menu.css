@@ -33,3 +33,6 @@
 .header-subnav li a:hover {
   background: rgba(250, 250, 250, 0.15);
   transition: all 0.35s ease-in-out; }
+.row {
+  max-width: 81rem;
+}

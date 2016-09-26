@@ -246,7 +246,7 @@ class TestApiUserRest(unittest.TestCase):
         self.assertEqual(r.status_code, 201, 'Create new user')
         answer_json = json.loads(r.text)
         id = answer_json['id']
-        self.assertTrue(str(id).isdigit(), 'User id create')
+        self.assertTrue(str(id).isdigit(), 'User id created')
 
         # test api with different params
         params = {}

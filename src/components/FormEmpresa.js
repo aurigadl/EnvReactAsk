@@ -40,7 +40,7 @@ var FormEmpresa = React.createClass({
           </label>
 
           <div className="row">
-            <div className="small-3 columns">
+            <div className="small-7 columns">
               <label>Nit - Consecutivo de identificación
                 <input name="nit1"
                        type="number"
@@ -48,7 +48,7 @@ var FormEmpresa = React.createClass({
                        required/>
               </label>
             </div>
-            <div className="small-1 columns">
+            <div className="small-5 columns">
               <label>Nit - Digito de verificación
                 <input name="nit2"
                        type="number"
