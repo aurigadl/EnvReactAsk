@@ -1,0 +1,57 @@
+from server import db
+
+
+class System(db.Model):
+    __tablename__ = 'system'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    address = db.Column(db.String(255))
+    phone = db.Column(db.Integer)
+    email = db.Column(db.String(255))
+    nit_1 = db.Column(db.Integer)
+    nit_2 = db.Column(db.Integer)
+    secuence_contract = db.Column(db.Integer)
+    secuence_payroll = db.Column(db.Integer)
+    secuence_vehicle = db.Column(db.Integer)
+
+    def __init__(self
+                 , name=None
+                 , address=None
+                 , phone=None
+                 , email=None
+                 , nit_1=None
+                 , nit_2=False
+                 , secuence_contract=False
+                 , secuence_payroll=False
+                 , secuence_vehicle = False
+                 ):
+        if name:
+            self.name = name.lower()
+        if address:
+            self.address = address.lower()
+        if phone:
+            self.phone = phone
+        if email:
+            self.email = email.lower()
+        if nit_1:
+            self.nit_1 = nit_1
+        if nit_2:
+            self.nit_2 = nit_2
+        if secuence_contract:
+            self.secuence_contract = secuence_contract
+        if secuence_payroll:
+            self.secuence_payroll = secuence_payroll
+        if secuence_vehicle:
+            self.secuence_vehicle = secuence_vehicle
+
+    def get_json(self):
+        return dict(name=self.name
+                    , address=self.address
+                    , phone=self.phone
+                    , email=self.email
+                    , nit_1=self.nit_1
+                    , nit_2=self.nit_2
+                    , secuence_contract=self.secuence_contract
+                    , secuence_payroll=self.secuence_payroll
+                    , secuence_vehicle=self.secuence_vehicle
+                    )

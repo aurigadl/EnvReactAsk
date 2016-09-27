@@ -21,7 +21,9 @@ from server.apiRole.models import Role
 from server.apiUser.api import apiUser
 from server.apiRole.api import apiRole
 from server.apiMarcas.api import apiMarca
+from server.apiSystem.api import apiSystem
 
 app.register_blueprint(apiUser)
 app.register_blueprint(apiRole)
 app.register_blueprint(apiMarca)
+app.register_blueprint(apiSystem)

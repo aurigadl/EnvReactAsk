@@ -2,6 +2,7 @@ import React from 'react'
 require('./formsPanels.css');
 import SelectInput from './SelectInput.js'
 import {makeRequest as mReq} from '../utils/mrequest';
+import MessageAlert from './MessageAlert.js'
 
 var FormMarcaAuto = React.createClass({
 
@@ -38,9 +39,9 @@ var FormMarcaAuto = React.createClass({
 
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
-    var marcaSelect = ref.selectMarca.value;
-    var marcaEdit = ref.marcaEdit.value;
+    var dot = e.target.elements;
+    var marcaSelect = dot.selectMarca.value;
+    var marcaEdit = dot.marcaEdit.value;
 
     if (marcaSelect === "") {
       var params = {
@@ -81,12 +82,10 @@ var FormMarcaAuto = React.createClass({
   successFormCreate: function (data){
     this.setState({
       showMessage: true,
-      contextText: 'Se Creo el usuario',
+      contextText: 'Se Creo la Marca',
       typeMess: 'success',
       newOptionSelectA: true
     });
-
-    this.props.onItemNew(true);
 
     setTimeout(function(){
       this.setState({
@@ -101,7 +100,7 @@ var FormMarcaAuto = React.createClass({
   errorFormCreate: function (err){
     this.setState({
       showMessage: true,
-      contextText: 'No se Creo el usuario. El correo electronico ya esta registrado',
+      contextText: 'No se Creo la marca.',
       typeMess: 'alert'
     });
     setTimeout(function(){
@@ -116,14 +115,16 @@ var FormMarcaAuto = React.createClass({
   successFormUpdate: function (data){
     this.setState({
       showMessage: true,
-      contextText: 'Se Actualizo el usuario',
-      typeMess: 'success'
+      contextText: 'Se Actualizo la Marca',
+      typeMess: 'success',
+      newOptionSelectA: true
     });
     setTimeout(function(){
       this.setState({
         showMessage: false,
         contextText: '',
-        typeMess: ''
+        typeMess: '',
+        newOptionSelectA: false
       })
     }.bind(this), 3000);
   },
@@ -131,7 +132,7 @@ var FormMarcaAuto = React.createClass({
   errorFormUpdate: function (err){
     this.setState({
       showMessage: true,
-      contextText: 'No se Actualizo el usuario',
+      contextText: 'No se Actualizo la Marca',
       typeMess: 'alert'
     });
     setTimeout(function(){
@@ -150,6 +151,57 @@ var FormMarcaAuto = React.createClass({
     })
   },
 
+  handleDelete: function(e){
+    e.preventDefault();
+    var get_id = this.state.childSelectValue;
+    var params = {
+      id: get_id
+    };
+
+    var parreq = {
+      method: 'DELETE',
+      url: 'apiFuec/deleteIdMarca',
+      params: {'params': params}
+    };
+
+    this.getRemoteData(parreq,
+        this.successFormDelete,
+        this.errorFormDelete
+    );
+  },
+
+  successFormDelete: function (data){
+    this.setState({
+      showMessage: true,
+      contextText: 'Se borro la Marca',
+      typeMess: 'success',
+      newOptionSelectA: true,
+      inputValue: ''
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: '',
+        newOptionSelectA: false
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormDelete: function (err){
+    this.setState({
+      showMessage: true,
+      contextText: 'No se borro la Marca',
+      typeMess: 'alert'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
 
 
   render: function () {
@@ -175,7 +227,7 @@ var FormMarcaAuto = React.createClass({
             />
 
             <div className="input-group-button">
-              <input type="submit" className="alert button" value="Borrar"/>
+              <input type="button" className="alert button" onClick={this.handleDelete} value="Borrar"/>
             </div>
 
           </div>
@@ -190,8 +242,18 @@ var FormMarcaAuto = React.createClass({
                    value={this.state.inputValue}/>
 
             <div className="input-group-button">
-              <button type="submit"  className="success button">Grabar</button>
+              <input type="submit" className="success button" value="Grabar"/>
             </div>
+
+          </div>
+
+          <div className="columns">
+            <MessageAlert
+                showHide={this.state.showMessage}
+                type={this.state.typeMess}
+                contextText={this.state.contextText}
+                onclickMessage={this.onClickMessage}
+            />
           </div>
 
         </form>
