@@ -11,7 +11,19 @@ apiSystem = Blueprint('apiSystem', __name__)
 @rbac.allow(['admon'], methods=['GET'])
 def api_fuec_marcas_all():
     system_all = System.query.first()
-    dict_system = system_all.get_json()
+    if system_all is None:
+        dict_system = dict(name=None
+                           , address=None
+                           , phone=None
+                           , email=None
+                           , nit_1=None
+                           , nit_2=None
+                           , secuence_contract=None
+                           , secuence_payroll=None
+                           , secuence_vehicle=None
+                           )
+    else:
+        dict_system = system_all.get_json()
     return jsonify(dict(jsonrpc="2.0", result=dict_system)), 200
 
 
@@ -49,7 +61,6 @@ def update_marca_id():
         data.update(dict(email=email))
     else:
         email = None
-
 
     if params.has_key('nit_1') and len(params['nit_1']) != 0:
         nit_1 = params['nit_1']

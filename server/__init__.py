@@ -22,8 +22,12 @@ from server.apiUser.api import apiUser
 from server.apiRole.api import apiRole
 from server.apiMarcas.api import apiMarca
 from server.apiSystem.api import apiSystem
+from server.apiRuta.api import apiRuta
+from server.apiTipoContrato.api import apiTipoContrato
 
 app.register_blueprint(apiUser)
 app.register_blueprint(apiRole)
-app.register_blueprint(apiMarca)
 app.register_blueprint(apiSystem)
+app.register_blueprint(apiMarca)
+app.register_blueprint(apiRuta)
+app.register_blueprint(apiTipoContrato)
