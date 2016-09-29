@@ -27,7 +27,7 @@ app = Flask(__name__, static_folder='./static', static_url_path='')
 if appEnv=='DEV':
     app.config.from_object(config.devConfig1)
 if appEnv=='PRO':
-    app.config.from_object(config)
+    app.config.from_object(config.config)
 db.app = app
 db.init_app(app)
 rbac.init_app(app)
