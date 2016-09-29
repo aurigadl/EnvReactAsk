@@ -1,14 +1,12 @@
 import os
 import jwt
-from server import app, rbac, db, Role, User, g_data
+from server import app, rbac, db, Role, User, g_data, appEnv
 from flask import request, jsonify, session
 import server.libs.sessionPickle as newSession
 
 
 def init_db():
     """Initializes the database."""
-    if os.path.exists('server/app.db'):
-        os.remove('server/app.db')
     db.create_all()
     new_role_basic = Role('candidate', 'They may present test')
     new_role_admon = Role('admon', 'They may to do anything')
@@ -55,14 +53,21 @@ def root():
     return app.send_static_file('index.html')
 
 rbac.set_user_loader(get_current_user)
+rbac.set_role_model(Role)
+rbac.set_user_model(User)
+
 path = './tmp_app_session'
 if not os.path.exists(path):
     os.mkdir(path)
     os.chmod(path, int('700', 8))
-rbac.set_role_model(Role)
-rbac.set_user_model(User)
-init_db()
 app.session_interface = newSession.PickleSessionInterface(path)
+
+if appEnv == 'DEV' and os.path.exists('server/app.db'):
+    os.remove('server/app.db')
+    init_db()
+
+if appEnv == 'PRO' and not os.path.exists('server/app.db'):
+    init_db()
 
 if __name__ == '__main__':
     app.run()

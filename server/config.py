@@ -11,8 +11,9 @@ class config(object):
 class devConfig1(config):
     DEBUG = True
     SQLALCHEMY_ECHO = False
-    SECRET_KEY = str(os.urandom(4)) + 'SRT#$ASDF_;:' + str(os.urandom(4))
+    SECRET_KEY = str(os.urandom(4)) + 'CAT' + str(os.urandom(4))
 
 class devConfig2(config):
     DEBUG = True
     SQLALCHEMY_ECHO = True
+    SECRET_KEY = str(os.urandom(4)) + 'DOG' + str(os.urandom(4))
