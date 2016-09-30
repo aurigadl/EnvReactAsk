@@ -1,5 +1,6 @@
 import os
 import jwt
+import time
 from server import app, rbac, db, Role, User, g_data, appEnv
 from flask import request, jsonify, session
 import server.libs.sessionPickle as newSession
@@ -11,10 +12,10 @@ def init_db():
     new_role_basic = Role('candidate', 'They may present test')
     new_role_admon = Role('admon', 'They may to do anything')
     new_user_admon = User(email='admon@mi.co',
-                          password='Abcd1234',
-                          display_name='User admin system',
-                          active=True,
-                          new_user=False)
+            password='Abcd1234',
+            display_name='User admin system',
+            active=True,
+            new_user=False)
     new_user_admon.add_role(new_role_admon)
     db.session.add(new_role_basic)
     db.session.add(new_role_admon)
@@ -51,6 +52,13 @@ def get_current_user():
 @rbac.allow(['anonymous'], methods=['GET'], with_children=False)
 def root():
     return app.send_static_file('index.html')
+
+# log Flask events
+app.logger.debug(u"Flask server started " + time.asctime())
+@app.after_request
+def write_access_log(response):
+    app.logger.debug(u"%s %s -> %s" % (time.asctime(), request.path, response.status_code))
+    return response
 
 rbac.set_user_loader(get_current_user)
 rbac.set_role_model(Role)

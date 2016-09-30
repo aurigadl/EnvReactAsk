@@ -3,6 +3,7 @@ npm-debug.log
 .idea
 .babelrc
 .editorconfig
+*.log
 env/
 tmp_app_session
 *.pyc

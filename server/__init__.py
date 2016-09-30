@@ -1,7 +1,9 @@
 import os
 import sys
+import logging
 from flask import Flask
 from server import config
+from logging import FileHandler
 
 from flask_sqlalchemy import SQLAlchemy
 from flask import g
@@ -47,3 +49,8 @@ app.register_blueprint(apiSystem)
 app.register_blueprint(apiMarca)
 app.register_blueprint(apiRuta)
 app.register_blueprint(apiTipoContrato)
+
+# configure Flask logging
+logger = FileHandler('error.log')
+app.logger.setLevel(logging.DEBUG)
+app.logger.addHandler(logger)
