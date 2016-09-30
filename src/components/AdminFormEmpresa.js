@@ -137,7 +137,7 @@ var AdminFormEmpresa = React.createClass({
 
         <form onSubmit={this.handleSubmitForm}>
 
-          <label>Nombre
+          <label>Razón social
             <input name="name"
                    type="text"
                    ref="name"
@@ -149,21 +149,24 @@ var AdminFormEmpresa = React.createClass({
             <input name="address"
                    type="text"
                    ref="address"
-                   placeholder=""/>
+                   placeholder=""
+                   required/>
           </label>
 
           <label>Telefono
             <input name="phone"
                    type="text"
                    ref="phone"
-                   placeholder=""/>
+                   placeholder=""
+                   required/>
           </label>
 
           <label>Correo electronico
             <input name="email"
                    type="email"
                    ref="email"
-                   placeholder=""/>
+                   placeholder=""
+                   required/>
           </label>
 
           <div className="row">
@@ -209,6 +212,28 @@ var AdminFormEmpresa = React.createClass({
                    placeholder=""
                    ref="secuence_vehicle"
                    required/>
+          </label>
+
+          <label>Representante Legal o Gerente
+            <input name="owner"
+                   type="text"
+                   ref="owner"
+                   placeholder=""
+                   required/>
+          </label>
+
+          <label> Firma "Dibujo en PNG"
+            <input name="sing"
+                   type="upload"
+                   ref="sing"
+                   placeholder=""/>
+          </label>
+
+          <label> Logo "Dibujo en PNG"
+            <input name="logo"
+                   type="upload"
+                   ref="logo"
+                   placeholder=""/>
           </label>
 
           <div className="row">

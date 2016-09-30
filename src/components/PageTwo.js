@@ -2,7 +2,6 @@ import React from 'react'
 import FormRuta from './FormRuta.js'
 import FormCarro from './FormCarro.js'
 import FormPersona from './FormPersona.js'
-import FormEmpresa from './FormEmpresa.js'
 import FormContrato from './FormContrato.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
@@ -20,9 +19,6 @@ const PageTwo = React.createClass({
         </div>
         <div className="columns">
           <FormRuta />
-        </div>
-        <div className="columns">
-          <FormEmpresa />
         </div>
         <div className="columns">
           <FormMarcaAuto />

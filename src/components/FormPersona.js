@@ -9,7 +9,7 @@ var FormPersona = React.createClass({
       <div className="header callout secondary">
 
         <div className="sign">
-          <h1>Persona</h1>
+          <h1>Personas</h1>
         </div>
 
         <p>Selecciona un elemento para editarlo o eliminarlo
@@ -29,6 +29,9 @@ var FormPersona = React.createClass({
             </div>
           </div>
 
+          <label> Modalidad
+            <input name="tipoMod" type="text" placeholder=""/>
+          </label>
           <label> Nombre
             <input name="autoPlaca" type="text" placeholder=""/>
           </label>

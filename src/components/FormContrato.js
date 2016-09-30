@@ -33,13 +33,13 @@ var AdminFormConductor = React.createClass({
 
           </div>
 
-          <label>No. Planilla
-            <input name="autoPlaca" type="text" placeholder=""/>
-          </label>
-          <label>Contrato
+          <label>No. de Contrato
             <input type="text" placeholder=""/>
           </label>
-          <label>Persona Contratante
+          <label>No. de Viaje
+            <input type="text" placeholder=""/>
+          </label>
+          <label>Persona o Empresa Contratante
             <input type="text" placeholder=""/>
           </label>
           <label>Nit
