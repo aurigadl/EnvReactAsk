@@ -1,4 +1,5 @@
 # For security reasons, Option followsymlinks cannot be overridden.
+SetEnv APPFLASK_A "PRO"
 Options +SymLinksIfOwnerMatch +ExecCGI
 AddHandler fcgid-script .fcgi
 RewriteEngine On
