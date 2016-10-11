@@ -4,6 +4,55 @@ import SelectInput from './SelectInput.js'
 
 var FormPersona = React.createClass({
 
+  handleSubmitForm: function (e) {
+    e.preventDefault();
+    var ref = e.target.elements;
+
+    var name = ref.name.value;
+    var address = ref.address.value;
+    var owner = ref.owner.value;
+    var phone = ref.phone.value;
+    var email = ref.email.value;
+    var nit_1 = ref.nit_1.value;
+    var nit_2 = ref.nit_2.value;
+    var secuence_contract = ref.secuence_contract.value;
+    var secuence_payroll = ref.secuence_payroll.value;
+    var secuence_vehicle = ref.secuence_vehicle.value;
+    var logo = this.state.fileLogo;
+    var sign = this.state.fileSign;
+
+    var params = {
+      name: name
+      , address: address
+      , phone: phone
+      , email: email
+      , nit_1: nit_1
+      , nit_2: nit_2
+      , secuence_contract: secuence_contract
+      , secuence_payroll: secuence_payroll
+      , secuence_vehicle: secuence_vehicle
+      , sign: sign
+      , logo: logo
+      , owner: owner
+    };
+
+    var parreq = {
+      method: 'PUT',
+      url: 'apiSystem/updateSystem',
+      params: {
+        'params': params
+        ,'file': true
+      }
+    };
+
+    this.getRemoteData(parreq,
+      this.successFormUpdate,
+      this.errorFormUpdate
+    );
+
+  },
+
+
   render: function () {
     return (
       <div className="header callout secondary">
@@ -16,11 +65,11 @@ var FormPersona = React.createClass({
           o llena el campo inferior sin seleccionar elemento
           para crear uno nuevo</p>
 
-        <form>
+        <form onSubmit={this.handleSubmitForm}>
           <div className="input-group">
             <SelectInput
               class="input-group-field"
-              url="apiAdmin/allRoles"
+              url="apiFuec/allPerson"
               name="selectPersona"
               onUserSelect={this.handleUserSelect}
             />
@@ -30,25 +79,36 @@ var FormPersona = React.createClass({
           </div>
 
           <label> Nombre
-            <input name="autoPlaca" type="text" placeholder=""/>
+            <input name="first_name" type="text" placeholder="" required/>
           </label>
           <label> Apellido
-            <input type="text" placeholder=""/>
+            <input name="last_name" type="text" placeholder=""/>
           </label>
-          <label> Cedula
-            <input type="text" placeholder=""/>
-          </label>
-          <label> Licencia
-            <input type="text" placeholder=""/>
-          </label>
-          <label> Vigencia
-            <input type="text" placeholder=""/>
+          <label> Correo Electronico
+            <input name="email" type="text" placeholder="" required/>
           </label>
           <label> Telefono
-            <input type="text" placeholder=""/>
+            <input name="phone" type="text" placeholder=""/>
+          </label>
+          <label> Identificación
+            <input name="id_number" type="text" placeholder="" required/>
+          </label>
+          <label> Tipo de Identificación
+          <SelectInput
+            url="apiFuec/allIdType"
+            name="id_Type"
+            onUserSelect={this.handleUserSelect}
+            required
+          />
+          </label>
+          <label> Licencia
+            <input name="license" type="text" placeholder=""/>
+          </label>
+          <label> Vigencia
+            <input name="effective_date" type="text" placeholder=""/>
           </label>
           <label> Dirección
-            <input type="text" placeholder=""/>
+            <input name="address" type="text" placeholder=""/>
           </label>
           <button type="button" className="success button">Grabar</button>
         </form>

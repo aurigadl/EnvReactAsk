@@ -16,16 +16,16 @@ def api_fuec_IdType_all():
         db.session.add(IdType('Nuip Numero unico de identificacion personal'))
         db.session.commit()
         idType_all = IdType.query.with_entities(IdType.id, IdType.name).all()
-    dict_idtype = [dict(zip(('id', 'name'), r)) for r in idType_all]
+    dict_idtype = [dict(zip(('id', 'nomb'), r)) for r in idType_all]
     return jsonify(dict(jsonrpc="2.0", result=dict_idtype)), 200
 
 
 @apiPerson.route('/apiFuec/allPerson', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def person_all():
-    person_all = Person.query.with_entities(Person.id, Person.first_name, Person.last_name).all()
-    dict_users = [dict(zip(('id', 'name', 'last_name'), r)) for r in person_all]
-    return jsonify(dict(jsonrpc="2.0", result=person_all)), 200
+    person_all = Person.query.with_entities(Person.id, Person.first_name + ' ' + Person.last_name).all()
+    dict_person_all = [dict(zip(('id', 'nomb', 'last_name'), r)) for r in person_all]
+    return jsonify(dict(jsonrpc="2.0", result=dict_person_all)), 200
 
 
 @apiPerson.route('/apiFuec/newPerson', methods=['GET'])
