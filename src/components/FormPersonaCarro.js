@@ -37,13 +37,12 @@ var FormPersonaCarro = React.createClass({
         <form>
 
           <SelectInput
-            class="input-group-field"
             url="apiAdmin/allRoles"
             name="carro"
             onUserSelect={this.handleUserSelect}
           />
 
-          <div className="input-group">
+          <div>
 
             <SelectInput
               class="input-group-field"
@@ -52,9 +51,11 @@ var FormPersonaCarro = React.createClass({
               onUserSelect={this.handleUserSelect}
             />
 
-            <div className="input-group-button">
-              <input type="submit" className="alert button" value="Agregar"/>
-            </div>
+            <SelectInput
+              url="apiFuec/allModality"
+              name="selectModalidad"
+              onUserSelect={this.handleUserSelect}
+            />
 
           </div>
 

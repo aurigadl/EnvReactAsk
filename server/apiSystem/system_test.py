@@ -11,10 +11,8 @@ class TestApiSystemRest(unittest.TestCase):
         self.admon = 'admon@' + self.domain
         self.passAdmin = 'Abcd1234'
 
-    # Validate user access with the role of "admon"  and
-    # get all System from database
-    def test_getAllUsers(self):
-        path1 = 'apiSystem/allSystem'  # Only candidate role
+    def test_getAllSystem(self):
+        path1 = 'apiSystem/allSystem'
 
         # Save session
         reqsess = requests.Session()

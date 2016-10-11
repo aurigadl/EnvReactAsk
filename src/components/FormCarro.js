@@ -23,7 +23,7 @@ var FormCarro = React.createClass({
               class="input-group-field"
               url="apiAdmin/allRoles"
               name="selectCarro"
-              onUserSelect={this.handleUserSelect}
+              onUserSelect={this.handleCarroSelect}
             />
 
             <div className="input-group-button">
@@ -38,12 +38,12 @@ var FormCarro = React.createClass({
             <input type="text" placeholder=""/>
           </label>
           <label>Marca
-            <select name="autoCart" form="carform">
-              <option value="volvo">Volvo</option>
-              <option value="saab">Saab</option>
-              <option value="opel">Opel</option>
-              <option value="audi">Audi</option>
-            </select>
+            <SelectInput
+
+              url="apiFuec/allMarca"
+              name="selectMarca"
+              ref="marca"
+            />
           </label>
           <label>Clase
             <input type="text" placeholder=""/>

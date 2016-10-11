@@ -1,6 +1,9 @@
+import os
+import server
+
 from flask import Blueprint, jsonify, request
 
-from server import rbac, db
+from server import rbac, db, app
 from models import System
 
 apiSystem = Blueprint('apiSystem', __name__)
@@ -14,10 +17,13 @@ def api_fuec_marcas_all():
     if system_all is None:
         dict_system = dict(name=None
                            , address=None
+                           , owner=None
                            , phone=None
                            , email=None
                            , nit_1=None
                            , nit_2=None
+                           , logo=None
+                           , sign=None
                            , secuence_contract=None
                            , secuence_payroll=None
                            , secuence_vehicle=None
@@ -49,6 +55,12 @@ def update_marca_id():
         data.update(dict(address=address))
     else:
         address = None
+
+    if params.has_key('owner') and len(params['owner']) != 0:
+        owner = params['owner']
+        data.update(dict(owner=owner))
+    else:
+        owner = None
 
     if params.has_key('phone') and len(params['phone']) != 0:
         phone = params['phone']
@@ -92,6 +104,30 @@ def update_marca_id():
     else:
         secuence_vehicle = None
 
+    if params.has_key('logo') and params['logo'] != None and len(params['logo']) != 0:
+        logo_data = params['logo'].split(',')
+        image_dec = logo_data[1].decode('base64')
+        type_data = logo_data[0].split(':')[1].split(';')[0]
+        if type_data == 'image/png':
+            data.update(dict(logo=image_dec))
+            logo = image_dec
+        else:
+            logo = None
+    else:
+        logo = None
+
+    if params.has_key('sign') and params['sign'] != None and len(params['sign']) != 0:
+        sign_data = params['sign'].split(',')
+        image_dec = sign_data[1].decode('base64')
+        type_data = sign_data[0].split(':')[1].split(';')[0]
+        if type_data == 'image/png':
+            data.update(dict(sign=image_dec))
+            sign = image_dec
+        else:
+            sign = None
+    else:
+        sign = None
+
     systemF = System.query.first()
     if systemF is not None and len(data) > 0:
         systemF.query.update(data)
@@ -100,9 +136,12 @@ def update_marca_id():
         db.session.add(System(name
                               , address
                               , phone
+                              , owner
                               , email
                               , nit_1
                               , nit_2
+                              , logo
+                              , sign
                               , secuence_contract
                               , secuence_payroll
                               , secuence_vehicle))

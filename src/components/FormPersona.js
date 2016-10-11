@@ -29,9 +29,6 @@ var FormPersona = React.createClass({
             </div>
           </div>
 
-          <label> Modalidad
-            <input name="tipoMod" type="text" placeholder=""/>
-          </label>
           <label> Nombre
             <input name="autoPlaca" type="text" placeholder=""/>
           </label>

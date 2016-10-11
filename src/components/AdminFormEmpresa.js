@@ -10,7 +10,9 @@ var AdminFormEmpresa = React.createClass({
     return {
       showHide: false,
       typeMess: '',
-      contextText: ''
+      contextText: '',
+      fileSign:'',
+      fileLogo:''
     };
   },
 
@@ -33,6 +35,7 @@ var AdminFormEmpresa = React.createClass({
   successHandler: function (data) {
     this.refs.name.value = data.name;
     this.refs.address.value = data.address;
+    this.refs.owner.value = data.owner;
     this.refs.phone.value = data.phone;
     this.refs.email.value = data.email;
     this.refs.nit_1.value = data.nit_1;
@@ -40,6 +43,12 @@ var AdminFormEmpresa = React.createClass({
     this.refs.secuence_contract.value = data.secuence_contract;
     this.refs.secuence_payroll.value = data.secuence_payroll;
     this.refs.secuence_vehicle.value = data.secuence_vehicle;
+
+    this.setState({
+      fileSign: data.sign,
+      fileLogo: data.logo
+    });
+
   },
 
   componentDidMount: function () {
@@ -63,6 +72,7 @@ var AdminFormEmpresa = React.createClass({
 
     var name = ref.name.value;
     var address = ref.address.value;
+    var owner = ref.owner.value;
     var phone = ref.phone.value;
     var email = ref.email.value;
     var nit_1 = ref.nit_1.value;
@@ -70,23 +80,31 @@ var AdminFormEmpresa = React.createClass({
     var secuence_contract = ref.secuence_contract.value;
     var secuence_payroll = ref.secuence_payroll.value;
     var secuence_vehicle = ref.secuence_vehicle.value;
+    var logo = this.state.fileLogo;
+    var sign = this.state.fileSign;
 
     var params = {
-        name : name
-      , address : address
-      , phone : phone
-      , email : email
-      , nit_1 : nit_1
-      , nit_2 : nit_2
-      , secuence_contract : secuence_contract
-      , secuence_payroll : secuence_payroll
-      , secuence_vehicle : secuence_vehicle
+      name: name
+      , address: address
+      , phone: phone
+      , email: email
+      , nit_1: nit_1
+      , nit_2: nit_2
+      , secuence_contract: secuence_contract
+      , secuence_payroll: secuence_payroll
+      , secuence_vehicle: secuence_vehicle
+      , sign: sign
+      , logo: logo
+      , owner: owner
     };
 
     var parreq = {
       method: 'PUT',
       url: 'apiSystem/updateSystem',
-      params: {'params': params}
+      params: {
+        'params': params
+        ,'file': true
+      }
     };
 
     this.getRemoteData(parreq,
@@ -126,8 +144,56 @@ var AdminFormEmpresa = React.createClass({
     }.bind(this), 3000);
   },
 
+  handleImageLogo: function(e){
+    e.preventDefault();
+
+    let reader = new FileReader();
+    let file = e.target.files[0];
+
+    reader.onloadend = function(event) {
+      this.setState({
+        fileLogo: event.target.result
+      });
+    }.bind(this);
+
+    if (file.type == "image/png"){
+      reader.readAsDataURL(file)
+    }
+  },
+
+  handleImageSign: function(e){
+    e.preventDefault();
+
+    let reader = new FileReader();
+    let file = e.target.files[0];
+
+    reader.onloadend = function(event) {
+      this.setState({
+        fileSign: event.target.result
+      });
+    }.bind(this);
+
+    if (file.type == "image/png"){
+      reader.readAsDataURL(file)
+    }
+  },
+
 
   render: function () {
+
+    var imgLogo = this.state.fileLogo;
+    var imagePreviewLogo;
+    var imgSign = this.state.fileSign;
+    var imagePreviewSign;
+
+    if (imgLogo) {
+      imagePreviewLogo = (<img src={imgLogo}/>);
+    }
+
+    if (imgSign) {
+      imagePreviewSign = (<img src={imgSign}/>);
+    }
+    
     return (
       <div className="header callout secondary">
 
@@ -223,18 +289,24 @@ var AdminFormEmpresa = React.createClass({
           </label>
 
           <label> Firma "Dibujo en PNG"
-            <input name="sing"
-                   type="upload"
-                   ref="sing"
-                   placeholder=""/>
+            <input name="sign"
+                   type="file"
+                   ref="sign"
+                   accept="image/png"
+                   placeholder=""
+                   onChange={this.handleImageSign} />
           </label>
+          {imagePreviewSign}
 
           <label> Logo "Dibujo en PNG"
             <input name="logo"
-                   type="upload"
+                   type="file"
                    ref="logo"
-                   placeholder=""/>
+                   accept="image/png"
+                   placeholder=""
+                   onChange={this.handleImageLogo} />
           </label>
+          {imagePreviewLogo}
 
           <div className="row">
             <div className="shrink columns">
