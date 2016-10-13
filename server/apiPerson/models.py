@@ -52,6 +52,6 @@ class Person(db.Model):
         if license:
             self.license = license
         if effective_date:
-            self.effective_date = datetime.strptime(effective_date, "%d/%m/%Y")
+            self.effective_date = datetime.strptime(effective_date, "%Y-%m-%d")
         if address:
             self.address = address.lower()
