@@ -1,5 +1,6 @@
 import React from 'react'
 require('./formsPanels.css');
+import MessageAlert from './MessageAlert.js'
 import SelectInput from './SelectInput.js'
 
 var FormPersonaCarro = React.createClass({
@@ -36,30 +37,63 @@ var FormPersonaCarro = React.createClass({
 
         <form>
 
-          <SelectInput
-            url="apiAdmin/allRoles"
-            name="carro"
-            onUserSelect={this.handleUserSelect}
-          />
+          <div className="row">
+            <div className="small-2 columns">
+              <label>&nbsp;&nbsp;</label>
+              <a href="#" className="button"><i className="fi-plus"></i></a>
+            </div>
+            <div className="small-10 columns">
+              <label>Carro</label>
+              <SelectInput
+                url="apiAdmin/allRoles"
+                name="carro"
+                onUserSelect={this.handleUserSelect}
+              />
+            </div>
+          </div>
 
-          <div>
+          <div className="row">
+            <div className="small-2 columns">
+              <label>&nbsp;&nbsp;</label>
+              <a href="#" className="button"><i className="fi-minus"></i></a>
+            </div>
 
-            <SelectInput
-              class="input-group-field"
-              url="apiAdmin/allRoles"
-              name="selectPersonaCarro"
-              onUserSelect={this.handleUserSelect}
-            />
+            <div className="small-6 columns">
+              <label> Persona
+                <SelectInput
+                  className="input-group-field"
+                  url="apiFuec/allPerson"
+                  name="selectPersonaCarro"
+                  onUserSelect={this.handleUserSelect}
+                />
+              </label>
+            </div>
 
-            <SelectInput
-              url="apiFuec/allModality"
-              name="selectModalidad"
-              onUserSelect={this.handleUserSelect}
-            />
+            <div className="small-4 columns">
+              <label> Modalidad
+                <SelectInput
+                  url="apiFuec/allModality"
+                  name="selectModalidad"
+                  onUserSelect={this.handleUserSelect}
+                />
+              </label>
+            </div>
 
           </div>
 
-          <button type="button" className="success button">Grabar</button>
+          <div className="row">
+            <div className="shrink columns">
+              <input type="submit" className="success button" value="Grabar"/>
+            </div>
+            <div className="columns">
+              <MessageAlert
+                showHide={this.state.showMessage}
+                type={this.state.typeMess}
+                contextText={this.state.contextText}
+                onclickMessage={this.onClickMessage}
+              />
+            </div>
+          </div>
 
         </form>
       </div>

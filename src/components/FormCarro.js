@@ -39,7 +39,6 @@ var FormCarro = React.createClass({
           </label>
           <label>Marca
             <SelectInput
-
               url="apiFuec/allMarca"
               name="selectMarca"
               ref="marca"
