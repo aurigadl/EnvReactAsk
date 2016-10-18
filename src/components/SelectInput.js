@@ -70,6 +70,7 @@ var SelectInput = React.createClass({
         className={this.props.class}
         onChange={this.handleChange}
         ref="selectValue"
+        required={this.props.required}
         name={this.props.name}>
         {this.state.options}
       </select>

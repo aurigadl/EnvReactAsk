@@ -8,7 +8,6 @@ var FormPersona = React.createClass({
 
   getInitialState: function () {
     return {
-      childSelectValue: [],
       newOptionSelectA: false,
 
       showMessage: false,
@@ -148,6 +147,8 @@ var FormPersona = React.createClass({
       newOptionSelectA: true
     });
 
+    this.props.onItemNew(true);
+
     setTimeout(function(){
       this.setState({
         showMessage: false,
@@ -267,7 +268,12 @@ var FormPersona = React.createClass({
             <input ref="license" name="license" type="text" placeholder=""/>
           </label>
           <label> Vigencia
-            <input ref="effective_date" name="effective_date" type="date" placeholder=""/>
+            <input
+              ref="effective_date"
+              name="effective_date"
+              type="date"
+              pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
+              placeholder=""/>
           </label>
           <label> Dirección
             <input ref="address" name="address" type="text" placeholder=""/>

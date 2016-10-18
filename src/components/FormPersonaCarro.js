@@ -7,6 +7,7 @@ var FormPersonaCarro = React.createClass({
 
   getInitialState: function () {
     return {
+      newOptionSelectPerson: false,
       childSelectValue: undefined,
       childSelectText: '',
       inputValue: ''
@@ -22,6 +23,22 @@ var FormPersonaCarro = React.createClass({
 
   onChange(e) {
     this.setState({inputValue: e.target.value});
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    var next = nextProps.newOptionPerson;
+    var prev = this.props.newOptionPerson;
+    if ( next == true  && next != prev){
+      this.setState({
+        newOptionSelectPerson: true
+      });
+      this.props.onItemNewPerson(false);
+    }
+    if ( next == false  && next != prev){
+      this.setState({
+        newOptionSelectPerson: false
+      });
+    }
   },
 
   render: function () {
@@ -64,6 +81,7 @@ var FormPersonaCarro = React.createClass({
                   className="input-group-field"
                   url="apiFuec/allPerson"
                   name="selectPersonaCarro"
+                  newOption={this.state.newOptionSelectPerson}
                   onUserSelect={this.handleUserSelect}
                 />
               </label>

@@ -28,6 +28,11 @@ var AdminFormUserRoles = React.createClass({
       });
       this.props.onItemNew(false);
     }
+    if ( next == false  && next != prev){
+      this.setState({
+        newOptionSelectA: false
+      });
+    }
   },
 
   handleUserSelect: function (childSelectValue) {

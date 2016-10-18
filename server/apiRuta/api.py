@@ -1,5 +1,6 @@
-from server import rbac, db
 from flask import Blueprint, jsonify, request
+
+from server import rbac, db
 from models import Ruta
 
 apiRuta = Blueprint('apiRuta', __name__)
@@ -7,15 +8,15 @@ apiRuta = Blueprint('apiRuta', __name__)
 
 # Method for App FUEC
 @apiRuta.route('/apiFuec/allRuta', methods=['GET'])
-@rbac.allow(['admon','candidate'], methods=['GET'])
+@rbac.allow(['admon', 'candidate'], methods=['GET'])
 def api_fuec_rutas_all():
-    rutas_all = Ruta.query.with_entities(Ruta.id, Ruta.name).all()
+    rutas_all = Ruta.query.with_entities(Ruta.id, str(Ruta.id).zfill(3) + ' ' + Ruta.name).all()
     dict_rutas = [dict(zip(('id', 'nomb'), r)) for r in rutas_all]
     return jsonify(dict(jsonrpc="2.0", result=dict_rutas)), 200
 
 
 @apiRuta.route('/apiFuec/newRuta', methods=['POST'])
-@rbac.allow(['admon','candidate'], methods=['POST'])
+@rbac.allow(['admon', 'candidate'], methods=['POST'])
 def api_fuec_new_ruta():
     json_data = request.get_json()
 
@@ -42,7 +43,7 @@ def api_fuec_new_ruta():
 
 
 @apiRuta.route('/apiFuec/updateIdRuta', methods=['PUT'])
-@rbac.allow(['admon','candidate'], methods=['PUT'])
+@rbac.allow(['admon', 'candidate'], methods=['PUT'])
 def update_ruta_id():
     json_data = request.get_json()
 
@@ -68,7 +69,7 @@ def update_ruta_id():
 
 
 @apiRuta.route('/apiFuec/deleteIdRuta', methods=['DELETE'])
-@rbac.allow(['admon','candidate'], methods=['DELETE'])
+@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
 def delete_ruta_id():
     json_data = request.get_json()
 

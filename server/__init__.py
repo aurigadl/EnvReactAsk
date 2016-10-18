@@ -41,6 +41,7 @@ from apiRuta.api import apiRuta
 from apiTipoContrato.api import apiTipoContrato
 from apiModality.api import apiModality
 from apiPerson.api import apiPerson
+from apiCar.api import apiCar
 
 app.register_blueprint(apiUser)
 app.register_blueprint(apiRole)
@@ -50,6 +51,7 @@ app.register_blueprint(apiRuta)
 app.register_blueprint(apiTipoContrato)
 app.register_blueprint(apiModality)
 app.register_blueprint(apiPerson)
+app.register_blueprint(apiCar)
 
 # configure Flask logging
 logger = FileHandler('error.log')

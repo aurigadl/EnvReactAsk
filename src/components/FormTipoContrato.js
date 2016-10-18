@@ -233,7 +233,6 @@ var FormTipoContrato = React.createClass({
           </div>
 
           <div className="input-group">
-
             <input name="tipoContratoEdit"
                    placeholder="Editar o crear..."
                    className="input-group-field"
