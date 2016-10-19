@@ -159,7 +159,7 @@ var FormRuta = React.createClass({
 
     var parreq = {
       method: 'DELETE',
-      url: 'apiFuec/deleteIdMarca',
+      url: 'apiFuec/deleteIdRuta',
       params: {'params': params}
     };
 
@@ -175,7 +175,9 @@ var FormRuta = React.createClass({
       contextText: 'Se borro la Ruta',
       typeMess: 'success',
       newOptionSelectA: true,
+      inputValue: ''
     });
+    this.refs.selectRuta.refs.selectValue.selectedIndex = '';
     setTimeout(function(){
       this.setState({
         showMessage: false,
@@ -200,8 +202,7 @@ var FormRuta = React.createClass({
       })
     }.bind(this), 3000);
   },
-
-
+  
 
   onClickMessage: function (event) {
     this.setState({
@@ -246,6 +247,7 @@ var FormRuta = React.createClass({
               ref="rutaEdit"
               placeholder="Editar o crear..."
               className="input-group-field"
+              onChange={this.onChange}
               value={this.state.inputValue}
               type="text"/>
 

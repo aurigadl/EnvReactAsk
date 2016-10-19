@@ -42,6 +42,7 @@ from apiTipoContrato.api import apiTipoContrato
 from apiModality.api import apiModality
 from apiPerson.api import apiPerson
 from apiCar.api import apiCar
+from apiAgreement.api import apiAgreement
 
 app.register_blueprint(apiUser)
 app.register_blueprint(apiRole)
@@ -52,6 +53,7 @@ app.register_blueprint(apiTipoContrato)
 app.register_blueprint(apiModality)
 app.register_blueprint(apiPerson)
 app.register_blueprint(apiCar)
+app.register_blueprint(apiAgreement)
 
 # configure Flask logging
 logger = FileHandler('error.log')

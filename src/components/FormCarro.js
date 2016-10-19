@@ -148,7 +148,7 @@ var FormCarro = React.createClass({
   successFormCreate: function (data) {
     this.setState({
       showMessage: true,
-      contextText: 'Se creo car',
+      contextText: 'Se creo un nuevo carro',
       typeMess: 'success',
       newOptionSelectA: true
     });

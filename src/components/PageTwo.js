@@ -12,7 +12,8 @@ const PageTwo = React.createClass({
   getInitialState: function () {
     return {
       newOptionPerson: false,
-      newOptionMarca:false
+      newOptionMarca:false,
+      newOptionRuta:false
     }
   },
 
@@ -28,6 +29,15 @@ const PageTwo = React.createClass({
     if (newValue !== this.state.newOptionMarca) {
       this.setState({
         newOptionMarca: newValue
+      });
+    }
+  },
+
+
+  handleNewElementRuta: function (newValue) {
+    if (newValue !== this.state.newOptionRuta) {
+      this.setState({
+        newOptionRuta: newValue
       });
     }
   },
@@ -48,7 +58,9 @@ const PageTwo = React.createClass({
         </div>
         
         <div className="columns">
-          <FormRuta />
+          <FormRuta
+            onItemNew={this.handleNewElementRuta}
+          />
         </div>
         
         <div className="columns">
@@ -65,7 +77,10 @@ const PageTwo = React.createClass({
         </div>
         
         <div className="columns">
-          <FormContrato />
+          <FormContrato
+            newOptionRuta={this.state.newOptionRuta}
+            onItemNewRuta={this.handleNewElementRuta}
+          />
         </div>
         
         <div className="columns">

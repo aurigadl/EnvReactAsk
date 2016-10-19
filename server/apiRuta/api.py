@@ -10,7 +10,7 @@ apiRuta = Blueprint('apiRuta', __name__)
 @apiRuta.route('/apiFuec/allRuta', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def api_fuec_rutas_all():
-    rutas_all = Ruta.query.with_entities(Ruta.id, str(Ruta.id).zfill(3) + ' ' + Ruta.name).all()
+    rutas_all = Ruta.query.with_entities(Ruta.id, Ruta.name).all()
     dict_rutas = [dict(zip(('id', 'nomb'), r)) for r in rutas_all]
     return jsonify(dict(jsonrpc="2.0", result=dict_rutas)), 200
 
