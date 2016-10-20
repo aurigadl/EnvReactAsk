@@ -196,3 +196,30 @@ def user_id():
         return jsonify(dict(jsonrpc="2.0", result=dict_person)), 200
     else:
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+
+
+@apiPerson.route('/apiFuec/deleteIdPerson', methods=['DELETE'])
+@rbac.allow(['admon','candidate'], methods=['DELETE'])
+def delete_person_id():
+    json_data = request.get_json()
+
+    if not json_data.has_key('params') or len(json_data.get('params')) == 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    params = request.json.get('params')
+
+    if params.has_key('id') and len(params['id']) != 0:
+        person_id = params['id']
+    else:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    if not person_id or not person_id.isdigit() or not len(person_id) != 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    id_person = Person.query.filter(Person.id == person_id).first()
+    if id_person is not None:
+        db.session.delete(id_person)
+        db.session.commit()
+    else:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'Person does not exist'}), 400
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200

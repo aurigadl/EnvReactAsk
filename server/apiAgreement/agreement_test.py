@@ -7,7 +7,7 @@ import string
 import requests
 
 
-class TestApiPersonRest(unittest.TestCase):
+class TestApiAgreementRest(unittest.TestCase):
     def setUp(self):
         self.domain = 'mi.co'
         self.URL = 'http://localhost:5000/'
@@ -36,8 +36,8 @@ class TestApiPersonRest(unittest.TestCase):
         dict_idtype = answer_json['result']
         self.assertTrue(type(dict_idtype) == list, 'Answer format ok')
 
-    def test_getAllPerson(self):
-        path1 = 'apiFuec/allPerson'
+    def test_getAllAgreement(self):
+        path1 = 'apiFuec/allAgreement'
         # Save session
         reqsess = requests.Session()
 
@@ -53,11 +53,11 @@ class TestApiPersonRest(unittest.TestCase):
         r = reqsess.get(self.URL + path1, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Answer ok')
         answer_json = json.loads(r.text)
-        dict_person = answer_json['result']
-        self.assertTrue(type(dict_person) == list, 'Answer format ok')
+        dict_agreement = answer_json['result']
+        self.assertTrue(type(dict_agreement) == list, 'Answer format ok')
 
-    def test_getNewPerson(self):
-        path1 = 'apiFuec/newPerson'
+    def test_getNewAgreement(self):
+        path1 = 'apiFuec/newAgreement'
         path2 = 'apiFuec/allIdType'
         # Save session
         reqsess = requests.Session()
@@ -79,15 +79,18 @@ class TestApiPersonRest(unittest.TestCase):
 
         # json format correct
         params = dict(
-            first_name=self.name_user + 'TERESA',
-            last_name='MARTINEZ DE VARELA',
-            email=self.name_user + '@mi.co',
-            phone='309435633',
-            id_number=self.digits,
-            id_type=dict_idtype[0]['id'],
-            license='23342222',
-            effective_date='2016-03-03',
-            address='cr 34 35 con matha esquina')
+                 no_agreement=12312313,
+                 no_trip=987,
+                 name_contract='test un test',
+                 id_type=dict_idtype[0]['id'],
+                 id_number='223424242',
+                 nit_1='33223424343',
+                 nit_2=23,
+                 purpose='one test with many data',
+                 id_route=1,
+                 id_type_agreement=1,
+                 init_date='2016-02-03',
+                 last_date='2016-02-03')
 
         payload = {"jsonrpc": "2.0", "method": path1, "params": params}
         header = {'Authorization': token}
@@ -95,5 +98,5 @@ class TestApiPersonRest(unittest.TestCase):
         self.assertEqual(r.status_code, 201, 'Answer ok')
 
 
-suite = unittest.TestLoader().loadTestsFromTestCase(TestApiPersonRest)
+suite = unittest.TestLoader().loadTestsFromTestCase(TestApiAgreementRest)
 unittest.TextTestRunner(verbosity=2).run(suite)

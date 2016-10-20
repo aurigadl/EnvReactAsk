@@ -9,13 +9,14 @@ var FormPersona = React.createClass({
   getInitialState: function () {
     return {
       newOptionSelectA: false,
+      childSelectValue: undefined,
 
       showMessage: false,
       typeMess: '',
       contextText: ''
     };
   },
-
+  
   getRemoteData: function (parreq, cb_success, cb_error) {
     mReq(parreq)
       .then(function (response) {
@@ -27,7 +28,7 @@ var FormPersona = React.createClass({
       });
   },
 
-  handlePersonSelect: function (childSelectValue) {
+  handlePersonSelect: function (childSelectValue, handlePersonSelect) {
     if (childSelectValue != 0) {
       var params = {'id': childSelectValue};
       var parreq = {
@@ -35,6 +36,11 @@ var FormPersona = React.createClass({
         url: 'apiFuec/idPerson',
         params: params
       };
+      
+      this.setState({
+        childSelectValue: childSelectValue
+      });
+      
       this.getRemoteData(parreq
         , this.successHandlerSelect
         , this.errorHandlerSelect);
@@ -211,6 +217,60 @@ var FormPersona = React.createClass({
     })
   },
 
+
+  handleDelete: function(e){
+    e.preventDefault();
+    var get_id = this.state.childSelectValue;
+    var params = {
+      id: get_id
+    };
+
+    var parreq = {
+      method: 'DELETE',
+      url: 'apiFuec/deleteIdPerson',
+      params: {'params': params}
+    };
+
+    this.getRemoteData(parreq,
+      this.successFormDelete,
+      this.errorFormDelete
+    );
+  },
+
+  successFormDelete: function (data){
+    this.setState({
+      showMessage: true,
+      contextText: 'Se borro la Marca',
+      typeMess: 'success',
+      newOptionSelectA: true,
+      inputValue: ''
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: '',
+        newOptionSelectA: false
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormDelete: function (err){
+    this.setState({
+      showMessage: true,
+      contextText: 'No se borro la Marca',
+      typeMess: 'alert'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+
   render: function () {
 
     return (
@@ -235,7 +295,7 @@ var FormPersona = React.createClass({
               onUserSelect={this.handlePersonSelect}
             />
             <div className="input-group-button">
-              <input type="submit" className="alert button" value="Borrar"/>
+              <input type="button" className="alert button" onClick={this.handleDelete} value="Borrar"/>
             </div>
           </div>
 
@@ -264,9 +324,11 @@ var FormPersona = React.createClass({
             required
           />
           </label>
+
           <label> Licencia
             <input ref="license" name="license" type="text" placeholder=""/>
           </label>
+
           <label> Vigencia
             <input
               ref="effective_date"
@@ -275,6 +337,7 @@ var FormPersona = React.createClass({
               pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
               placeholder=""/>
           </label>
+
           <label> Dirección
             <input ref="address" name="address" type="text" placeholder=""/>
           </label>

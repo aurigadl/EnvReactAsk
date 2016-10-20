@@ -9,6 +9,7 @@ var FormConductor = React.createClass({
   getInitialState: function () {
     return {
       newOptionSelectA: false,
+      childSelectValue: undefined,
 
       showMessage: false,
       typeMess: '',
@@ -35,34 +36,44 @@ var FormConductor = React.createClass({
         url: 'apiFuec/idAgreement',
         params: params
       };
+
+      this.setState({
+        childSelectValue: childSelectValue
+      });
+
       this.getRemoteData(parreq
         , this.successHandlerSelect
         , this.errorHandlerSelect);
     } else {
-      this.refs.selectPerson.value = '';
-      this.refs.first_name.value = '';
-      this.refs.last_name.value = '';
-      this.refs.email.value = '';
-      this.refs.phone.value = '';
+      this.refs.no_agreement.value = '';
+      this.refs.no_trip.value = '';
+      this.refs.name_contract.value = '';
+      this.refs.id_type.refs.selectValue.selectedIndex = undefined;
       this.refs.id_number.value = '';
-      this.refs.id_type.value = '';
-      this.refs.license.value = '';
-      this.refs.effective_date.value = '';
-      this.refs.address.value = '';
+      this.refs.nit_1.value = '';
+      this.refs.nit_2.value = '';
+      this.refs.purpose.value = '';
+      this.refs.id_route.refs.selectValue.selectedIndex = undefined;
+      this.refs.id_type_agreement.value = '';
+      this.refs.init_date.value = '';
+      this.refs.last_date.value = '';
     }
   },
 
   successHandlerSelect: function (remoteData) {
     var data = remoteData.result;
-    this.refs.first_name.value = (data.first_name) ? data.first_name : undefined;
-    this.refs.last_name.value = (data.last_name) ? data.last_name : undefined;
-    this.refs.email.value = (data.email) ? data.email : undefined;
-    this.refs.phone.value = (data.phone) ? data.phone : undefined;
+    this.refs.no_agreement.value = (data.no_agreement) ? data.no_agreement : undefined;
+    this.refs.no_trip.value = (data.no_trip) ? data.no_trip : undefined;
+    this.refs.name_contract.value = (data.name_contract) ? data.name_contract : undefined;
+    this.refs.id_type.value = (data.id_type) ? data.id_type : undefined;
     this.refs.id_number.value = (data.id_number) ? data.id_number : undefined;
-    this.refs.license.value = (data.license) ? data.license : undefined;
-    this.refs.effective_date.value = (data.effective_date) ? data.effective_date : undefined;
-    this.refs.address.value = (data.address) ? data.address : undefined;
-    this.refs.id_type.refs.selectValue.selectedIndex = (data.id_type) ? data.id_type : undefined;
+    this.refs.nit_1.value = (data.nit_1) ? data.nit_1 : undefined;
+    this.refs.nit_2.value = (data.nit_2) ? data.nit_2 : undefined;
+    this.refs.purpose.value = (data.purpose) ? data.purpose : undefined;
+    this.refs.id_route.value = (data.id_route) ? data.id_route : undefined;
+    this.refs.id_type_agreement.refs.selectValue.selectedIndex = (data.id_type_agreement) ? data.id_type_agreement : undefined;
+    this.refs.init_date.value = (data.init_date) ? data.init_date : undefined;
+    this.refs.last_date.value = (data.last_date) ? data.last_date : undefined;
   },
 
   errorHandlerSelect: function (remoteData) {
@@ -80,11 +91,194 @@ var FormConductor = React.createClass({
     }.bind(this), 3000);
   },
 
+  handleSubmitForm: function (e) {
+    e.preventDefault();
+    var ref = e.target.elements;
+
+    var selectAgreement = ref.selectAgreement.value;
+    var no_agreement = ref.no_agreement.value;
+    var no_trip = ref.no_trip.value;
+    var name_contract = ref.name_contract.value;
+    var id_type = ref.id_type.value;
+    var id_number = ref.id_number.value;
+    var nit_1 = ref.nit_1.value;
+    var nit_2 = ref.nit_2.value;
+    var purpose = ref.purpose.value;
+    var id_route = ref.id_route.value;
+    var id_type_agreement = ref.id_type_agreement.value;
+    var init_date = ref.init_date.value;
+    var last_date = ref.last_date.value;
+
+    var params = {
+        no_agreement: no_agreement
+      , no_trip: no_trip
+      , name_contract: name_contract
+      , id_type: id_type
+      , id_number: id_number
+      , nit_1: nit_1
+      , nit_2: nit_2
+      , purpose: purpose
+      , id_route: id_route
+      , id_type_agreement: id_type_agreement
+      , init_date: init_date
+      , last_date: last_date
+    };
+
+    if (selectAgreement === "") {
+
+      var parreq = {
+        method: 'POST',
+        url: 'apiFuec/newAgreement',
+        params: {'params': params}
+      };
+
+      this.getRemoteData(parreq,
+        this.successFormCreate,
+        this.errorFormCreate
+      );
+
+    } else {
+
+      params['id'] = selectAgreement;
+
+      var parreq = {
+        method: 'PUT',
+        url: 'apiFuec/updateIdAgreement',
+        params: {
+          'params': params
+        }
+      };
+
+      this.getRemoteData(parreq,
+        this.successFormUpdate,
+        this.errorFormUpdate
+      );
+    }
+  },
+
+  successFormCreate: function (data) {
+    this.setState({
+      showMessage: true,
+      contextText: 'Se creo el contrato',
+      typeMess: 'success',
+      newOptionSelectA: true
+    });
+
+    this.props.onItemNew(true);
+
+    setTimeout(function () {
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: '',
+        newOptionSelectA: false
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormCreate: function (err) {
+    this.setState({
+      showMessage: true,
+      contextText: 'No se Creo el contrato. Alguno de los datos no corresponde',
+      typeMess: 'alert'
+    });
+    setTimeout(function () {
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+  successFormUpdate: function (data) {
+    this.setState({
+      showMessage: true,
+      contextText: 'Se Actualizo el contrato',
+      typeMess: 'success'
+    });
+    setTimeout(function () {
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormUpdate: function (err) {
+    this.setState({
+      showMessage: true,
+      contextText: 'No se Actualizo el contrato',
+      typeMess: 'alert'
+    });
+    setTimeout(function () {
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+
   onClickMessage: function (event) {
     this.setState({
       showMessage: false,
       contextText: ''
     })
+  },
+
+  handleDelete: function(e){
+    e.preventDefault();
+    var get_id = this.state.childSelectValue;
+    var params = {
+      id: get_id
+    };
+
+    var parreq = {
+      method: 'DELETE',
+      url: 'apiFuec/deleteIdAgreement',
+      params: {'params': params}
+    };
+
+    this.getRemoteData(parreq,
+      this.successFormDelete,
+      this.errorFormDelete
+    );
+  },
+
+  successFormDelete: function (data){
+    this.setState({
+      showMessage: true,
+      contextText: 'Se borro la Marca',
+      typeMess: 'success',
+      newOptionSelectA: true,
+      inputValue: ''
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: '',
+        newOptionSelectA: false
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormDelete: function (err){
+    this.setState({
+      showMessage: true,
+      contextText: 'No se borro la Marca',
+      typeMess: 'alert'
+    });
+    setTimeout(function(){
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
   },
 
   render: function () {
@@ -113,7 +307,7 @@ var FormConductor = React.createClass({
             />
 
             <div className="input-group-button">
-              <input type="submit" className="alert button" value="Borrar"/>
+              <input type="button" className="alert button" onClick={this.handleDelete} value="Borrar"/>
             </div>
 
           </div>
@@ -133,8 +327,14 @@ var FormConductor = React.createClass({
               name="no_trip"
               placeholder=""/>
           </label>
+
           <label>Persona o Empresa Contratante
-            <input type="text" placeholder="" required/>
+            <input
+              type="text"
+              ref="person"
+              name="name_contract"
+              placeholder=""
+              required/>
           </label>
 
           <label> Tipo de Identificación
@@ -148,11 +348,9 @@ var FormConductor = React.createClass({
 
           <label> Identificación
             <input
-              ref="id_type"
-              name="id_type"
-              type="text"
-              placeholder=""
-              required/>
+              ref="id_number"
+              name="id_number"
+              type="text"/>
           </label>
 
           <div className="row">
@@ -160,18 +358,14 @@ var FormConductor = React.createClass({
               <label>Nit - Consecutivo de identificación
                 <input name="nit_1"
                        type="number"
-                       placeholder=""
-                       ref="nit_1"
-                       required/>
+                       ref="nit_1"/>
               </label>
             </div>
             <div className="small-5 columns">
               <label>Nit - Digito de verificación
                 <input name="nit_2"
                        type="number"
-                       placeholder=""
-                       ref="nit_2"
-                       required/>
+                       ref="nit_2"/>
               </label>
             </div>
           </div>
@@ -179,9 +373,8 @@ var FormConductor = React.createClass({
           <label>Objeto
             <input
               type="text"
-              ref="object"
-              name="object"
-              placeholder=""/>
+              ref="purpose"
+              name="purpose"/>
           </label>
 
           <label>Ruta origen destino
@@ -206,7 +399,7 @@ var FormConductor = React.createClass({
               pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
               name="init_date"
               ref="init_date"
-            />
+              required/>
           </label>
           <label>Fecha Final
             <input
@@ -215,7 +408,7 @@ var FormConductor = React.createClass({
               pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
               name="last_date"
               ref="last_date"
-            />
+              required/>
           </label>
 
           <div className="row">
