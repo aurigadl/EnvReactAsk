@@ -184,6 +184,7 @@ def user_id():
     if agreement_id and agreement_id.isdigit() and len(agreement_id) != 0:
         agreement = Agreement.query.with_entities(Agreement.no_agreement
                                                   , Agreement.no_trip
+                                                  , Agreement.name_contract
                                                   , Agreement.id_type
                                                   , Agreement.id_number
                                                   , Agreement.nit_1
@@ -195,19 +196,20 @@ def user_id():
                                                   , Agreement.last_date).filter(
             Agreement.id == agreement_id).first()
 
-        if agreement[8]:
+        if agreement[10]:
             lst = list(agreement)
-            lst[8] = agreement[8].strftime('%Y-%m-%d')
+            lst[10] = agreement[10].strftime('%Y-%m-%d')
             agreement = tuple(lst)
 
-        if agreement[9]:
+        if agreement[11]:
             lst = list(agreement)
-            lst[9] = agreement[9].strftime('%Y-%m-%d')
+            lst[11] = agreement[11].strftime('%Y-%m-%d')
             agreement = tuple(lst)
 
         dict_agreement = dict(
             zip(('no_agreement'
                  , 'no_trip'
+                 , 'name_contract'
                  , 'id_type'
                  , 'id_number'
                  , 'nit_1'

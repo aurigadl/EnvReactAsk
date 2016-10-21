@@ -3,7 +3,6 @@ import json
 import random
 import string
 
-
 import requests
 
 
@@ -15,26 +14,6 @@ class TestApiCarRest(unittest.TestCase):
         self.passAdmin = 'Abcd1234'
         self.digits = "".join([random.choice(string.digits) for i in xrange(10)])
         self.name_user = "test_{x}".format(x=self.digits)
-
-    def test_getAllidType(self):
-        path1 = 'apiFuec/classcar'
-        # Save session
-        reqsess = requests.Session()
-
-        # Login user admon
-        payload = dict(email=self.admon, password=self.passAdmin, password_c=self.passAdmin)
-        result = reqsess.post(self.URL + 'apiUser/login', json=payload)
-        answer_json = json.loads(result.text)
-        token = answer_json['token']
-
-        # json format correct
-        payload = {"jsonrpc": "2.0", "method": path1, "params": ""}
-        header = {'Authorization': token}
-        r = reqsess.get(self.URL + path1, json=payload, headers=header)
-        self.assertEqual(r.status_code, 200, 'Answer ok')
-        answer_json = json.loads(r.text)
-        dict_idtype = answer_json['result']
-        self.assertTrue(type(dict_idtype) == list, 'Answer format ok')
 
     def test_getAllCar(self):
         path1 = 'apiFuec/allCar'
@@ -67,20 +46,17 @@ class TestApiCarRest(unittest.TestCase):
         answer_json = json.loads(result.text)
         token = answer_json['token']
 
-        payload = {"jsonrpc": "2.0", "method": path1, "params": ""}
-        header = {'Authorization': token}
-
         # json format correct
         params = dict(
-            license_plate='ACV234',
-                 model=2012,
-                 brand=1,
-                 class_car=1,
-                 operation_card='ASDF13413')
+            license_plate='ACV234' + self.digits,
+            model='2012',
+            brand='1',
+            class_car='1',
+            operation_card='ASDF13413' + self.digits)
 
         payload = {"jsonrpc": "2.0", "method": path1, "params": params}
         header = {'Authorization': token}
-        r = reqsess.get(self.URL + path1, json=payload, headers=header)
+        r = reqsess.post(self.URL + path1, json=payload, headers=header)
         self.assertEqual(r.status_code, 201, 'Answer ok')
 
 

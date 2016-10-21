@@ -88,6 +88,8 @@ var FormTipoContrato = React.createClass({
       newOptionSelectA: true
     });
 
+    this.props.onItemNew(true);
+
     setTimeout(function () {
       this.setState({
         showMessage: false,
@@ -120,6 +122,10 @@ var FormTipoContrato = React.createClass({
       typeMess: 'success',
       newOptionSelectA: true
     });
+
+    this.props.onItemNew(true);
+    this.refs.selectTipoContrato.refs.selectValue.selectedIndex = '';
+    
     setTimeout(function () {
       this.setState({
         showMessage: false,
@@ -179,6 +185,10 @@ var FormTipoContrato = React.createClass({
       newOptionSelectA: true,
       inputValue: ''
     });
+
+    this.props.onItemNew(true);
+    this.refs.selectTipoContrato.refs.selectValue.selectedIndex = '';
+    
     setTimeout(function () {
       this.setState({
         showMessage: false,

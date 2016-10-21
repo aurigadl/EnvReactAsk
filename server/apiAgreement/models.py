@@ -1,3 +1,4 @@
+from datetime import datetime
 from server import db
 
 
@@ -53,6 +54,6 @@ class Agreement(db.Model):
         if id_type_agreement:
             self.id_type_agreement = id_type_agreement
         if init_date:
-            self.init_date = init_date
+            self.init_date = datetime.strptime(init_date, "%Y-%m-%d")
         if last_date:
-            self.last_date = last_date
+            self.last_date = datetime.strptime(last_date, "%Y-%m-%d")

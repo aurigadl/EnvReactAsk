@@ -10,11 +10,47 @@ var FormConductor = React.createClass({
     return {
       newOptionSelectA: false,
       childSelectValue: undefined,
+      newOptionSelectRuta: false,
+      newOptionSelectTiCon: false,
+
 
       showMessage: false,
       typeMess: '',
       contextText: ''
     };
+  },
+
+  componentWillReceiveProps: function (nextProps) {
+    var nextRuta = nextProps.newOptionRuta;
+    var prevRuta = this.props.newOptionRuta;
+
+    var nextTiCon = nextProps.newOptionTiCon;
+    var prevTiCon = this.props.newOptionTiCon;
+
+    if (nextRuta == true && nextRuta != prevRuta) {
+      this.setState({
+        newOptionSelectRuta: true
+      });
+      this.props.onItemNewRuta(false);
+    }
+    if (nextRuta == false && nextRuta != prevRuta) {
+      this.setState({
+        newOptionSelectRuta: false
+      });
+    }
+
+    if (nextTiCon == true && nextTiCon != prevTiCon) {
+      this.setState({
+        newOptionSelectTiCon: true
+      });
+      this.props.onItemNewTiCon(false);
+    }
+    if (nextTiCon == false && nextTiCon != prevTiCon) {
+      this.setState({
+        newOptionSelectTiCon: false
+      });
+    }
+
   },
 
   getRemoteData: function (parreq, cb_success, cb_error) {
@@ -54,7 +90,7 @@ var FormConductor = React.createClass({
       this.refs.nit_2.value = '';
       this.refs.purpose.value = '';
       this.refs.id_route.refs.selectValue.selectedIndex = undefined;
-      this.refs.id_type_agreement.value = '';
+      this.refs.id_type_agreement.refs.selectValue.selectedIndex = undefined;
       this.refs.init_date.value = '';
       this.refs.last_date.value = '';
     }
@@ -64,13 +100,13 @@ var FormConductor = React.createClass({
     var data = remoteData.result;
     this.refs.no_agreement.value = (data.no_agreement) ? data.no_agreement : undefined;
     this.refs.no_trip.value = (data.no_trip) ? data.no_trip : undefined;
-    this.refs.name_contract.value = (data.name_contract) ? data.name_contract : undefined;
-    this.refs.id_type.value = (data.id_type) ? data.id_type : undefined;
+    this.refs.name_contract.value = (data.name_contract) ? data.name_contract : '';
+    this.refs.id_type.refs.selectValue.selectedIndex = (data.id_type) ? data.id_type : undefined;
     this.refs.id_number.value = (data.id_number) ? data.id_number : undefined;
     this.refs.nit_1.value = (data.nit_1) ? data.nit_1 : undefined;
     this.refs.nit_2.value = (data.nit_2) ? data.nit_2 : undefined;
     this.refs.purpose.value = (data.purpose) ? data.purpose : undefined;
-    this.refs.id_route.value = (data.id_route) ? data.id_route : undefined;
+    this.refs.id_route.refs.selectValue.selectedIndex = (data.id_route) ? data.id_route : undefined;
     this.refs.id_type_agreement.refs.selectValue.selectedIndex = (data.id_type_agreement) ? data.id_type_agreement : undefined;
     this.refs.init_date.value = (data.init_date) ? data.init_date : undefined;
     this.refs.last_date.value = (data.last_date) ? data.last_date : undefined;
@@ -110,7 +146,7 @@ var FormConductor = React.createClass({
     var last_date = ref.last_date.value;
 
     var params = {
-        no_agreement: no_agreement
+      no_agreement: no_agreement
       , no_trip: no_trip
       , name_contract: name_contract
       , id_type: id_type
@@ -163,8 +199,6 @@ var FormConductor = React.createClass({
       typeMess: 'success',
       newOptionSelectA: true
     });
-
-    this.props.onItemNew(true);
 
     setTimeout(function () {
       this.setState({
@@ -229,7 +263,7 @@ var FormConductor = React.createClass({
     })
   },
 
-  handleDelete: function(e){
+  handleDelete: function (e) {
     e.preventDefault();
     var get_id = this.state.childSelectValue;
     var params = {
@@ -248,15 +282,15 @@ var FormConductor = React.createClass({
     );
   },
 
-  successFormDelete: function (data){
+  successFormDelete: function (data) {
     this.setState({
       showMessage: true,
-      contextText: 'Se borro la Marca',
+      contextText: 'Se borro el contrato',
       typeMess: 'success',
       newOptionSelectA: true,
       inputValue: ''
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -266,13 +300,13 @@ var FormConductor = React.createClass({
     }.bind(this), 3000);
   },
 
-  errorFormDelete: function (err){
+  errorFormDelete: function (err) {
     this.setState({
       showMessage: true,
-      contextText: 'No se borro la Marca',
+      contextText: 'No se borro el contrato',
       typeMess: 'alert'
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -292,9 +326,7 @@ var FormConductor = React.createClass({
           o llena el campo inferior sin seleccionar elemento
           para crear uno nuevo</p>
 
-
         <form onSubmit={this.handleSubmitForm}>
-
           <div className="input-group">
 
             <SelectInput
@@ -317,7 +349,6 @@ var FormConductor = React.createClass({
               type="number"
               ref="no_agreement"
               name="no_agreement"
-              placeholder=""
               required/>
           </label>
           <label>No. de Viaje
@@ -325,15 +356,14 @@ var FormConductor = React.createClass({
               type="number"
               ref="no_trip"
               name="no_trip"
-              placeholder=""/>
+            />
           </label>
 
           <label>Persona o Empresa Contratante
             <input
               type="text"
-              ref="person"
+              ref="name_contract"
               name="name_contract"
-              placeholder=""
               required/>
           </label>
 
@@ -341,7 +371,6 @@ var FormConductor = React.createClass({
             <SelectInput
               url="apiFuec/allIdType"
               name="id_type"
-              id='id_type'
               ref="id_type"
               required/>
           </label>
@@ -377,11 +406,12 @@ var FormConductor = React.createClass({
               name="purpose"/>
           </label>
 
-          <label>Ruta origen destino
+          <label>Ruta origen - destino
             <SelectInput
               url="apiFuec/allRuta"
               name="id_route"
               ref="id_route"
+              newOption={this.state.newOptionSelectRuta}
             />
           </label>
 
@@ -390,20 +420,21 @@ var FormConductor = React.createClass({
               url="apiFuec/allTipoContrato"
               name="id_type_agreement"
               ref="id_type_agreement"
+              newOption={this.state.newOptionSelectTiCon}
             />
           </label>
+
           <label>Fecha Inicial
             <input
-              placeholder=""
               type="date"
               pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
               name="init_date"
               ref="init_date"
               required/>
           </label>
+
           <label>Fecha Final
             <input
-              placeholder=""
               type="date"
               pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
               name="last_date"

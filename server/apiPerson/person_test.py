@@ -91,7 +91,7 @@ class TestApiPersonRest(unittest.TestCase):
 
         payload = {"jsonrpc": "2.0", "method": path1, "params": params}
         header = {'Authorization': token}
-        r = reqsess.get(self.URL + path1, json=payload, headers=header)
+        r = reqsess.post(self.URL + path1, json=payload, headers=header)
         self.assertEqual(r.status_code, 201, 'Answer ok')
 
 

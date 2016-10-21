@@ -92,6 +92,8 @@ var FormRuta = React.createClass({
       newOptionSelectA: true
     });
 
+    this.props.onItemNew(true);
+
     setTimeout(function(){
       this.setState({
         showMessage: false,
@@ -124,6 +126,9 @@ var FormRuta = React.createClass({
       typeMess: 'success',
       newOptionSelectA: true
     });
+
+    this.props.onItemNew(true);
+
     setTimeout(function(){
       this.setState({
         showMessage: false,
@@ -177,7 +182,10 @@ var FormRuta = React.createClass({
       newOptionSelectA: true,
       inputValue: ''
     });
+
+    this.props.onItemNew(true);
     this.refs.selectRuta.refs.selectValue.selectedIndex = '';
+
     setTimeout(function(){
       this.setState({
         showMessage: false,

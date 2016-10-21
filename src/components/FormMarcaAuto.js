@@ -180,6 +180,9 @@ var FormMarcaAuto = React.createClass({
       newOptionSelectA: true,
       inputValue: ''
     });
+
+    this.props.onItemNew(true);
+    
     setTimeout(function(){
       this.setState({
         showMessage: false,

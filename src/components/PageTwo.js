@@ -13,7 +13,8 @@ const PageTwo = React.createClass({
     return {
       newOptionPerson: false,
       newOptionMarca:false,
-      newOptionRuta:false
+      newOptionRuta:false,
+      newOptionTiCon:false
     }
   },
 
@@ -33,6 +34,13 @@ const PageTwo = React.createClass({
     }
   },
 
+  handleNewElementTiCon: function (newValue) {
+    if (newValue !== this.state.newOptionTiCon) {
+      this.setState({
+        newOptionTiCon: newValue
+      });
+    }
+  },
 
   handleNewElementRuta: function (newValue) {
     if (newValue !== this.state.newOptionRuta) {
@@ -47,7 +55,9 @@ const PageTwo = React.createClass({
       <div className="row small-up-1 medium-up-2 large-up-3">
         
         <div className="columns">
-          <FormTipoContrato />
+          <FormTipoContrato
+            onItemNew={this.handleNewElementTiCon}
+          />
         </div>
         
         <div className="columns">
@@ -80,6 +90,8 @@ const PageTwo = React.createClass({
           <FormContrato
             newOptionRuta={this.state.newOptionRuta}
             onItemNewRuta={this.handleNewElementRuta}
+            newOptionTiCon={this.state.newOptionTiCon}
+            onItemNewTiCon={this.handleNewElementTiCon}
           />
         </div>
         
