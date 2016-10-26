@@ -1,8 +1,9 @@
+from datetime import datetime
+
 from flask import Blueprint, request, abort, jsonify
 
 from server import db, rbac
 from models import Person, IdType
-from datetime import datetime
 
 apiPerson = Blueprint('apiPerson', __name__)
 
@@ -45,7 +46,12 @@ def new_person():
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    if params.has_key('last_name') and len(params['last_name']) != 0:
+    if params.has_key('type_person') and len(params['type_person']) != 0:
+        type_person = params['type_person']
+    else:
+        type_person = None
+
+    if params.has_key('type_person') and len(params['last_name']) != 0:
         last_name = params['last_name']
     else:
         last_name = None
@@ -88,7 +94,8 @@ def new_person():
     if email is None or len(email) < 5:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'Email no cumple'}), 400
 
-    new_person_db = Person(first_name
+    new_person_db = Person(type_person
+                           , first_name
                            , last_name
                            , email
                            , phone
@@ -121,6 +128,9 @@ def update_person_id():
 
     if not person_id or not person_id.isdigit() or not len(person_id) != 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    if params.has_key('type_person') and len(params['type_person']) != 0:
+        data.update(dict(type_person=params['type_person']))
 
     if params.has_key('first_name') and len(params['first_name']) != 0:
         data.update(dict(first_name=params['first_name']))
@@ -167,7 +177,8 @@ def update_person_id():
 def user_id():
     person_id = request.args.get('id')
     if person_id and person_id.isdigit() and len(person_id) != 0:
-        person = Person.query.with_entities(Person.first_name
+        person = Person.query.with_entities(Person.type_person
+                                            , Person.first_name
                                             , Person.last_name
                                             , Person.email
                                             , Person.phone
@@ -199,7 +210,7 @@ def user_id():
 
 
 @apiPerson.route('/apiFuec/deleteIdPerson', methods=['DELETE'])
-@rbac.allow(['admon','candidate'], methods=['DELETE'])
+@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
 def delete_person_id():
     json_data = request.get_json()
 

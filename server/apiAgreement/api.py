@@ -4,6 +4,7 @@ from flask import Blueprint, request, abort, jsonify
 
 from server import db, rbac
 from models import Agreement
+from server.apiSystem.models import System
 
 apiAgreement = Blueprint('apiAgreement', __name__)
 
@@ -19,47 +20,41 @@ def Agreement_all():
 @apiAgreement.route('/apiFuec/newAgreement', methods=['POST'])
 @rbac.allow(['admon', 'candidate'], methods=['POST'])
 def new_agreement():
+    data = {}
     json_data = request.get_json()
+    no_agreement = 0
 
     if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
     params = request.json.get('params')
 
-    if params.has_key('no_agreement') and len(params['no_agreement']) != 0:
-        no_agreement = params['no_agreement']
+    system_all = System.query.first()
+    last_agreement = Agreement.query.with_entities(Agreement.no_agreement).order_by(
+        Agreement.no_agreement.desc()).first()
+
+    if system_all:
+        no_agreement = system_all.secuence_contract + 1
+        no_new_agreement = no_agreement
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+        no_new_agreement = 1
+
+    if last_agreement and no_new_agreement <= last_agreement[0]:
+        no_new_agreement = last_agreement[0] + 1
+
+    data.update(dict(secuence_contract=no_new_agreement))
+    System.query.first().query.update(data)
+    db.session.commit()
 
     if params.has_key('no_trip') and len(params['no_trip']) != 0:
         no_trip = params['no_trip']
     else:
         no_trip = None
 
-    if params.has_key('name_contract') and len(params['name_contract']) != 0:
-        name_contract = params['name_contract']
+    if params.has_key('id_person') and len(params['id_person']) != 0:
+        id_person = params['id_person']
     else:
-        name_contract = None
-
-    if params.has_key('id_type') and len(params['id_type']) != 0:
-        id_type = params['id_type']
-    else:
-        id_type = None
-
-    if params.has_key('id_number') and len(params['id_number']) != 0:
-        id_number = params['id_number']
-    else:
-        id_number = None
-
-    if params.has_key('nit_1') and len(params['nit_1']) != 0:
-        nit_1 = params['nit_1']
-    else:
-        nit_1 = None
-
-    if params.has_key('nit_2') and params['nit_2'] > 0:
-        nit_2 = params['nit_2']
-    else:
-        nit_2 = None
+        id_person = None
 
     if params.has_key('purpose') and len(params['purpose']) != 0:
         purpose = params['purpose']
@@ -86,13 +81,9 @@ def new_agreement():
     else:
         last_date = None
 
-    new_agreement_db = Agreement(no_agreement
+    new_agreement_db = Agreement(no_new_agreement
                                  , no_trip
-                                 , name_contract
-                                 , id_type
-                                 , id_number
-                                 , nit_1
-                                 , nit_2
+                                 , id_person
                                  , purpose
                                  , id_route
                                  , id_type_agreement
@@ -101,7 +92,7 @@ def new_agreement():
 
     db.session.add(new_agreement_db)
     db.session.commit()
-    return jsonify({"jsonrpc": "2.0", "result": True, "id": new_agreement_db.id}), 201
+    return jsonify({"jsonrpc": "2.0", "result": True, "no_agreement": new_agreement_db.no_agreement}), 201
 
 
 @apiAgreement.route('/apiFuec/updateIdAgreement', methods=['PUT'])
@@ -129,20 +120,8 @@ def update_agreement_id():
     if params.has_key('no_trip') and len(params['no_trip']) != 0:
         data.update(dict(no_trip=params['no_trip']))
 
-    if params.has_key('name_contract') and len(params['name_contract']) != 0:
-        data.update(dict(name_contract=params['name_contract']))
-
-    if params.has_key('id_type') and len(params['id_type']) != 0:
-        data.update(dict(id_type=params['id_type']))
-
-    if params.has_key('id_number') and len(params['id_number']) != 0:
-        data.update(dict(id_type=params['id_number']))
-
-    if params.has_key('nit_2') and len(params['nit_2']) != 0:
-        data.update(dict(nit_2=params['nit_2']))
-
-    if params.has_key('nit_1') and len(params['nit_1']) != 0:
-        data.update(dict(nit_1=params['nit_1']))
+    if params.has_key('id_number') and len(params['id_person']) != 0:
+        data.update(dict(id_type=params['id_person']))
 
     if params.has_key('purpose') and len(params['purpose']) != 0:
         data.update(dict(purpose=params['purpose']))
@@ -184,11 +163,7 @@ def user_id():
     if agreement_id and agreement_id.isdigit() and len(agreement_id) != 0:
         agreement = Agreement.query.with_entities(Agreement.no_agreement
                                                   , Agreement.no_trip
-                                                  , Agreement.name_contract
-                                                  , Agreement.id_type
-                                                  , Agreement.id_number
-                                                  , Agreement.nit_1
-                                                  , Agreement.nit_2
+                                                  , Agreement.id_person
                                                   , Agreement.purpose
                                                   , Agreement.id_route
                                                   , Agreement.id_type_agreement
@@ -209,9 +184,7 @@ def user_id():
         dict_agreement = dict(
             zip(('no_agreement'
                  , 'no_trip'
-                 , 'name_contract'
-                 , 'id_type'
-                 , 'id_number'
+                 , 'id_person'
                  , 'nit_1'
                  , 'nit_2'
                  , 'purpose'
@@ -226,7 +199,7 @@ def user_id():
 
 
 @apiAgreement.route('/apiFuec/deleteIdAgreement', methods=['DELETE'])
-@rbac.allow(['admon','candidate'], methods=['DELETE'])
+@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
 def delete_agreement_id():
     json_data = request.get_json()
 

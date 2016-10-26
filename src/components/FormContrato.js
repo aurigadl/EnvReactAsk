@@ -50,7 +50,6 @@ var FormConductor = React.createClass({
         newOptionSelectTiCon: false
       });
     }
-
   },
 
   getRemoteData: function (parreq, cb_success, cb_error) {
@@ -83,11 +82,7 @@ var FormConductor = React.createClass({
     } else {
       this.refs.no_agreement.value = '';
       this.refs.no_trip.value = '';
-      this.refs.name_contract.value = '';
-      this.refs.id_type.refs.selectValue.selectedIndex = undefined;
-      this.refs.id_number.value = '';
-      this.refs.nit_1.value = '';
-      this.refs.nit_2.value = '';
+      this.refs.id_person.refs.selectValue.selectedIndex = undefined;
       this.refs.purpose.value = '';
       this.refs.id_route.refs.selectValue.selectedIndex = undefined;
       this.refs.id_type_agreement.refs.selectValue.selectedIndex = undefined;
@@ -100,11 +95,7 @@ var FormConductor = React.createClass({
     var data = remoteData.result;
     this.refs.no_agreement.value = (data.no_agreement) ? data.no_agreement : undefined;
     this.refs.no_trip.value = (data.no_trip) ? data.no_trip : undefined;
-    this.refs.name_contract.value = (data.name_contract) ? data.name_contract : '';
-    this.refs.id_type.refs.selectValue.selectedIndex = (data.id_type) ? data.id_type : undefined;
-    this.refs.id_number.value = (data.id_number) ? data.id_number : undefined;
-    this.refs.nit_1.value = (data.nit_1) ? data.nit_1 : undefined;
-    this.refs.nit_2.value = (data.nit_2) ? data.nit_2 : undefined;
+    this.refs.id_person.refs.selectValue.selectedIndex = (data.id_person) ? data.id_person : undefined;
     this.refs.purpose.value = (data.purpose) ? data.purpose : undefined;
     this.refs.id_route.refs.selectValue.selectedIndex = (data.id_route) ? data.id_route : undefined;
     this.refs.id_type_agreement.refs.selectValue.selectedIndex = (data.id_type_agreement) ? data.id_type_agreement : undefined;
@@ -132,13 +123,8 @@ var FormConductor = React.createClass({
     var ref = e.target.elements;
 
     var selectAgreement = ref.selectAgreement.value;
-    var no_agreement = ref.no_agreement.value;
     var no_trip = ref.no_trip.value;
-    var name_contract = ref.name_contract.value;
-    var id_type = ref.id_type.value;
-    var id_number = ref.id_number.value;
-    var nit_1 = ref.nit_1.value;
-    var nit_2 = ref.nit_2.value;
+    var id_person = ref.id_person.value;
     var purpose = ref.purpose.value;
     var id_route = ref.id_route.value;
     var id_type_agreement = ref.id_type_agreement.value;
@@ -146,13 +132,8 @@ var FormConductor = React.createClass({
     var last_date = ref.last_date.value;
 
     var params = {
-      no_agreement: no_agreement
-      , no_trip: no_trip
-      , name_contract: name_contract
-      , id_type: id_type
-      , id_number: id_number
-      , nit_1: nit_1
-      , nit_2: nit_2
+      no_trip: no_trip
+      , id_person: id_person
       , purpose: purpose
       , id_route: id_route
       , id_type_agreement: id_type_agreement
@@ -193,6 +174,7 @@ var FormConductor = React.createClass({
   },
 
   successFormCreate: function (data) {
+    this.refs.no_agreement.value = data.result.id;
     this.setState({
       showMessage: true,
       contextText: 'Se creo el contrato',
@@ -349,7 +331,7 @@ var FormConductor = React.createClass({
               type="number"
               ref="no_agreement"
               name="no_agreement"
-              required/>
+              readOnly/>
           </label>
           <label>No. de Viaje
             <input
@@ -359,45 +341,13 @@ var FormConductor = React.createClass({
             />
           </label>
 
-          <label>Persona o Empresa Contratante
-            <input
-              type="text"
-              ref="name_contract"
-              name="name_contract"
-              required/>
-          </label>
-
-          <label> Tipo de Identificación
+          <label> Persona Juridica o Natural
             <SelectInput
-              url="apiFuec/allIdType"
-              name="id_type"
-              ref="id_type"
-              required/>
-          </label>
-
-          <label> Identificación
-            <input
-              ref="id_number"
-              name="id_number"
+              url="apiFuec/allAgreement"
+              ref="id_person"
+              name="id_person"
               type="text"/>
           </label>
-
-          <div className="row">
-            <div className="small-7 columns">
-              <label>Nit - Consecutivo de identificación
-                <input name="nit_1"
-                       type="number"
-                       ref="nit_1"/>
-              </label>
-            </div>
-            <div className="small-5 columns">
-              <label>Nit - Digito de verificación
-                <input name="nit_2"
-                       type="number"
-                       ref="nit_2"/>
-              </label>
-            </div>
-          </div>
 
           <label>Objeto
             <input

@@ -10,13 +10,14 @@ var FormPersona = React.createClass({
     return {
       newOptionSelectA: false,
       childSelectValue: undefined,
+      selectedOption: undefined,
 
       showMessage: false,
       typeMess: '',
       contextText: ''
     };
   },
-  
+
   getRemoteData: function (parreq, cb_success, cb_error) {
     mReq(parreq)
       .then(function (response) {
@@ -36,11 +37,11 @@ var FormPersona = React.createClass({
         url: 'apiFuec/idPerson',
         params: params
       };
-      
+
       this.setState({
         childSelectValue: childSelectValue
       });
-      
+
       this.getRemoteData(parreq
         , this.successHandlerSelect
         , this.errorHandlerSelect);
@@ -55,6 +56,9 @@ var FormPersona = React.createClass({
       this.refs.license.value = '';
       this.refs.effective_date.value = '';
       this.refs.address.value = '';
+      this.setState({
+        selectedOption: undefined
+      });
     }
   },
 
@@ -69,15 +73,18 @@ var FormPersona = React.createClass({
     this.refs.effective_date.value = (data.effective_date) ? data.effective_date : undefined;
     this.refs.address.value = (data.address) ? data.address : undefined;
     this.refs.id_type.refs.selectValue.selectedIndex = (data.id_type) ? data.id_type : undefined;
+    this.setState({
+      selectedOption: (data.type_person) ? data.type_person : undefined
+    });
   },
 
-  errorHandlerSelect: function(remoteData){
+  errorHandlerSelect: function (remoteData) {
     this.setState({
       showMessage: true,
       contextText: 'Conexion rechazada',
       typeMess: 'alert'
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -91,6 +98,7 @@ var FormPersona = React.createClass({
     var ref = e.target.elements;
 
     var selectPerson = ref.selectPerson.value;
+    var type_person = this.state.selectedOption;
     var first_name = ref.first_name.value;
     var last_name = ref.last_name.value;
     var email = ref.email.value;
@@ -102,7 +110,8 @@ var FormPersona = React.createClass({
     var address = ref.address.value;
 
     var params = {
-        first_name: first_name
+      type_person: type_person
+      , first_name: first_name
       , last_name: last_name
       , email: email
       , phone: phone
@@ -145,7 +154,7 @@ var FormPersona = React.createClass({
     }
   },
 
-  successFormCreate: function (data){
+  successFormCreate: function (data) {
     this.setState({
       showMessage: true,
       contextText: 'Se creo persona',
@@ -155,7 +164,7 @@ var FormPersona = React.createClass({
 
     this.props.onItemNew(true);
 
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -165,13 +174,13 @@ var FormPersona = React.createClass({
     }.bind(this), 3000);
   },
 
-  errorFormCreate: function (err){
+  errorFormCreate: function (err) {
     this.setState({
       showMessage: true,
       contextText: 'No se Creo el usuario. El correo electronico, o el nombre o la identificación ya esta registrado',
       typeMess: 'alert'
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -180,13 +189,13 @@ var FormPersona = React.createClass({
     }.bind(this), 3000);
   },
 
-  successFormUpdate: function (data){
+  successFormUpdate: function (data) {
     this.setState({
       showMessage: true,
       contextText: 'Se Actualizo el usuario',
       typeMess: 'success'
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -195,13 +204,13 @@ var FormPersona = React.createClass({
     }.bind(this), 3000);
   },
 
-  errorFormUpdate: function (err){
+  errorFormUpdate: function (err) {
     this.setState({
       showMessage: true,
       contextText: 'No se Actualizo el usuario',
       typeMess: 'alert'
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -210,7 +219,7 @@ var FormPersona = React.createClass({
     }.bind(this), 3000);
   },
 
-  onClickMessage: function(event) {
+  onClickMessage: function (event) {
     this.setState({
       showMessage: false,
       contextText: ''
@@ -218,7 +227,7 @@ var FormPersona = React.createClass({
   },
 
 
-  handleDelete: function(e){
+  handleDelete: function (e) {
     e.preventDefault();
     var get_id = this.state.childSelectValue;
     var params = {
@@ -237,7 +246,7 @@ var FormPersona = React.createClass({
     );
   },
 
-  successFormDelete: function (data){
+  successFormDelete: function (data) {
     this.setState({
       showMessage: true,
       contextText: 'Se borro la Marca',
@@ -245,7 +254,7 @@ var FormPersona = React.createClass({
       newOptionSelectA: true,
       inputValue: ''
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -255,13 +264,13 @@ var FormPersona = React.createClass({
     }.bind(this), 3000);
   },
 
-  errorFormDelete: function (err){
+  errorFormDelete: function (err) {
     this.setState({
       showMessage: true,
       contextText: 'No se borro la Marca',
       typeMess: 'alert'
     });
-    setTimeout(function(){
+    setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
@@ -299,30 +308,58 @@ var FormPersona = React.createClass({
             </div>
           </div>
 
+          <fieldset>
+            <legend>Tipo de persona</legend>
+            <input
+              type="radio"
+              name="type_person"
+              value="0"
+              id="personN"
+              checked={this.state.selectedOption === 0}
+              onChange={this.handleOptionChange}
+              required
+            />
+            <label for="personN">Natural</label>
+
+            <input
+              type="radio"
+              name="type_person"
+              value="1"
+              id="personJ"
+              checked={this.state.selectedOption === 1}
+              onChange={this.handleOptionChange}/>
+            />
+            <label for="personJ">Juridica</label>
+          </fieldset>
+
           <label> Nombre
             <input ref="first_name" name="first_name" type="text" placeholder="" required/>
           </label>
           <label> Apellido
             <input ref="last_name" name="last_name" type="text" placeholder=""/>
           </label>
+
           <label> Correo Electronico
             <input ref="email" name="email" type="text" placeholder="" required/>
           </label>
+
           <label> Telefono
             <input ref="phone" name="phone" type="text" placeholder=""/>
           </label>
+
+          <label> Tipo de Identificación
+            <SelectInput
+              url="apiFuec/allIdType"
+              name="id_type"
+              id='id_type'
+              ref="id_type"
+              onUserSelect={this.handleIdTypeSelect}
+              required
+            />
+          </label>
+
           <label> Identificación
             <input ref="id_number" name="id_number" type="text" placeholder="" required/>
-          </label>
-          <label> Tipo de Identificación
-          <SelectInput
-            url="apiFuec/allIdType"
-            name="id_type"
-            id = 'id_type'
-            ref="id_type"
-            onUserSelect={this.handleIdTypeSelect}
-            required
-          />
           </label>
 
           <label> Licencia

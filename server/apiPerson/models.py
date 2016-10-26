@@ -17,6 +17,7 @@ class Person(db.Model):
     __table_args__ = {'extend_existing': True}
     __tablename__ = 'person'
     id = db.Column(db.Integer, primary_key=True)
+    type_person = db.Column(db.Boolean)
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255))
     email = db.Column(db.String(255), nullable=False, unique=True)
@@ -28,6 +29,7 @@ class Person(db.Model):
     address = db.Column(db.String(255))
 
     def __init__(self,
+                 type_person,
                  first_name=None,
                  last_name=None,
                  email=None,
@@ -37,6 +39,8 @@ class Person(db.Model):
                  license=None,
                  effective_date=None,
                  address=None):
+        if type_person:
+            self.type_person = type_person
         if first_name:
             self.first_name = first_name.lower()
         if last_name:

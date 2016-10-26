@@ -79,16 +79,10 @@ class TestApiAgreementRest(unittest.TestCase):
 
         # json format correct
         params = dict(
-                 no_agreement='12312313',
                  no_trip='987',
-                 name_contract='test un test',
-                 id_type=str(dict_idtype[0]['id']),
-                 id_number='223424242',
-                 nit_1='33223424343',
-                 nit_2='23',
+                 id_person='1',
                  purpose='one test with many data',
                  id_route='1',
-                 id_type_agreement='1',
                  init_date='2016-02-03',
                  last_date='2016-02-03')
 

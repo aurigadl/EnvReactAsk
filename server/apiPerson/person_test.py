@@ -79,6 +79,7 @@ class TestApiPersonRest(unittest.TestCase):
 
         # json format correct
         params = dict(
+            type_person='0',
             first_name=self.name_user + 'TERESA',
             last_name='MARTINEZ DE VARELA',
             email=self.name_user + '@mi.co',
