@@ -1,9 +1,6 @@
-import os
-import server
-
 from flask import Blueprint, jsonify, request
 
-from server import rbac, db, app
+from server import rbac, db
 from models import System
 
 apiSystem = Blueprint('apiSystem', __name__)
@@ -24,10 +21,10 @@ def api_fuec_marcas_all():
                            , nit_2=None
                            , logo=None
                            , sign=None
-                           , secuence_contract=None
-                           , secuence_payroll=None
-                           , secuence_vehicle=None
                            )
+
+        db.session.add(System(None, None, None, None, None, None, None, None, None))
+        db.session.commit()
     else:
         dict_system = system_all.get_json()
     return jsonify(dict(jsonrpc="2.0", result=dict_system)), 200

@@ -188,13 +188,14 @@ def user_id():
                                             , Person.effective_date
                                             , Person.address).filter(Person.id == person_id).first()
 
-        if person[7]:
+        if person[8]:
             lst = list(person)
-            lst[7] = person[7].strftime('%Y-%m-%d')
+            lst[8] = person[8].strftime('%Y-%m-%d')
             person = tuple(lst)
 
         dict_person = dict(
-            zip(('first_name'
+            zip(('type_person'
+                 , 'first_name'
                  , 'last_name'
                  , 'email'
                  , 'phone'

@@ -2,6 +2,8 @@ from flask import Blueprint, request, abort, jsonify
 
 from server import db, rbac
 from models import ClassCar, Car
+from server.apiSystem.models import System
+
 
 apiCar = Blueprint('apiCar', __name__)
 
@@ -33,12 +35,30 @@ def Car_all():
 @apiCar.route('/apiFuec/newCar', methods=['POST'])
 @rbac.allow(['admon', 'candidate'], methods=['POST'])
 def new_Car():
+    data = {}
     json_data = request.get_json()
 
     if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
     params = request.json.get('params')
+
+    system_all = System.query.first()
+    last_car = Car.query.with_entities(Car.no_car).order_by(
+        Car.no_car.desc()).first()
+
+    if system_all:
+        no_car = system_all.secuence_vehicle + 1
+        no_new_car = no_car
+    else:
+        no_new_car = 1
+
+    if last_car and no_new_car <= last_car[0]:
+        no_new_car = last_car[0] + 1
+
+    data.update(dict(secuence_vehicle=no_new_car))
+    System.query.first().query.update(data)
+    db.session.commit()
 
     if params.has_key('license_plate') and len(params['license_plate']) != 0:
         license_plate = params['license_plate']
@@ -65,7 +85,8 @@ def new_Car():
     else:
         operation_card = None
 
-    new_Car_db = Car(license_plate
+    new_Car_db = Car(no_new_car
+                     , license_plate
                      , model
                      , brand
                      , class_car
@@ -73,7 +94,7 @@ def new_Car():
 
     db.session.add(new_Car_db)
     db.session.commit()
-    return jsonify({"jsonrpc": "2.0", "result": True, "id": new_Car_db.id}), 201
+    return jsonify({"jsonrpc": "2.0", "result": True, "id": new_Car_db.id, "no_car": no_new_car}), 201
 
 
 @apiCar.route('/apiFuec/updateIdCar', methods=['PUT'])
@@ -126,13 +147,15 @@ def update_Car_id():
 def user_id():
     Car_id = request.args.get('id')
     if Car_id and Car_id.isdigit() and len(Car_id) != 0:
-        CarNew = Car.query.with_entities(Car.license_plate
+        CarNew = Car.query.with_entities(Car.no_car
+                                         , Car.license_plate
                                          , Car.model
                                          , Car.brand
                                          , Car.class_car
                                          , Car.operation_card).filter(Car.id == Car_id).first()
         dict_Car = dict(
-            zip(('license_plate'
+            zip(('no_car'
+                 , 'license_plate'
                  , 'model'
                  , 'brand'
                  , 'class_car'

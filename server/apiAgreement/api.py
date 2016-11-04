@@ -22,7 +22,6 @@ def Agreement_all():
 def new_agreement():
     data = {}
     json_data = request.get_json()
-    no_agreement = 0
 
     if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400

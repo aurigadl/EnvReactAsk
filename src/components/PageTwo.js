@@ -12,9 +12,18 @@ const PageTwo = React.createClass({
   getInitialState: function () {
     return {
       newOptionPerson: false,
+      newOptionCar: false,
       newOptionMarca:false,
       newOptionRuta:false,
       newOptionTiCon:false
+    }
+  },
+
+  handleNewElementCar: function (newValue) {
+    if (newValue !== this.state.newOptionCar) {
+      this.setState({
+        newOptionCar: newValue
+      });
     }
   },
 
@@ -64,6 +73,8 @@ const PageTwo = React.createClass({
           <FormPersonaCarro
             newOptionPerson={this.state.newOptionPerson}
             onItemNewPerson={this.handleNewElementPerson}
+            newOptionCar={this.state.newOptionCar}
+            onItemNewCar={this.handleNewElementCar}
           />
         </div>
         
@@ -83,6 +94,7 @@ const PageTwo = React.createClass({
           <FormCarro
             newOptionMarca={this.state.newOptionMarca}
             onItemNewMarca={this.handleNewElementMarca}
+            onItemNewCar={this.handleNewElementCar}
           />
         </div>
         
@@ -100,6 +112,7 @@ const PageTwo = React.createClass({
             onItemNew={this.handleNewElementPerson}
           />
         </div>
+
       </div>
     );
   }

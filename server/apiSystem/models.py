@@ -22,9 +22,9 @@ class System(db.Model):
     nit_2 = db.Column(db.Integer)
     logo = db.Column(db.LargeBinary)
     sign = db.Column(db.LargeBinary)
-    secuence_contract = db.Column(db.Integer)
-    secuence_payroll = db.Column(db.Integer)
-    secuence_vehicle = db.Column(db.Integer)
+    secuence_contract = db.Column(db.Integer, default=0)
+    secuence_payroll = db.Column(db.Integer, default=0)
+    secuence_vehicle = db.Column(db.Integer, default=0)
 
     def __init__(self
                  , name=None

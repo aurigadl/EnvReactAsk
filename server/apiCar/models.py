@@ -18,6 +18,7 @@ class Car(db.Model):
     __table_args__ = {'extend_existing': True}
     __tablename__ = 'car'
     id = db.Column(db.Integer, primary_key=True)
+    no_car = db.Column(db.Integer, nullable=False, unique=True)
     license_plate = db.Column(db.String(255), nullable=False, unique=True)
     model = db.Column(db.Integer, nullable=False)
     brand = db.Column(db.Integer, db.ForeignKey('marca.id'), nullable=False)
@@ -25,11 +26,14 @@ class Car(db.Model):
     operation_card = db.Column(db.String(255), nullable=False)
 
     def __init__(self,
+                 no_car=None,
                  license_plate=None,
                  model=None,
                  brand=None,
                  class_car=None,
                  operation_card=None):
+        if no_car:
+            self.no_car = no_car
         if license_plate:
             self.license_plate = license_plate.lower()
         if model:

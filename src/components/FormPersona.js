@@ -29,6 +29,13 @@ var FormPersona = React.createClass({
       });
   },
 
+  handleOptionChange: function (e) {
+    this.setState({
+      selectedOption: e.target.value
+    });
+  },
+
+
   handlePersonSelect: function (childSelectValue, handlePersonSelect) {
     if (childSelectValue != 0) {
       var params = {'id': childSelectValue};
@@ -74,7 +81,7 @@ var FormPersona = React.createClass({
     this.refs.address.value = (data.address) ? data.address : undefined;
     this.refs.id_type.refs.selectValue.selectedIndex = (data.id_type) ? data.id_type : undefined;
     this.setState({
-      selectedOption: (data.type_person) ? data.type_person : undefined
+      selectedOption: ~~((data.type_person) ? data.type_person : undefined) + ''
     });
   },
 
@@ -247,6 +254,7 @@ var FormPersona = React.createClass({
   },
 
   successFormDelete: function (data) {
+
     this.setState({
       showMessage: true,
       contextText: 'Se borro la Marca',
@@ -254,6 +262,9 @@ var FormPersona = React.createClass({
       newOptionSelectA: true,
       inputValue: ''
     });
+
+    this.refs.person.getDOMNode().reset();
+
     setTimeout(function () {
       this.setState({
         showMessage: false,
@@ -262,6 +273,7 @@ var FormPersona = React.createClass({
         newOptionSelectA: false
       })
     }.bind(this), 3000);
+
   },
 
   errorFormDelete: function (err) {
@@ -293,7 +305,7 @@ var FormPersona = React.createClass({
           o llena el campo inferior sin seleccionar elemento
           para crear uno nuevo</p>
 
-        <form onSubmit={this.handleSubmitForm}>
+        <form onSubmit={this.handleSubmitForm} ref="person">
           <div className="input-group">
             <SelectInput
               class="input-group-field"
@@ -309,27 +321,27 @@ var FormPersona = React.createClass({
           </div>
 
           <fieldset>
-            <legend>Tipo de persona</legend>
+            <label>Tipo de persona</label>
             <input
               type="radio"
               name="type_person"
               value="0"
               id="personN"
-              checked={this.state.selectedOption === 0}
+              checked={this.state.selectedOption === "0"}
               onChange={this.handleOptionChange}
               required
             />
-            <label for="personN">Natural</label>
+            <label htmlFor="personN">Natural</label>
 
             <input
               type="radio"
               name="type_person"
-              value="1"
               id="personJ"
-              checked={this.state.selectedOption === 1}
-              onChange={this.handleOptionChange}/>
+              value="1"
+              checked={this.state.selectedOption === "1"}
+              onChange={this.handleOptionChange}
             />
-            <label for="personJ">Juridica</label>
+            <label htmlFor="personJ">Juridica</label>
           </fieldset>
 
           <label> Nombre

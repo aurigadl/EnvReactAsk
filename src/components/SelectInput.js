@@ -4,12 +4,13 @@ import {makeRequest as mReq} from '../utils/mrequest';
 var SelectInput = React.createClass({
   propTypes: {
     url: React.PropTypes.string.isRequired,
-    name: React.PropTypes.string.isRequired
+    name: React.PropTypes.string.isRequired,
   },
 
   getInitialState: function () {
     return {
-      options: []
+      options: [],
+      name: React.PropTypes.string.isRequired,
     }
   },
 
@@ -67,6 +68,7 @@ var SelectInput = React.createClass({
   render: function () {
     return (
       <select
+        value={this.props.selectstate}
         className={this.props.class}
         onChange={this.handleChange}
         ref="selectValue"

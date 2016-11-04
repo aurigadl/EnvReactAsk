@@ -57,11 +57,9 @@ var FormCarro = React.createClass({
         , this.successHandlerSelect
         , this.errorHandlerSelect);
     } else {
-      var d = new Date();
-      var n = d.getFullYear();
-
+      this.refs.no_car.value = '';
       this.refs.license_plate.value = '';
-      this.refs.model.value = n;
+      this.refs.model.value = '';
       this.refs.brand.refs.selectValue.selectedIndex = undefined;
       this.refs.class_car.refs.selectValue.selectedIndex = undefined;
       this.refs.operation_card.value = '';
@@ -72,6 +70,7 @@ var FormCarro = React.createClass({
     var data = remoteData.result;
     var d = new Date();
     var n = d.getFullYear();
+    this.refs.no_car.value = (data.no_car) ? data.no_car : undefined;
     this.refs.license_plate.value = (data.license_plate) ? data.license_plate : undefined;
     this.refs.model.value = (data.model) ? data.model : n;
     this.refs.brand.refs.selectValue.selectedIndex = (data.brand) ? data.brand : undefined;
@@ -153,6 +152,9 @@ var FormCarro = React.createClass({
       newOptionSelectA: true
     });
 
+    this.refs.no_car.value = data.no_car;
+    this.props.onItemNewCar(true);
+
     setTimeout(function () {
       this.setState({
         showMessage: false,
@@ -184,6 +186,7 @@ var FormCarro = React.createClass({
       contextText: 'Se Actualizo el carro',
       typeMess: 'success'
     });
+    this.props.onItemNewCar(true);
     setTimeout(function () {
       this.setState({
         showMessage: false,
@@ -243,6 +246,14 @@ var FormCarro = React.createClass({
               <input type="submit" className="alert button" value="Borrar"/>
             </div>
           </div>
+
+          <label>No. de Carro
+            <input
+              type="number"
+              ref="no_car"
+              name="no_car"
+              readOnly/>
+          </label>
 
           <label>Placa
             <input
