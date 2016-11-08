@@ -56,7 +56,7 @@ var FormPersonaCarro = React.createClass({
   },
 
   successHandlerSelect: function (remoteData) {
-    var data = remoteData.result;
+    var data = JSON.parse(remoteData.result);
     var dataArray = [];
 
     for (var prop in data) {
@@ -87,7 +87,7 @@ var FormPersonaCarro = React.createClass({
 
   onChange(e) {
     this.setState({inputValue: e.target.value});
-  },
+z  },
 
   componentWillReceiveProps: function (nextProps) {
     var nextc = nextProps.newOptionCar;

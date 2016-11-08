@@ -12,9 +12,14 @@ apiPersonCar = Blueprint('apiPersonCar', __name__)
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def user_id():
     id_car = request.args.get('id')
+
     if id_car and id_car.isdigit() and len(id_car) != 0:
-        personCar = json.loads(PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()[0])
-        return jsonify(dict(jsonrpc="2.0", result=personCar)), 200
+        person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()
+        if person_car is not None:
+            person_car = person_car[0]
+        else:
+            person_car = dict(mod='', person='')
+        return jsonify(dict(jsonrpc="2.0", result=person_car)), 200
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 

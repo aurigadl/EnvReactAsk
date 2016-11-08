@@ -367,7 +367,7 @@ var FormConductor = React.createClass({
 
           <label>Tipo de contrato
             <SelectInput
-              url="apiFuec/allTipoContrato"
+              url="apiFuec/allKindHiring"
               name="id_type_agreement"
               ref="id_type_agreement"
               newOption={this.state.newOptionSelectTiCon}

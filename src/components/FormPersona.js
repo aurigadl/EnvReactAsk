@@ -1,7 +1,7 @@
 import React from 'react'
+import SelectInput from './SelectInput.js'
 import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-import SelectInput from './SelectInput.js'
 require('./formsPanels.css');
 
 var FormPersona = React.createClass({
@@ -300,10 +300,6 @@ var FormPersona = React.createClass({
         <div className="sign">
           <h1>Personas</h1>
         </div>
-
-        <p>Selecciona un elemento para editarlo o eliminarlo
-          o llena el campo inferior sin seleccionar elemento
-          para crear uno nuevo</p>
 
         <form onSubmit={this.handleSubmitForm} ref="person">
           <div className="input-group">

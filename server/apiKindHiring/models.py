@@ -1,7 +1,7 @@
 from server import db
 
 
-class TipoContrato(db.Model):
+class KindHiring(db.Model):
     __tablename__ = 'tipo_contrato'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
