@@ -41,6 +41,7 @@ var AdminFormEmpresa = React.createClass({
     this.refs.nit_1.value = data.nit_1;
     this.refs.nit_2.value = data.nit_2;
     this.refs.secuence_contract.value = data.secuence_contract;
+    this.refs.id_company_legal.value = data.id_company_legal;
     this.refs.secuence_payroll.value = data.secuence_payroll;
     this.refs.secuence_vehicle.value = data.secuence_vehicle;
 
@@ -78,6 +79,7 @@ var AdminFormEmpresa = React.createClass({
     var nit_1 = ref.nit_1.value;
     var nit_2 = ref.nit_2.value;
     var secuence_contract = ref.secuence_contract.value;
+    var id_company_legal = ref.id_company_legal.value;
     var secuence_payroll = ref.secuence_payroll.value;
     var secuence_vehicle = ref.secuence_vehicle.value;
     var logo = this.state.fileLogo;
@@ -91,6 +93,7 @@ var AdminFormEmpresa = React.createClass({
       , nit_1: nit_1
       , nit_2: nit_2
       , secuence_contract: secuence_contract
+      , id_company_legal: id_company_legal
       , secuence_payroll: secuence_payroll
       , secuence_vehicle: secuence_vehicle
       , sign: sign
@@ -255,6 +258,15 @@ var AdminFormEmpresa = React.createClass({
               </label>
             </div>
           </div>
+
+          <label>Identificación de la empresa
+            <input name="id_company_legal"
+                   type="number"
+                   placeholder=""
+                   ref="id_company_legal"
+                   required/>
+          </label>
+
 
           <label>Consecutivo contratos
             <input name="secuence_contract"

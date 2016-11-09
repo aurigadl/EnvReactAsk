@@ -66,9 +66,13 @@ var SelectInput = React.createClass({
   },
 
   render: function () {
+    var value_selected = undefined;
+    if(this.props.selectstate){
+      value_selected = this.props.selectstate;
+    }
     return (
       <select
-        value={this.props.selectstate}
+        value={value_selected}
         className={this.props.class}
         onChange={this.handleChange}
         ref="selectValue"

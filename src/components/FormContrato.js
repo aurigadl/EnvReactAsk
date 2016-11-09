@@ -10,7 +10,6 @@ var FormConductor = React.createClass({
     return {
       newOptionSelectA: false,
       childSelectValue: undefined,
-      newOptionSelectRuta: false,
       newOptionSelectTiCon: false,
 
 
@@ -21,23 +20,8 @@ var FormConductor = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    var nextRuta = nextProps.newOptionRuta;
-    var prevRuta = this.props.newOptionRuta;
-
     var nextTiCon = nextProps.newOptionTiCon;
     var prevTiCon = this.props.newOptionTiCon;
-
-    if (nextRuta == true && nextRuta != prevRuta) {
-      this.setState({
-        newOptionSelectRuta: true
-      });
-      this.props.onItemNewRuta(false);
-    }
-    if (nextRuta == false && nextRuta != prevRuta) {
-      this.setState({
-        newOptionSelectRuta: false
-      });
-    }
 
     if (nextTiCon == true && nextTiCon != prevTiCon) {
       this.setState({
@@ -83,8 +67,6 @@ var FormConductor = React.createClass({
       this.refs.no_agreement.value = '';
       this.refs.no_trip.value = '';
       this.refs.id_person.refs.selectValue.selectedIndex = undefined;
-      this.refs.purpose.value = '';
-      this.refs.id_route.refs.selectValue.selectedIndex = undefined;
       this.refs.id_type_agreement.refs.selectValue.selectedIndex = undefined;
       this.refs.init_date.value = '';
       this.refs.last_date.value = '';
@@ -96,8 +78,6 @@ var FormConductor = React.createClass({
     this.refs.no_agreement.value = (data.no_agreement) ? data.no_agreement : undefined;
     this.refs.no_trip.value = (data.no_trip) ? data.no_trip : undefined;
     this.refs.id_person.refs.selectValue.selectedIndex = (data.id_person) ? data.id_person : undefined;
-    this.refs.purpose.value = (data.purpose) ? data.purpose : undefined;
-    this.refs.id_route.refs.selectValue.selectedIndex = (data.id_route) ? data.id_route : undefined;
     this.refs.id_type_agreement.refs.selectValue.selectedIndex = (data.id_type_agreement) ? data.id_type_agreement : undefined;
     this.refs.init_date.value = (data.init_date) ? data.init_date : undefined;
     this.refs.last_date.value = (data.last_date) ? data.last_date : undefined;
@@ -125,8 +105,6 @@ var FormConductor = React.createClass({
     var selectAgreement = ref.selectAgreement.value;
     var no_trip = ref.no_trip.value;
     var id_person = ref.id_person.value;
-    var purpose = ref.purpose.value;
-    var id_route = ref.id_route.value;
     var id_type_agreement = ref.id_type_agreement.value;
     var init_date = ref.init_date.value;
     var last_date = ref.last_date.value;
@@ -134,8 +112,6 @@ var FormConductor = React.createClass({
     var params = {
       no_trip: no_trip
       , id_person: id_person
-      , purpose: purpose
-      , id_route: id_route
       , id_type_agreement: id_type_agreement
       , init_date: init_date
       , last_date: last_date
@@ -181,7 +157,7 @@ var FormConductor = React.createClass({
       typeMess: 'success',
       newOptionSelectA: true
     });
-
+    this.props.onItemNewAgreement(true);
     setTimeout(function () {
       this.setState({
         showMessage: false,
@@ -213,6 +189,7 @@ var FormConductor = React.createClass({
       contextText: 'Se Actualizo el contrato',
       typeMess: 'success'
     });
+    this.props.onItemNewAgreement(true);
     setTimeout(function () {
       this.setState({
         showMessage: false,
@@ -302,7 +279,7 @@ var FormConductor = React.createClass({
       <div className="header callout secondary">
 
         <div className="sign">
-          <h1>Contrato</h1>
+          <h1>Contrato de Vinculación</h1>
         </div>
         <p>Selecciona un elemento para editarlo o eliminarlo
           o llena el campo inferior sin seleccionar elemento
@@ -343,26 +320,9 @@ var FormConductor = React.createClass({
 
           <label> Persona Juridica o Natural
             <SelectInput
-              url="apiFuec/allAgreement"
+              url="apiFuec/allPerson"
               ref="id_person"
-              name="id_person"
-              type="text"/>
-          </label>
-
-          <label>Objeto
-            <input
-              type="text"
-              ref="purpose"
-              name="purpose"/>
-          </label>
-
-          <label>Ruta origen - destino
-            <SelectInput
-              url="apiFuec/allRuta"
-              name="id_route"
-              ref="id_route"
-              newOption={this.state.newOptionSelectRuta}
-            />
+              name="id_person"/>
           </label>
 
           <label>Tipo de contrato

@@ -78,7 +78,7 @@ var FormPersona = React.createClass({
     this.refs.id_number.value = (data.id_number) ? data.id_number : undefined;
     this.refs.license.value = (data.license) ? data.license : undefined;
     this.refs.effective_date.value = (data.effective_date) ? data.effective_date : undefined;
-    this.refs.address.value = (data.address) ? data.address : undefined;
+    this.refs.address.value = (data.address) ? data.address : '';
     this.refs.id_type.refs.selectValue.selectedIndex = (data.id_type) ? data.id_type : undefined;
     this.setState({
       selectedOption: ~~((data.type_person) ? data.type_person : undefined) + ''

@@ -1,6 +1,7 @@
 import React from 'react'
 import FormRuta from './FormRuta.js'
 import FormCarro from './FormCarro.js'
+import SelectInput from './SelectInput.js'
 import FormPersona from './FormPersona.js'
 import FormContrato from './FormContrato.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
@@ -14,7 +15,10 @@ const PageTwo = React.createClass({
       newOptionPerson: false,
       newOptionCar: false,
       newOptionMarca: false,
-      newOptionRuta: false
+      newOptionRuta: false,
+      newOptionAgreement: false,
+
+      option: []
     }
   },
 
@@ -48,6 +52,31 @@ const PageTwo = React.createClass({
         newOptionRuta: newValue
       });
     }
+  },
+
+  handleNewAgreement: function (newValue) {
+    if (newValue !== this.state.newOptionAgreement) {
+      this.setState({
+        newOptionAgreement: newValue
+      });
+    }
+  },
+
+  addNewRuta: function () {
+    var newOption = this.state.option;
+    newOption.push({id:''});
+    this.setState({
+      option: newOption
+    });
+  },
+
+  delRelRuta: function (e) {
+    let idKey = e.currentTarget.dataset.key;
+    var newOption = this.state.option;
+    delete newOption[idKey];
+    this.setState({
+      option: newOption
+    });
   },
 
   render: function () {
@@ -99,24 +128,62 @@ const PageTwo = React.createClass({
               </label>
 
               <label>Objeto del contrato:
-                <input
+                <SelectInput
                   name="agreement_object"
-                  type="text"
-                  readOnly/>
+                  url="apiFuec/allObjectAgreement"
+                  />
               </label>
 
-              <label>Origen Destino:
-                <input
-                  name="agreement_object"
-                  type="text"
-                  readOnly/>
-              </label>
+              <div className="row">
+                <div className="small-2 columns">
+                  <label>&nbsp;&nbsp;</label>
+                  <a onClick={this.addNewRuta} className="button">
+                    <i className="fi-plus"></i>
+                  </a>
+                </div>
+                <div className="small-10 columns">
+                  <label>Ruta: Origen - Destino</label>
+                  <SelectInput
+                    className="input-group-field"
+                    url="apiFuec/allRuta"
+                    name={"selectRuta"}
+                    ref={"selectRuta"}
+                    newOption={this.state.newOptionRuta}
+                  />
+                </div>
+              </div>
+
+              {this.state.option.map(function (data, i) {
+                return (
+                  <div key={i} ref={i} className="row">
+
+                    <div className="small-2 columns">
+                      <a data-key={i}
+                         onClick={this.delRelRuta}
+                         className="button">
+                        <i className="fi-minus"></i>
+                      </a>
+                    </div>
+
+                    <div className="small-10 columns">
+                      <SelectInput
+                        className="input-group-field"
+                        url="apiFuec/allRuta"
+                        name={"selectRuta_" + i}
+                        newOption={this.state.newOptionRuta}
+                      />
+                    </div>
+
+                  </div>
+                )
+              }, this)}
 
               <label>Contrato:
-                <input
+                <SelectInput
+                  url="apiFuec/allAgreement"
                   name="agreement"
-                  type="text"
-                  readOnly/>
+                  newOption={this.state.newOptionAgreement}
+                />
               </label>
 
               <label>Vehiculo:
@@ -163,6 +230,7 @@ const PageTwo = React.createClass({
           <FormContrato
             newOptionRuta={this.state.newOptionRuta}
             onItemNewRuta={this.handleNewElementRuta}
+            onItemNewAgreement={this.handleNewAgreement}
           />
         </div>
 

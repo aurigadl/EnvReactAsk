@@ -1,5 +1,6 @@
-from server import db
 import base64
+
+from server import db
 
 
 def image_format(imgInBinary):
@@ -22,6 +23,7 @@ class System(db.Model):
     nit_2 = db.Column(db.Integer)
     logo = db.Column(db.LargeBinary)
     sign = db.Column(db.LargeBinary)
+    id_company_legal = db.Column(db.Integer, default=0)
     secuence_contract = db.Column(db.Integer, default=0)
     secuence_payroll = db.Column(db.Integer, default=0)
     secuence_vehicle = db.Column(db.Integer, default=0)
@@ -36,9 +38,10 @@ class System(db.Model):
                  , nit_2=False
                  , logo=None
                  , sign=None
+                 , id_company_legal=None
                  , secuence_contract=False
                  , secuence_payroll=False
-                 , secuence_vehicle = False
+                 , secuence_vehicle=False
                  ):
         if name:
             self.name = name.lower()
@@ -58,6 +61,8 @@ class System(db.Model):
             self.logo = logo
         if sign:
             self.sign = sign
+        if id_company_legal:
+            self.id_company_legal = id_company_legal
         if secuence_contract:
             self.secuence_contract = secuence_contract
         if secuence_payroll:
@@ -73,8 +78,9 @@ class System(db.Model):
                     , email=self.email
                     , nit_1=self.nit_1
                     , nit_2=self.nit_2
-                    , logo= image_format(self.logo)
-                    , sign= image_format(self.sign)
+                    , logo=image_format(self.logo)
+                    , sign=image_format(self.sign)
+                    , id_company_legal=self.id_company_legal
                     , secuence_contract=self.secuence_contract
                     , secuence_payroll=self.secuence_payroll
                     , secuence_vehicle=self.secuence_vehicle

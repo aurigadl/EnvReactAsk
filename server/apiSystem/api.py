@@ -83,11 +83,20 @@ def update_marca_id():
     else:
         nit_2 = None
 
+
+
     if params.has_key('secuence_contract') and len(params['secuence_contract']) != 0:
         secuence_contract = params['secuence_contract']
         data.update(dict(secuence_contract=secuence_contract))
     else:
         secuence_contract = None
+
+    if params.has_key('id_company_legal') and len(params['id_company_legal']) != 0:
+        id_company_legal = params['id_company_legal']
+        data.update(dict(id_company_legal=id_company_legal))
+    else:
+        id_company_legal = None
+
 
     if params.has_key('secuence_payroll') and len(params['secuence_payroll']) != 0:
         secuence_payroll = params['secuence_payroll']
@@ -139,6 +148,7 @@ def update_marca_id():
                               , nit_2
                               , logo
                               , sign
+                              , id_company_legal
                               , secuence_contract
                               , secuence_payroll
                               , secuence_vehicle))
