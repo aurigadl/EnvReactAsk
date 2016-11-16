@@ -20,10 +20,12 @@ const PageTwo = React.createClass({
       newOptionRuta: false,
       newOptionAgreement: false,
 
-      no_agreefuec:'',
+      no_agreefuec: '',
       no_sec: '',
-      no_fuec:'',
-      id_company_legal:'',
+      no_fuec: '',
+      no_nit: '',
+      social_object: '',
+      id_company_legal: '',
       option: [],
 
       showMessage: false,
@@ -39,7 +41,7 @@ const PageTwo = React.createClass({
       }.bind(this))
       .catch(function (err) {
         cb_error(err);
-        console.log('AdminFormUser, there was an error!', err.statusText);
+        console.log('PageTwo, there was an error!', err.statusText);
       });
   },
 
@@ -56,19 +58,19 @@ const PageTwo = React.createClass({
 
   successHandlerSelect: function (remoteData) {
     var data = remoteData.result;
-    var d = new Date();
-    var n = d.getFullYear();
     var id_company_legal = data.id_company_legal.toString();
     var no_sec = data.secuence_contract.toString();
-
+    var nit1 = data.nit_1;
+    var nit2 = data.nit_2;
+    var social_object = data.name;
 
     this.setState({
       id_company_legal: id_company_legal,
       no_sec: no_sec,
-      no_fuec: id_company_legal + no_sec
+      no_fuec: id_company_legal + no_sec,
+      no_nit: nit1 + '-' + nit2,
+      social_object: social_object
     });
-
-    this.refs.no_car.value = (data.no_car) ? data.no_car : undefined;
   },
 
   errorHandlerSelect: function (remoteData) {
@@ -154,6 +156,120 @@ const PageTwo = React.createClass({
     });
   },
 
+
+  handleSubmitForm: function (e) {
+    e.preventDefault();
+    var ref = e.target.elements;
+    var data = [];
+    var relPerCar = new Object();
+    var no_fuec = ref.no_fuec.value;
+    var social_object = ref.social_object.value;
+    var nit = ref.nit.value;
+    var no_agreefuec = ref.no_agreefuec.value;
+    var contractor = ref.contractor.value;
+    var agreement_object = ref.agreement_object.value;
+    var kind_agreement_link = ref.kind_agreement_link.value;
+    var kind_agreement = ref.kind_agreement.value;
+    var init_date = ref.init_date.value;
+    var last_date = ref.last_date.value;
+    var agreement = ref.agreement.value;
+    var car = ref.car.value;
+
+
+    for (var prop in ref) {
+      if (!isNaN(prop) && prop != '0') {
+        result.push(prop);
+      }
+    }
+
+    for (var i = 0; i < result.length; i++) {
+      relPerCar.mod = ref[result[i]].value;
+      data.push(relPerCar);
+      relPerCar = new Object();
+    }
+
+
+    var params = {
+      type_person: type_person
+      , first_name: first_name
+      , last_name: last_name
+      , email: email
+      , phone: phone
+      , id_number: id_number
+      , id_type: id_type
+      , license: license
+      , effective_date: effective_date
+      , address: address
+    };
+
+    if (selectPerson === "") {
+
+      var parreq = {
+        method: 'POST',
+        url: 'apiFuec/newPerson',
+        params: {'params': params}
+      };
+
+      this.getRemoteData(parreq,
+        this.successFormCreate,
+        this.errorFormCreate
+      );
+
+    } else {
+
+      params['id'] = selectPerson;
+
+      var parreq = {
+        method: 'PUT',
+        url: 'apiFuec/updateIdPerson',
+        params: {
+          'params': params
+        }
+      };
+
+      this.getRemoteData(parreq,
+        this.successFormUpdate,
+        this.errorFormUpdate
+      );
+    }
+  },
+
+  successFormCreate: function (data) {
+    this.setState({
+      showMessage: true,
+      contextText: 'Se creo un nuevo FUEC',
+      typeMess: 'success',
+      newOptionSelectA: true
+    });
+
+    this.props.onItemNew(true);
+
+    setTimeout(function () {
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: '',
+        newOptionSelectA: false
+      })
+    }.bind(this), 3000);
+  },
+
+  errorFormCreate: function (err) {
+    this.setState({
+      showMessage: true,
+      contextText: 'No se Creo el FUEC',
+      typeMess: 'alert'
+    });
+    setTimeout(function () {
+      this.setState({
+        showMessage: false,
+        contextText: '',
+        typeMess: ''
+      })
+    }.bind(this), 3000);
+  },
+
+
   render: function () {
     return (
       <div className="row">
@@ -165,14 +281,14 @@ const PageTwo = React.createClass({
                 Transporte Terrestre Automotor Especial</h1>
             </div>
 
-            <form onSubmit={this.handleSubmitFuec}>
+            <form onSubmit={this.handleSubmitForm}>
 
               <label>No. FUEC
                 <input
                   name="no_fuec"
                   ref="no_fuec"
                   type="text"
-                  value = {this.state.no_fuec}
+                  value={this.state.no_fuec}
                   readOnly/>
               </label>
 
@@ -180,6 +296,7 @@ const PageTwo = React.createClass({
                 <input
                   name="social_object"
                   ref="social_object"
+                  value={this.state.social_object}
                   type="text"
                   readOnly/>
               </label>
@@ -188,6 +305,7 @@ const PageTwo = React.createClass({
                 <input
                   name="nit"
                   ref="nit"
+                  value={this.state.no_nit}
                   type="text"
                   readOnly/>
               </label>
@@ -205,6 +323,7 @@ const PageTwo = React.createClass({
               <label>Contratante:
                 <SelectInput
                   name="contractor"
+                  ref="contractor"
                   url="apiFuec/allPerson"
                 />
               </label>
@@ -212,7 +331,24 @@ const PageTwo = React.createClass({
               <label>Objeto del contrato:
                 <SelectInput
                   name="agreement_object"
+                  ref="agreement_object"
                   url="apiFuec/allObjectAgreement"
+                />
+              </label>
+
+              <label>Tipo de contrato:
+                <SelectInput
+                  name="kind_agreement"
+                  ref="kind_agreement"
+                  url="apiFuec/allKindAgreement"
+                />
+              </label>
+
+              <label>Con:
+                <SelectInput
+                  name="kind_agreement_link"
+                  ref="kind_agreement_link"
+                  url="apiFuec/allPerson"
                 />
               </label>
 
@@ -235,12 +371,14 @@ const PageTwo = React.createClass({
               </label>
 
               <div className="row">
+
                 <div className="small-2 columns">
                   <label>&nbsp;&nbsp;</label>
                   <a onClick={this.addNewRuta} className="button">
                     <i className="fi-plus"></i>
                   </a>
                 </div>
+
                 <div className="small-10 columns">
                   <label>Ruta: Origen - Destino</label>
                   <SelectInput
@@ -249,8 +387,10 @@ const PageTwo = React.createClass({
                     name={"selectRuta"}
                     ref={"selectRuta"}
                     newOption={this.state.newOptionRuta}
+                    onItemNew={this.handleNewElementRuta}
                   />
                 </div>
+
               </div>
 
               {this.state.option.map(function (data, i) {
@@ -271,6 +411,7 @@ const PageTwo = React.createClass({
                         url="apiFuec/allRuta"
                         name={"selectRuta_" + i}
                         newOption={this.state.newOptionRuta}
+                        onItemNew={this.handleNewElementRuta}
                       />
                     </div>
 
@@ -282,6 +423,7 @@ const PageTwo = React.createClass({
                 <SelectInput
                   url="apiFuec/allAgreement"
                   name="agreement"
+                  ref="agreement"
                   newOption={this.state.newOptionAgreement}
                 />
               </label>
@@ -289,7 +431,8 @@ const PageTwo = React.createClass({
               <label>Vehiculo:
                 <SelectInput
                   url="apiFuec/allCar"
-                  name="agreement"
+                  name="no_car"
+                  ref="no_car"
                   newOption={this.state.newOptionCar}
                 />
               </label>

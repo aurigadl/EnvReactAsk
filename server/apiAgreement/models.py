@@ -11,7 +11,7 @@ class Agreement(db.Model):
     id_person = db.Column(db.Integer, db.ForeignKey('person.id'))
     purpose = db.Column(db.String(255))
     id_route = db.Column(db.Integer, db.ForeignKey('ruta.id'))
-    id_type_agreement = db.Column(db.Integer, db.ForeignKey('tipo_contrato.id'))
+    id_type_agreement = db.Column(db.Integer, db.ForeignKey('kind_hiring.id'))
     init_date = db.Column(db.DateTime())
     last_date = db.Column(db.DateTime())
 

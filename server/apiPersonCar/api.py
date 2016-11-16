@@ -18,7 +18,7 @@ def user_id():
         if person_car is not None:
             person_car = person_car[0]
         else:
-            person_car = dict(mod='', person='')
+            person_car = json.JSONEncoder().encode([dict(mod='', person='')])
         return jsonify(dict(jsonrpc="2.0", result=person_car)), 200
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
