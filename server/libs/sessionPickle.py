@@ -1,8 +1,8 @@
 import os
-import errno
 from uuid import uuid1
 from pickle import UnpicklingError, dumps, loads
 from collections import MutableMapping
+
 from flask.sessions import SessionInterface, SessionMixin
 
 
@@ -42,7 +42,7 @@ class PickleSession(MutableMapping, SessionMixin):
         try:
             with open(self.path, 'rb') as blob:
                 self.data = loads(blob.read())
-        except (EnvironmentError, ValueError, EOFError, UnpicklingError): # OSError or IOError...
+        except (EnvironmentError, ValueError, EOFError, UnpicklingError):  # OSError or IOError...
             self.data = {}
 
     def save(self):
@@ -52,8 +52,9 @@ class PickleSession(MutableMapping, SessionMixin):
             blob.write(dumps(self.data))
         os.rename(new_name, self.path)
 
-    # Note: Newer versions of Flask no longer require 
-    # CallableAttributeProxy and PersistedObjectProxy
+        # Note: Newer versions of Flask no longer require
+        # CallableAttributeProxy and PersistedObjectProxy
+
 
 class PickleSessionInterface(SessionInterface):
     """Basic SessionInterface which uses the PickleSession."""
@@ -71,7 +72,7 @@ class PickleSessionInterface(SessionInterface):
         if not session:
             try:
                 os.unlink(session.path)
-            except EnvironmentError as e: # OSError or IOError...
+            except EnvironmentError as e:  # OSError or IOError...
                 print(os.strerror(e.errno))
             response.delete_cookie(
                 app.session_cookie_name, domain=domain)

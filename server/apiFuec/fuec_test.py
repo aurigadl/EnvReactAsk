@@ -30,7 +30,11 @@ class TestMovilidadRest(unittest.TestCase):
         header = {'Authorization': token}
 
         # json format correct without params
-        payload = {"jsonrpc": "2.0", "method": path1, "params": ""}
+        payload = {"jsonrpc": "2.0", "method": path1,
+                   "params": {"no_fuec":"201612432173345450","social_object":"EB company","nit":"2431434133-11","no_agreefuec":"73345","selectRuta":["1","2","3"],"contractor":"1","agreement_object":"2","kind_agreement_link":"1","kind_agreement":"2","init_date":"2016-12-31","last_date":"2017-12-31","agreement":"2","no_car":"2"}}
+
+
+
         r = reqsess.get(self.URL + path1, json=payload, headers=header)
         self.assertEqual(r.status_code, 200, 'Modality is ok')
         answer_json = json.loads(r.text)

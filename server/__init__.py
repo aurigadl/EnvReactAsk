@@ -46,6 +46,7 @@ from apiPerson.api import apiPerson
 from apiCar.api import apiCar
 from apiAgreement.api import apiAgreement
 from apiPersonCar.api import apiPersonCar
+from apiFuec.api import apiFuec
 
 app.register_blueprint(apiUser)
 app.register_blueprint(apiRole)
@@ -60,6 +61,7 @@ app.register_blueprint(apiPerson)
 app.register_blueprint(apiCar)
 app.register_blueprint(apiAgreement)
 app.register_blueprint(apiPersonCar)
+app.register_blueprint(apiFuec)
 
 # configure Flask logging
 logger = FileHandler('error.log')

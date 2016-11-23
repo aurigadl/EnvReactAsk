@@ -55,16 +55,6 @@ def new_agreement():
     else:
         id_person = None
 
-    if params.has_key('purpose') and len(params['purpose']) != 0:
-        purpose = params['purpose']
-    else:
-        purpose = None
-
-    if params.has_key('id_route') and len(params['id_route']) != 0:
-        id_route = params['id_route']
-    else:
-        id_route = None
-
     if params.has_key('id_type_agreement') and len(params['id_type_agreement']) != 0:
         id_type_agreement = params['id_type_agreement']
     else:
@@ -83,8 +73,6 @@ def new_agreement():
     new_agreement_db = Agreement(no_new_agreement
                                  , no_trip
                                  , id_person
-                                 , purpose
-                                 , id_route
                                  , id_type_agreement
                                  , init_date
                                  , last_date)
@@ -122,12 +110,6 @@ def update_agreement_id():
     if params.has_key('id_number') and len(params['id_person']) != 0:
         data.update(dict(id_type=params['id_person']))
 
-    if params.has_key('purpose') and len(params['purpose']) != 0:
-        data.update(dict(purpose=params['purpose']))
-
-    if params.has_key('id_route') and len(params['id_route']) != 0:
-        data.update(dict(id_route=params['id_route']))
-
     if params.has_key('id_type_agreement') and len(params['id_type_agreement']) != 0:
         data.update(dict(id_type_agreement=params['id_type_agreement']))
 
@@ -163,31 +145,25 @@ def user_id():
         agreement = Agreement.query.with_entities(Agreement.no_agreement
                                                   , Agreement.no_trip
                                                   , Agreement.id_person
-                                                  , Agreement.purpose
-                                                  , Agreement.id_route
                                                   , Agreement.id_type_agreement
                                                   , Agreement.init_date
                                                   , Agreement.last_date).filter(
             Agreement.id == agreement_id).first()
 
-        if agreement[10]:
+        if agreement[4]:
             lst = list(agreement)
-            lst[10] = agreement[10].strftime('%Y-%m-%d')
+            lst[4] = agreement[4].strftime('%Y-%m-%d')
             agreement = tuple(lst)
 
-        if agreement[11]:
+        if agreement[5]:
             lst = list(agreement)
-            lst[11] = agreement[11].strftime('%Y-%m-%d')
+            lst[5] = agreement[5].strftime('%Y-%m-%d')
             agreement = tuple(lst)
 
         dict_agreement = dict(
             zip(('no_agreement'
                  , 'no_trip'
                  , 'id_person'
-                 , 'nit_1'
-                 , 'nit_2'
-                 , 'purpose'
-                 , 'id_route'
                  , 'id_type_agreement'
                  , 'init_date'
                  , 'last_date'), agreement))

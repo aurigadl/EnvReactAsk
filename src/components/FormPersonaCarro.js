@@ -59,18 +59,15 @@ var FormPersonaCarro = React.createClass({
     var data = JSON.parse(remoteData.result);
     var dataArray = [];
 
-    this.setState({
-      option: [{mod:'', person:''}]
-    });
-
     for (var prop in data) {
       var _mod = (data[prop].mod) ? data[prop].mod : undefined;
       var _per = (data[prop].person) ? data[prop].person : undefined;
 
       if(_mod != undefined && _per != undefined){
         dataArray.push({mod: _mod, person: _per});
+      }else{
+        dataArray = [];
       }
-
     }
 
     this.setState({

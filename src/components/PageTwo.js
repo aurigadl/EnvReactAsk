@@ -18,7 +18,6 @@ const PageTwo = React.createClass({
       newOptionCar: false,
       newOptionMarca: false,
       newOptionRuta: false,
-      newOptionAgreement: false,
 
       no_agreefuec: '',
       no_sec: '',
@@ -131,7 +130,7 @@ const PageTwo = React.createClass({
 
   addNewRuta: function () {
     var newOption = this.state.option;
-    newOption.push({id: ''});
+    newOption.unshift({});
     this.setState({
       option: newOption
     });
@@ -161,7 +160,7 @@ const PageTwo = React.createClass({
     e.preventDefault();
     var ref = e.target.elements;
     var data = [];
-    var relPerCar = new Object();
+    var x = 0;
     var no_fuec = ref.no_fuec.value;
     var social_object = ref.social_object.value;
     var nit = ref.nit.value;
@@ -172,66 +171,43 @@ const PageTwo = React.createClass({
     var kind_agreement = ref.kind_agreement.value;
     var init_date = ref.init_date.value;
     var last_date = ref.last_date.value;
-    var agreement = ref.agreement.value;
-    var car = ref.car.value;
+    var selectRuta = ref.selectRuta.value;
+    var no_car = ref.no_car.value;
 
+    data.push(selectRuta);
 
-    for (var prop in ref) {
-      if (!isNaN(prop) && prop != '0') {
-        result.push(prop);
-      }
+    while (eval('ref.selectRuta_' + x) !== undefined) {
+      data.push(eval('ref.selectRuta_' + x).value);
+      x++;
     }
-
-    for (var i = 0; i < result.length; i++) {
-      relPerCar.mod = ref[result[i]].value;
-      data.push(relPerCar);
-      relPerCar = new Object();
-    }
-
 
     var params = {
-      type_person: type_person
-      , first_name: first_name
-      , last_name: last_name
-      , email: email
-      , phone: phone
-      , id_number: id_number
-      , id_type: id_type
-      , license: license
-      , effective_date: effective_date
-      , address: address
+      no_fuec: no_fuec
+      , social_object: social_object
+      , nit: nit
+      , no_agreefuec: no_agreefuec
+      , selectRuta: data
+      , contractor: contractor
+      , agreement_object: agreement_object
+      , kind_agreement_link: kind_agreement_link
+      , kind_agreement: kind_agreement
+      , init_date: init_date
+      , last_date: last_date
+      , no_car: no_car
     };
 
-    if (selectPerson === "") {
+    var parreq = {
+      method: 'PUT',
+      url: 'apiFuec/newFuec',
+      params: {
+        'params': params
+      }
+    };
 
-      var parreq = {
-        method: 'POST',
-        url: 'apiFuec/newPerson',
-        params: {'params': params}
-      };
-
-      this.getRemoteData(parreq,
-        this.successFormCreate,
-        this.errorFormCreate
-      );
-
-    } else {
-
-      params['id'] = selectPerson;
-
-      var parreq = {
-        method: 'PUT',
-        url: 'apiFuec/updateIdPerson',
-        params: {
-          'params': params
-        }
-      };
-
-      this.getRemoteData(parreq,
-        this.successFormUpdate,
-        this.errorFormUpdate
-      );
-    }
+    this.getRemoteData(parreq,
+      this.successFormCreate,
+      this.errorFormCreate
+    );
   },
 
   successFormCreate: function (data) {
@@ -317,7 +293,7 @@ const PageTwo = React.createClass({
                   ref="no_agreefuec"
                   type="text"
                   onChange={this.handleChangeNoAgreement}
-                />
+                  required/>
               </label>
 
               <label>Contratante:
@@ -325,7 +301,7 @@ const PageTwo = React.createClass({
                   name="contractor"
                   ref="contractor"
                   url="apiFuec/allPerson"
-                />
+                  required/>
               </label>
 
               <label>Objeto del contrato:
@@ -333,7 +309,7 @@ const PageTwo = React.createClass({
                   name="agreement_object"
                   ref="agreement_object"
                   url="apiFuec/allObjectAgreement"
-                />
+                  required/>
               </label>
 
               <label>Tipo de contrato:
@@ -341,7 +317,7 @@ const PageTwo = React.createClass({
                   name="kind_agreement"
                   ref="kind_agreement"
                   url="apiFuec/allKindAgreement"
-                />
+                  required/>
               </label>
 
               <label>Con:
@@ -349,7 +325,7 @@ const PageTwo = React.createClass({
                   name="kind_agreement_link"
                   ref="kind_agreement_link"
                   url="apiFuec/allPerson"
-                />
+                  required/>
               </label>
 
               <label>Fecha Inicial
@@ -388,7 +364,7 @@ const PageTwo = React.createClass({
                     ref={"selectRuta"}
                     newOption={this.state.newOptionRuta}
                     onItemNew={this.handleNewElementRuta}
-                  />
+                    required/>
                 </div>
 
               </div>
@@ -419,22 +395,13 @@ const PageTwo = React.createClass({
                 )
               }, this)}
 
-              <label>Contrato:
-                <SelectInput
-                  url="apiFuec/allAgreement"
-                  name="agreement"
-                  ref="agreement"
-                  newOption={this.state.newOptionAgreement}
-                />
-              </label>
-
               <label>Vehiculo:
                 <SelectInput
                   url="apiFuec/allCar"
                   name="no_car"
                   ref="no_car"
                   newOption={this.state.newOptionCar}
-                />
+                  required/>
               </label>
 
               <div className="row">

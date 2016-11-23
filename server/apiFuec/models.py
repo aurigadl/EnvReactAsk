@@ -1,7 +1,7 @@
 from server import db
 
 
-class fuec(db.Model):
+class Fuec(db.Model):
     __table_args__ = {'extend_existing': True}
     __tablename__ = 'fuec'
     id = db.Column(db.Integer, primary_key=True)
