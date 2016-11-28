@@ -11,3 +11,4 @@ nodeenv==0.13.6
 wsgiref==0.1.2
 requests==2.10.0
 flup==1.0.2
+fpdf=1.7.2

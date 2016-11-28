@@ -2,10 +2,10 @@ from datetime import datetime
 
 
 class calendarTranslate():
-    dict_calendar = {'weekDict': {1: 'Lunes', 2: 'Martes',
-                                  3: 'Miercoles', 4: 'Jueves',
-                                  5: 'Viernes', 6: 'Sabado',
-                                  7: 'Domingo'},
+    dict_calendar = {'weekDict': {0: 'Lunes', 1: 'Martes',
+                                  2: 'Miercoles', 3: 'Jueves',
+                                  4: 'Viernes', 5: 'Sabado',
+                                  6: 'Domingo'},
 
                      'monthDict': {1: 'Enero', 2: 'Febrero',
                                    3: 'Marzo', 4: 'Abril',

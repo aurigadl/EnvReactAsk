@@ -214,18 +214,14 @@ const PageTwo = React.createClass({
     this.setState({
       showMessage: true,
       contextText: 'Se creo un nuevo FUEC',
-      typeMess: 'success',
-      newOptionSelectA: true
+      typeMess: 'success'
     });
-
-    this.props.onItemNew(true);
 
     setTimeout(function () {
       this.setState({
         showMessage: false,
         contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
+        typeMess: ''
       })
     }.bind(this), 3000);
   },
@@ -301,6 +297,8 @@ const PageTwo = React.createClass({
                   name="contractor"
                   ref="contractor"
                   url="apiFuec/allPerson"
+                  newOption={this.state.newOptionPerson}
+                  onItemNew={this.handleNewElementPerson}
                   required/>
               </label>
 
@@ -325,6 +323,8 @@ const PageTwo = React.createClass({
                   name="kind_agreement_link"
                   ref="kind_agreement_link"
                   url="apiFuec/allPerson"
+                  newOption={this.state.newOptionPerson}
+                  onItemNew={this.handleNewElementPerson}
                   required/>
               </label>
 

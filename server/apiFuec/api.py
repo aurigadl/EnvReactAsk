@@ -6,13 +6,13 @@ from models import Fuec
 from server import rbac, db
 from server.apiPerson.models import Person
 from server.apiKindAgreement.models import KindAgreement
-from server.apiCar.models import Car,ClassCar
+from server.apiCar.models import Car, ClassCar
 from server.apiMarcas.models import Marca
 from server.apiPersonCar.models import PersonCar
 from server.apiRuta.models import Ruta
 from server.apiObjectAgreement.models import ObjectAgreement
 from server.libs.calendarTranslate import calendarTranslate as trasCal
-from server.apiModality.models import Modality
+from server.pdfTemplate.fuec import TmpPdfFuec
 
 apiFuec = Blueprint('apiFuec', __name__)
 
@@ -22,7 +22,8 @@ apiFuec = Blueprint('apiFuec', __name__)
 @rbac.allow(['admon', 'candidate'], methods=['PUT'])
 def api_fuec_new():
     json_data = request.get_json()
-    new_person_car = []
+    data_drivers = []
+    contractor_owner = []
     if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
@@ -95,29 +96,36 @@ def api_fuec_new():
     contractor, id_contractor = d_contractor
 
     object_agreement = ObjectAgreement.query.with_entities(ObjectAgreement.name).filter(
-        ObjectAgreement.id == agreement_object).first()
+        ObjectAgreement.id == agreement_object).first()[0]
 
     ruta = json.JSONEncoder().encode(Ruta.query.with_entities(Ruta.name).filter(
         Ruta.id.in_(selectRuta)).all())
 
-    kindAgreement = KindAgreement.query.with_entities(KindAgreement.id, KindAgreement.name).filter(
-        KindAgreement.id == kind_agreement).all()
+    kindAgreement = json.JSONEncoder().encode(KindAgreement.query.with_entities(KindAgreement.id, KindAgreement.name).filter(
+        KindAgreement.id == kind_agreement).first())
 
-    kind_agreement_link = Person.query.with_entities(Person.first_name + ' ' + Person.last_name).filter(
-        Person.id == kind_agreement_link).first()
+    kind_agreement_link = json.JSONEncoder().encode(Person.query.with_entities(Person.first_name + ' ' + Person.last_name).filter(
+        Person.id == kind_agreement_link).first())
 
-    text_init_date = trasCal(init_date).translate()
-    text_last_date = trasCal(last_date).translate()
+    text_init_date = json.JSONEncoder().encode(trasCal(init_date).translate())
+    text_last_date = json.JSONEncoder().encode(trasCal(last_date).translate())
 
-    car = Car.query.join(Marca.id).join(ClassCar.id).with_entities(Car.no_car
-                                                                   , Car.license_plate
-                                                                   , Car.model
-                                                                   , Marca.name
-                                                                   , ClassCar.name
-                                                                   , Car.operation_card).filter(
-        Car.id == id_car, Marca.id == Car.brand, ClassCar.id == Car.class_Car).all()
+    car = Car.query.join(Marca, ClassCar).with_entities(Marca.name
+                                                        , ClassCar.name
+                                                        , Car.no_car
+                                                        , Car.license_plate
+                                                        , Car.model
+                                                        , Car.operation_card
+                                                        ).filter(Car.brand == Marca.id, Car.id == id_car,
+                                                                 Car.class_car == ClassCar.id).first()
 
-    modality = Modality.query.with_entities(Modality.id, Modality.name).all()
+    car_brand = car[0]
+    car_class_car = car[1]
+    car_no = car[2]
+    car_license_plate = car[3]
+    car_model = car[4]
+    car_operation = car[5]
+
     person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()
 
     for r in person_car:
@@ -132,10 +140,19 @@ def api_fuec_new():
                                                   , Person.license
                                                   , Person.effective_date
                                                   , Person.address).filter(Person.id == rel['person']).first()
-            d_modal = dict(modality)[int(rel['mod'])]
 
-            element = dict(per=d_person, mod=d_modal)
-            new_person_car.append(element)
+            if d_person[8]:
+                lst = list(d_person)
+                lst[8] = d_person[8].strftime("%Y-%m-%d %H:%M:%S")
+                d_person = tuple(lst)
+
+            if int(rel['mod']) == 1:
+                data_drivers.append(d_person)
+            else:
+                contractor_owner.append(d_person)
+
+    makeTmp = TmpPdfFuec('Aurigadl')
+    makeTmp()
 
     new_fuec_db = Fuec(no_fuec
                        , social_object
@@ -149,8 +166,14 @@ def api_fuec_new():
                        , kind_agreement_link
                        , text_init_date
                        , text_last_date
-                       , car
-                       , new_person_car)
+                       , car_no
+                       , car_license_plate
+                       , car_model
+                       , car_brand
+                       , car_class_car
+                       , car_operation
+                       , json.JSONEncoder().encode(data_drivers)
+                       , json.JSONEncoder().encode(contractor_owner))
 
     db.session.add(new_fuec_db)
     db.session.commit()
