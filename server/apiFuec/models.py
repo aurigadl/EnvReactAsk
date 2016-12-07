@@ -29,6 +29,8 @@ class Fuec(db.Model):
     data_driver_json = db.Column(db.String(1000))
     contractor_owner = db.Column(db.String(1000))
 
+    file_pdf = db.Column(db.LargeBinary)
+
     def __init__(self,
                  no_fuec,
                  social_object,
@@ -52,7 +54,9 @@ class Fuec(db.Model):
                  car_operation,
 
                  data_driver,
-                 contractor_owner):
+                 contractor_owner,
+                 file_pdf):
+
         if no_fuec:
             self.no_fuec = no_fuec
         if social_object:
@@ -93,3 +97,5 @@ class Fuec(db.Model):
             self.data_driver_json = data_driver
         if contractor_owner:
             self.contractor_owner = contractor_owner
+        if file_pdf:
+            self.file_pdf = file_pdf

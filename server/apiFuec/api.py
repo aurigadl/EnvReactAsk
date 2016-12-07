@@ -1,4 +1,5 @@
 import json
+import os
 
 from flask import Blueprint, jsonify, request
 
@@ -13,6 +14,7 @@ from server.apiRuta.models import Ruta
 from server.apiObjectAgreement.models import ObjectAgreement
 from server.libs.calendarTranslate import calendarTranslate as trasCal
 from server.pdfTemplate.fuec import TmpPdfFuec
+from server.apiSystem.models import System
 
 apiFuec = Blueprint('apiFuec', __name__)
 
@@ -23,7 +25,6 @@ apiFuec = Blueprint('apiFuec', __name__)
 def api_fuec_new():
     json_data = request.get_json()
     data_drivers = []
-    contractor_owner = []
     if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
@@ -98,17 +99,17 @@ def api_fuec_new():
     object_agreement = ObjectAgreement.query.with_entities(ObjectAgreement.name).filter(
         ObjectAgreement.id == agreement_object).first()[0]
 
-    ruta = json.JSONEncoder().encode(Ruta.query.with_entities(Ruta.name).filter(
-        Ruta.id.in_(selectRuta)).all())
+    ruta = Ruta.query.with_entities(Ruta.name).filter(
+        Ruta.id.in_(selectRuta)).all()
 
-    kindAgreement = json.JSONEncoder().encode(KindAgreement.query.with_entities(KindAgreement.id, KindAgreement.name).filter(
-        KindAgreement.id == kind_agreement).first())
+    kindAgreement = KindAgreement.query.with_entities(KindAgreement.id, KindAgreement.name).filter(
+        KindAgreement.id == kind_agreement).first()
 
-    kind_agreement_link = json.JSONEncoder().encode(Person.query.with_entities(Person.first_name + ' ' + Person.last_name).filter(
-        Person.id == kind_agreement_link).first())
+    kind_agreement_link = Person.query.with_entities(Person.first_name + ' ' + Person.last_name).filter(
+        Person.id == kind_agreement_link).first()
 
-    text_init_date = json.JSONEncoder().encode(trasCal(init_date).translate())
-    text_last_date = json.JSONEncoder().encode(trasCal(last_date).translate())
+    text_init_date = trasCal(init_date).translate()
+    text_last_date = trasCal(last_date).translate()
 
     car = Car.query.join(Marca, ClassCar).with_entities(Marca.name
                                                         , ClassCar.name
@@ -149,10 +150,54 @@ def api_fuec_new():
             if int(rel['mod']) == 1:
                 data_drivers.append(d_person)
             else:
-                contractor_owner.append(d_person)
+                contractor_owner = d_person
 
-    makeTmp = TmpPdfFuec('Aurigadl')
-    makeTmp()
+    system_all = System.query.first()
+    nameCompany = system_all.get_json()
+
+    companyLogo = system_all.get_json()
+    tmp_companyLogo = 'tmp/' + str(os.urandom(24)) + '.pdf'
+    fcl = open(tmp_companyLogo, 'w')
+    fcl.write(companyLogo)
+    fcl.close
+
+    img_sign = system_all.get_json()
+    tmp_img_sign = 'tmp/' + str(os.urandom(24)) + '.pdf'
+    fcl = open(tmp_img_sign, 'w')
+    fcl.write(img_sign)
+    fcl.close
+
+    try:
+        makeTmp = TmpPdfFuec(nameCompany,
+                             tmp_companyLogo,
+                             no_fuec,
+                             social_object,
+                             nit,
+                             no_agreefuec,
+                             contractor,
+                             id_contractor,
+                             object_agreement,
+                             ruta,
+                             kindAgreement,
+                             kind_agreement_link,
+                             text_init_date,
+                             text_last_date,
+                             car_no,
+                             car_license_plate,
+                             car_model,
+                             car_brand,
+                             car_class_car,
+                             car_operation,
+                             data_drivers,
+                             contractor_owner,
+                             tmp_img_sign)
+
+        file_pdf = makeTmp()
+    except Exception as error:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": error}), 400
+
+    os.remove(tmp_companyLogo)
+    os.remove(tmp_img_sign)
 
     new_fuec_db = Fuec(no_fuec
                        , social_object
@@ -161,11 +206,11 @@ def api_fuec_new():
                        , contractor
                        , id_contractor
                        , object_agreement
-                       , ruta
-                       , kindAgreement
-                       , kind_agreement_link
-                       , text_init_date
-                       , text_last_date
+                       , json.JSONEncoder().encode(ruta)
+                       , json.JSONEncoder().encode(kindAgreement)
+                       , json.JSONEncoder().encode(kind_agreement_link)
+                       , json.JSONEncoder().encode(text_init_date)
+                       , json.JSONEncoder().encode(text_last_date)
                        , car_no
                        , car_license_plate
                        , car_model
@@ -173,7 +218,8 @@ def api_fuec_new():
                        , car_class_car
                        , car_operation
                        , json.JSONEncoder().encode(data_drivers)
-                       , json.JSONEncoder().encode(contractor_owner))
+                       , json.JSONEncoder().encode(contractor_owner)
+                       , file_pdf)
 
     db.session.add(new_fuec_db)
     db.session.commit()
