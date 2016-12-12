@@ -14,7 +14,7 @@ class TmpPdfFuec:
                  , contractor=None
                  , id_contractor=None
                  , object_agreement=None
-                 , ruta=None
+                 , route=None
                  , kindAgreement=' '
                  , kind_agreement_link=' '
                  , text_init_date=None
@@ -28,12 +28,6 @@ class TmpPdfFuec:
                  , data_drivers=None
                  , contractor_owner=None
                  , img_sign=None):
-
-        # search if some var are empty in this case
-        # make exception because all var are necessary
-        for name_var, val_var in locals().items():
-            if val_var is None:
-                raise Exception(name_var + ' is None')
 
         self.nameCompany = nameCompany
         self.companyLogo = companyLogo
@@ -57,13 +51,7 @@ class TmpPdfFuec:
 
         self.kind_agreement_link = kind_agreement_link
 
-        self.text_init_date_y = text_init_date[0]
-        self.text_init_date_m = text_init_date[1]
-        self.text_init_date_d = text_init_date[2]
-
-        self.text_last_date_y = text_last_date[0]
-        self.text_last_date_m = text_last_date[1]
-        self.text_last_date_d = text_last_date[2]
+        self.img_sign = img_sign
 
         self.car_no = car_no
         self.car_license_plate = car_license_plate
@@ -72,15 +60,28 @@ class TmpPdfFuec:
         self.car_class_car = car_class_car
         self.car_operation = car_operation
 
+        self.text_init_date = text_init_date
+        self.text_last_date = text_last_date
+
         self.data_drivers = data_drivers
         self.contractor_owner = contractor_owner
-
-        for i in range(len(ruta)):
-            self.ruta += 'Ruta '+ i + '' + ruta[i] + ''
-        self.img_sign = img_sign
-
+        self.route = route
 
     def __call__(self):
+
+        route = ''
+
+        text_init_date_y = self.text_init_date[0]
+        text_init_date_m = self.text_init_date[1]
+        text_init_date_d = self.text_init_date[2]
+
+        text_last_date_y = self.text_last_date[0]
+        text_last_date_m = self.text_last_date[1]
+        text_last_date_d = self.text_last_date[2]
+
+        for i in range(len(self.route)):
+            route += 'Ruta '+ i + '' + route[i] + ''
+
         pdf = fpdf.FPDF(format='letter')
         pdf.set_margins(15, 15, 15)
         pdf.add_page()
@@ -241,7 +242,7 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(70, 124)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt=self.text_init_date_d, border=0, align='C')
+        pdf.cell(w=45, h=0, txt=text_init_date_d, border=0, align='C')
 
         # Title Path
         pdf.set_xy(110, 119)
@@ -250,7 +251,7 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(110, 124)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt=self.text_init_date_m, border=0, align='C')
+        pdf.cell(w=45, h=0, txt=text_init_date_m, border=0, align='C')
 
         # Title Path
         pdf.set_xy(155, 119)
@@ -259,7 +260,7 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(155, 124)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt=self.text_init_date_y, border=0, align='C')
+        pdf.cell(w=45, h=0, txt=text_init_date_y, border=0, align='C')
 
 
         # Title Path
@@ -270,17 +271,17 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(70, 130)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt=self.text_last_date_d, border=0, align='C')
+        pdf.cell(w=45, h=0, txt=text_last_date_d, border=0, align='C')
 
         # Content
         pdf.set_xy(110, 130)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt=self.text_last_date_m, border=0, align='C')
+        pdf.cell(w=45, h=0, txt=text_last_date_m, border=0, align='C')
 
         # Content
         pdf.set_xy(155, 130)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt=self.text_last_date_y, border=0, align='C')
+        pdf.cell(w=45, h=0, txt=text_last_date_y, border=0, align='C')
 
         # text title
         pdf.set_xy(17, 137)
@@ -474,7 +475,7 @@ class TmpPdfFuec:
         pdf.set_font("Arial", size=9)
         pdf.set_xy(17, 213)
         pdf.multi_cell(w=182, h=4,
-                       txt=self.ruta,
+                       txt=self.route,
                        border=0, align='J')
 
         # End page
@@ -498,9 +499,3 @@ class TmpPdfFuec:
         pdf.image(self.img_sign, 136, 241, 62, 20)
         return pdf.output('temp.pdf')
         # return pdf.output('temp.pdf', 'S')
-
-try:
-    test = TmpPdfFuec()
-    test()
-except Exception as error:
-    print('caught this error: ' + repr(error))

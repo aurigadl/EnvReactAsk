@@ -1,5 +1,5 @@
 import json
-import os
+import os, random
 
 from flask import Blueprint, jsonify, request
 
@@ -32,11 +32,6 @@ def api_fuec_new():
 
     if params.has_key('no_fuec') and len(params['no_fuec']) != 0:
         no_fuec = params['no_fuec']
-    else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
-
-    if params.has_key('social_object') and len(params['social_object']) != 0:
-        social_object = params['social_object']
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
@@ -153,25 +148,24 @@ def api_fuec_new():
                 contractor_owner = d_person
 
     system_all = System.query.first()
-    nameCompany = system_all.get_json()
+    nameCompany = system_all.get_json()['name']
 
-    companyLogo = system_all.get_json()
-    tmp_companyLogo = 'tmp/' + str(os.urandom(24)) + '.pdf'
+    companyLogo = system_all.get_json()['logo']
+    tmp_companyLogo = '/tmp/' + str(int(random.random()*10000)) + '.pdf'
     fcl = open(tmp_companyLogo, 'w')
     fcl.write(companyLogo)
     fcl.close
 
-    img_sign = system_all.get_json()
-    tmp_img_sign = 'tmp/' + str(os.urandom(24)) + '.pdf'
+    img_sign = system_all.get_json()['sign']
+    tmp_img_sign = '/tmp/' + str(int(random.random()*10000)) + '.pdf'
     fcl = open(tmp_img_sign, 'w')
     fcl.write(img_sign)
     fcl.close
 
     try:
-        makeTmp = TmpPdfFuec(nameCompany,
-                             tmp_companyLogo,
+        makeTmp = TmpPdfFuec(tmp_companyLogo,
                              no_fuec,
-                             social_object,
+                             nameCompany,
                              nit,
                              no_agreefuec,
                              contractor,
@@ -200,7 +194,7 @@ def api_fuec_new():
     os.remove(tmp_img_sign)
 
     new_fuec_db = Fuec(no_fuec
-                       , social_object
+                       , nameCompany
                        , nit
                        , no_agreefuec
                        , contractor
