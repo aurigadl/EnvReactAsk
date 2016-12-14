@@ -5,7 +5,6 @@ class TmpPdfFuec:
     # this will define the ELEMENTS that will
     # compose the template.
     def __init__(self
-                 , nameCompany=None
                  , companyLogo=None
                  , code_fuec=None
                  , social_object=None
@@ -29,7 +28,6 @@ class TmpPdfFuec:
                  , contractor_owner=None
                  , img_sign=None):
 
-        self.nameCompany = nameCompany
         self.companyLogo = companyLogo
         self.code_fuec = code_fuec
         self.social_object = social_object
@@ -42,11 +40,11 @@ class TmpPdfFuec:
         self.kind_agreement_1 = ' '
         self.kind_agreement_2 = ' '
         self.kind_agreement_3 = ' '
-        if kindAgreement is 1:
+        if kindAgreement[0] is 1:
             self.kind_agreement_1 = 'X'
-        elif kindAgreement is 2:
+        elif kindAgreement[0] is 2:
             self.kind_agreement_2 = 'X'
-        elif kindAgreement is 3:
+        elif kindAgreement[0] is 3:
             self.kind_agreement_3 = 'X'
 
         self.kind_agreement_link = kind_agreement_link
@@ -80,7 +78,7 @@ class TmpPdfFuec:
         text_last_date_d = self.text_last_date[2]
 
         for i in range(len(self.route)):
-            route += 'Ruta '+ i + '' + route[i] + ''
+            route += 'Ruta_'+ str(i) + ': ' + str(self.route[i][0]) + ' '
 
         pdf = fpdf.FPDF(format='letter')
         pdf.set_margins(15, 15, 15)
@@ -99,7 +97,7 @@ class TmpPdfFuec:
 
         # image min-transporte
         pdf.image('server/image/min_transporte.jpg', 20, 24, 85, 13)
-        pdf.image('server/image/blanco.jpg', 130, 18.5, 66, 23)
+        pdf.image(self.companyLogo, 130, 18.5, 66, 23, 'png')
 
         # line split header
         pdf.line(15, 45, 201, 45)
@@ -118,7 +116,7 @@ class TmpPdfFuec:
         pdf.code39(self.code_fuec, 20, 60, w=1, h=10)
         pdf.set_xy(122, 65)
         pdf.set_font("Arial", 'B', size=13)
-        pdf.cell(w=80, h=2, txt='No ' + self.code_fuec, border=0, align='C')
+        pdf.cell(w=80, h=2, txt=self.code_fuec, border=0, align='C')
 
         # table 3 rows and 2 columns
         # line split cell
@@ -475,7 +473,7 @@ class TmpPdfFuec:
         pdf.set_font("Arial", size=9)
         pdf.set_xy(17, 213)
         pdf.multi_cell(w=182, h=4,
-                       txt=self.route,
+                       txt=route,
                        border=0, align='J')
 
         # End page
@@ -496,6 +494,7 @@ class TmpPdfFuec:
         pdf.set_xy(17, 259)
         pdf.cell(w=111, txt='Radicado No. 12342341234132445345', border=0, align='L')
 
-        pdf.image(self.img_sign, 136, 241, 62, 20)
+        pdf.image(self.img_sign, 136, 241, 62, 20, 'png')
+        #return pdf.output()
         return pdf.output('temp.pdf')
-        # return pdf.output('temp.pdf', 'S')
+        #return pdf.output('temp.pdf', 'S')

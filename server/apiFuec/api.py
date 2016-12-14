@@ -103,6 +103,8 @@ def api_fuec_new():
     kind_agreement_link = Person.query.with_entities(Person.first_name + ' ' + Person.last_name).filter(
         Person.id == kind_agreement_link).first()
 
+    kind_agreement_link = kind_agreement_link[0]
+
     text_init_date = trasCal(init_date).translate()
     text_last_date = trasCal(last_date).translate()
 
@@ -116,11 +118,11 @@ def api_fuec_new():
                                                                  Car.class_car == ClassCar.id).first()
 
     car_brand = car[0]
-    car_class_car = car[1]
-    car_no = car[2]
-    car_license_plate = car[3]
-    car_model = car[4]
-    car_operation = car[5]
+    car_class_car = str(car[1])
+    car_no = str(car[2])
+    car_license_plate = str(car[3])
+    car_model = str(car[4])
+    car_operation = str(car[5])
 
     person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()
 
@@ -151,44 +153,44 @@ def api_fuec_new():
     nameCompany = system_all.get_json()['name']
 
     companyLogo = system_all.get_json()['logo']
-    tmp_companyLogo = '/tmp/' + str(int(random.random()*10000)) + '.pdf'
-    fcl = open(tmp_companyLogo, 'w')
-    fcl.write(companyLogo)
-    fcl.close
+    data_logo = companyLogo.split(',')[1].decode('base64')
+    tmp_companyLogo = 'server/tmp/' + str(int(random.random()*1000000)) + '.png'
+    fcl = open(tmp_companyLogo, 'wb')
+    fcl.write(data_logo)
+    fcl.close()
 
     img_sign = system_all.get_json()['sign']
-    tmp_img_sign = '/tmp/' + str(int(random.random()*10000)) + '.pdf'
-    fcl = open(tmp_img_sign, 'w')
-    fcl.write(img_sign)
-    fcl.close
+    data_sign = img_sign.split(',')[1].decode('base64')
+    tmp_img_sign = 'server/tmp/' + str(int(random.random()*1000000)) + '.png'
+    fcs = open(tmp_img_sign, 'wb')
+    fcs.write(data_sign)
+    fcs.close()
 
-    try:
-        makeTmp = TmpPdfFuec(tmp_companyLogo,
-                             no_fuec,
-                             nameCompany,
-                             nit,
-                             no_agreefuec,
-                             contractor,
-                             id_contractor,
-                             object_agreement,
-                             ruta,
-                             kindAgreement,
-                             kind_agreement_link,
-                             text_init_date,
-                             text_last_date,
-                             car_no,
-                             car_license_plate,
-                             car_model,
-                             car_brand,
-                             car_class_car,
-                             car_operation,
-                             data_drivers,
-                             contractor_owner,
-                             tmp_img_sign)
+    makeTmp = TmpPdfFuec(tmp_companyLogo,
+                         no_fuec,
+                         nameCompany,
+                         nit,
+                         no_agreefuec,
+                         contractor,
+                         id_contractor,
+                         object_agreement,
+                         ruta,
+                         kindAgreement,
+                         kind_agreement_link,
+                         text_init_date,
+                         text_last_date,
+                         car_no,
+                         car_license_plate,
+                         car_model,
+                         car_brand,
+                         car_class_car,
+                         car_operation,
+                         data_drivers,
+                         contractor_owner,
+                         tmp_img_sign)
 
-        file_pdf = makeTmp()
-    except Exception as error:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": error}), 400
+    file_pdf = makeTmp()
+
 
     os.remove(tmp_companyLogo)
     os.remove(tmp_img_sign)
@@ -202,7 +204,7 @@ def api_fuec_new():
                        , object_agreement
                        , json.JSONEncoder().encode(ruta)
                        , json.JSONEncoder().encode(kindAgreement)
-                       , json.JSONEncoder().encode(kind_agreement_link)
+                       , kind_agreement_link
                        , json.JSONEncoder().encode(text_init_date)
                        , json.JSONEncoder().encode(text_last_date)
                        , car_no
