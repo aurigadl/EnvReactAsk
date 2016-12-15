@@ -1,5 +1,5 @@
 import fpdf
-
+from datetime import datetime
 
 class TmpPdfFuec:
     # this will define the ELEMENTS that will
@@ -29,7 +29,7 @@ class TmpPdfFuec:
                  , img_sign=None):
 
         self.companyLogo = companyLogo
-        self.code_fuec = code_fuec
+        self.code_fuec = str(code_fuec)
         self.social_object = social_object
         self.nit = nit
         self.no_agreefuec = no_agreefuec
@@ -113,11 +113,12 @@ class TmpPdfFuec:
         pdf.line(15, 57, 201, 57)
 
         # Code bar
-        pdf.code39(self.code_fuec, 20, 60, w=1, h=10)
-        pdf.set_xy(122, 65)
-        pdf.set_font("Arial", 'B', size=13)
-        pdf.cell(w=80, h=2, txt=self.code_fuec, border=0, align='C')
-
+        pdf.code39(self.code_fuec, 18, 58, w=1, h=10)
+        pdf.set_xy(17, 71)
+        pdf.set_font("Arial", size=11)
+        pdf.cell(w=101, h=2, txt='No. FUEC: ' + self.code_fuec, border=0, align='L')
+        pdf.set_xy(123, 71)
+        pdf.cell(w=80, h=2, txt='Fecha de creacion: ' + datetime.now().strftime('%Y/%m/%d  %H:%M:%S'), border=0, align='L')
         # table 3 rows and 2 columns
         # line split cell
         pdf.line(15, 75, 201, 75)
@@ -380,7 +381,6 @@ class TmpPdfFuec:
         pdf.set_xy(70, 187)
         pdf.set_font("Arial", size=9)
         pdf.cell(w=55, h=0, txt='Tercero', border=0, align='C')
-
 
 
 
