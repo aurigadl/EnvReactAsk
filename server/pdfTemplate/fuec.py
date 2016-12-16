@@ -350,70 +350,68 @@ class TmpPdfFuec:
         pdf.set_xy(15, 172)
         pdf.set_font("Arial", 'B', size=9)
         pdf.cell(w=55, h=0, txt='NOMBRE', border=0, align='C')
+        # Title Path
+        pdf.set_xy(70, 172)
+        pdf.set_font("Arial", 'B', size=9)
+        pdf.cell(w=45, h=0, txt='CEDULA', border=0, align='C')
+        # Title Path
+        pdf.set_xy(110, 172)
+        pdf.set_font("Arial", 'B', size=9)
+        pdf.cell(w=45, h=0, txt='LICENCIA DE CONDUCCION', border=0, align='C')
+        # Title Path
+        pdf.set_xy(155, 172)
+        pdf.set_font("Arial", 'B', size=9)
+        pdf.cell(w=45, h=0, txt='VIGENCIA', border=0, align='C')
+
+
         # Content
         pdf.set_xy(15, 177)
         pdf.set_font("Arial", size=9)
         pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
         # Content
-        pdf.set_xy(15, 182)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
-        # Content
-        pdf.set_xy(15, 187)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
-
-
-
-        # Title Path
-        pdf.set_xy(70, 172)
-        pdf.set_font("Arial", 'B', size=9)
-        pdf.cell(w=45, h=0, txt='CEDULA', border=0, align='C')
-        # Content
         pdf.set_xy(70, 177)
         pdf.set_font("Arial", size=9)
         pdf.cell(w=45, h=0, txt='Tercero', border=0, align='C')
-        # Content
-        pdf.set_xy(70, 182)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Tercero', border=0, align='C')
-        # Content
-        pdf.set_xy(70, 187)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Tercero', border=0, align='C')
-
-
-
-        # Title Path
-        pdf.set_xy(110, 172)
-        pdf.set_font("Arial", 'B', size=9)
-        pdf.cell(w=45, h=0, txt='LICENCIA DE CONDUCCION', border=0, align='C')
         # Content
         pdf.set_xy(110, 177)
         pdf.set_font("Arial", size=9)
         pdf.cell(w=45, h=0, txt='2015', border=0, align='C')
         # Content
+        pdf.set_xy(155, 177)
+        pdf.set_font("Arial", size=9)
+        pdf.cell(w=45, h=0, txt='345655', border=0, align='C')
+
+
+        # Content
+        pdf.set_xy(15, 182)
+        pdf.set_font("Arial", size=9)
+        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
+        # Content
+        pdf.set_xy(70, 182)
+        pdf.set_font("Arial", size=9)
+        pdf.cell(w=55, h=0, txt='Tercero', border=0, align='C')
+        # Content
         pdf.set_xy(110, 182)
         pdf.set_font("Arial", size=9)
         pdf.cell(w=55, h=0, txt='2015', border=0, align='C')
         # Content
-        pdf.set_xy(110, 187)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='2015', border=0, align='C')
-
-
-        # Title Path
-        pdf.set_xy(155, 172)
-        pdf.set_font("Arial", 'B', size=9)
-        pdf.cell(w=45, h=0, txt='VIGENCIA', border=0, align='C')
-        # Content
-        pdf.set_xy(155, 177)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt='345655', border=0, align='C')
-        # Content
         pdf.set_xy(155, 182)
         pdf.set_font("Arial", size=9)
         pdf.cell(w=55, h=0, txt='235454', border=0, align='C')
+
+
+        # Content
+        pdf.set_xy(15, 187)
+        pdf.set_font("Arial", size=9)
+        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
+        # Content
+        pdf.set_xy(70, 187)
+        pdf.set_font("Arial", size=9)
+        pdf.cell(w=55, h=0, txt='Tercero', border=0, align='C')
+        # Content
+        pdf.set_xy(110, 187)
+        pdf.set_font("Arial", size=9)
+        pdf.cell(w=55, h=0, txt='2015', border=0, align='C')
         # Content
         pdf.set_xy(155, 187)
         pdf.set_font("Arial", size=9)
