@@ -129,6 +129,13 @@ var FormPersonaCarro = React.createClass({
     }
   },
 
+  handleReset: function (e) {
+    this.refs.selectCar.value = '';
+    this.setState({
+      option: [{mod:'', person:''}]
+    });
+  },
+
   handleSubmitForm: function (e) {
     e.preventDefault();
     var data = [];
@@ -296,6 +303,7 @@ var FormPersonaCarro = React.createClass({
           <div className="row">
             <div className="shrink columns">
               <input type="submit" className="success button" value="Grabar"/>
+              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
             </div>
             <div className="columns">
               <MessageAlert

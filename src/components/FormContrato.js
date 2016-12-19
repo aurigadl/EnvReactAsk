@@ -222,6 +222,13 @@ var FormConductor = React.createClass({
     })
   },
 
+  handleReset: function (e) {
+    this.refs.selectAgreement.value = '';
+    this.setState({
+      inputValue: ''
+    });
+  },
+
   handleDelete: function (e) {
     e.preventDefault();
     var get_id = this.state.childSelectValue;
@@ -355,6 +362,7 @@ var FormConductor = React.createClass({
           <div className="row">
             <div className="shrink columns">
               <input type="submit" className="success button" value="Grabar"/>
+              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
             </div>
             <div className="columns">
               <MessageAlert

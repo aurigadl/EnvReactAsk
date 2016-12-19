@@ -93,6 +93,21 @@ var FormCarro = React.createClass({
     }.bind(this), 3000);
   },
 
+  handleReset: function (e) {
+    this.refs.selectCar.value = '';
+    this.refs.no_car.value = '';
+    this.refs.license_plate.value = '';
+    this.refs.model.value = '';
+    this.refs.brand.refs.selectValue.selectedIndex = undefined;
+    this.refs.class_car.refs.selectValue.selectedIndex = undefined;
+    this.refs.operation_card.value = '';
+
+    this.setState({
+      inputValue: ''
+    });
+
+  },
+
   handleSubmitForm: function (e) {
     e.preventDefault();
     var ref = e.target.elements;
@@ -307,6 +322,8 @@ var FormCarro = React.createClass({
           <div className="row">
             <div className="shrink columns">
               <input type="submit" className="success button" value="Grabar"/>
+              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
+
             </div>
             <div className="columns">
               <MessageAlert

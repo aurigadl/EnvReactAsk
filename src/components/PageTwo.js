@@ -241,6 +241,11 @@ const PageTwo = React.createClass({
     }.bind(this), 3000);
   },
 
+  handleReset: function (e) {
+    this.setState({
+      no_agreefuec: ''
+    });
+  },
 
   render: function () {
     return (
@@ -407,6 +412,7 @@ const PageTwo = React.createClass({
               <div className="row">
                 <div className="shrink columns">
                   <input type="submit" className="success button" value="Grabar"/>
+                  <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
                 </div>
                 <div className="columns">
                   <MessageAlert

@@ -154,6 +154,12 @@ var FormRuta = React.createClass({
     }.bind(this), 3000);
   },
 
+  handleReset: function (e) {
+    this.refs.selectRuta.value = '';
+    this.setState({
+      inputValue: ''
+    });
+  },
 
   handleDelete: function (e) {
     e.preventDefault();
@@ -261,6 +267,7 @@ var FormRuta = React.createClass({
 
             <div className="input-group-button">
               <input type="submit" className="success button" value="Grabar"/>
+              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
             </div>
 
           </div>

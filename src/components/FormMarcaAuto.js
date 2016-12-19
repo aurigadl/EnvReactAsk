@@ -22,6 +22,13 @@ var FormMarcaAuto = React.createClass({
     });
   },
 
+  handleReset: function (e) {
+    this.refs.selectMarca.value = '';
+    this.setState({
+      inputValue: ''
+    });
+  },
+
   onChange(e) {
     this.setState({inputValue: e.target.value});
   },
@@ -227,6 +234,7 @@ var FormMarcaAuto = React.createClass({
               class="input-group-field"
               url="apiFuec/allMarca"
               name="selectMarca"
+              ref="selectMarca"
               newOption={this.state.newOptionSelectA}
               onUserSelect={this.handleUserSelect}
             />
@@ -248,6 +256,7 @@ var FormMarcaAuto = React.createClass({
 
             <div className="input-group-button">
               <input type="submit" className="success button" value="Grabar"/>
+              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
             </div>
 
           </div>

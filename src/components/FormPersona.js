@@ -18,6 +18,22 @@ var FormPersona = React.createClass({
     };
   },
 
+  handleReset: function (e) {
+    this.refs.selectPerson.value = '';
+    this.refs.first_name.value = '';
+    this.refs.last_name.value = '';
+    this.refs.email.value = '';
+    this.refs.phone.value = '';
+    this.refs.id_number.value = '';
+    this.refs.id_type.value = '';
+    this.refs.license.value = '';
+    this.refs.effective_date.value = '';
+    this.refs.address.value = '';
+    this.setState({
+      selectedOption: undefined
+    });
+  },
+
   getRemoteData: function (parreq, cb_success, cb_error) {
     mReq(parreq)
       .then(function (response) {
@@ -390,6 +406,7 @@ var FormPersona = React.createClass({
           <div className="row">
             <div className="shrink columns">
               <input type="submit" className="success button" value="Grabar"/>
+              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
             </div>
             <div className="columns">
               <MessageAlert
