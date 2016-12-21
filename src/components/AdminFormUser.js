@@ -259,6 +259,17 @@ var AdminFormUser = React.createClass({
     })
   },
 
+  handleReset: function (e) {
+    this.setState({
+      first_name: undefined,
+      last_name: undefined,
+      new_user: false,
+      active: false,
+      email: undefined,
+      display_name: undefined
+    });
+  },
+
   render: function () {
 
     var showClass = this.state.showHide ? 'show' : 'invisible';
@@ -358,6 +369,7 @@ var AdminFormUser = React.createClass({
           <div className="row">
             <div className="shrink columns">
               <input type="submit" className="success button" value="Grabar"/>
+              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
             </div>
             <div className="columns">
               <MessageAlert

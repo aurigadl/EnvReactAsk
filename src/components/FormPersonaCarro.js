@@ -70,10 +70,15 @@ var FormPersonaCarro = React.createClass({
       }
     }
 
-    this.setState({
-      option: dataArray
-    });
-
+    if(dataArray.length > 0){
+      this.setState({
+        option: dataArray
+      });
+    }else{
+      this.setState({
+        option: [{mod:'', person:''}]
+      });
+    }
   },
 
   errorHandlerSelect: function (remoteData) {
@@ -189,6 +194,8 @@ var FormPersonaCarro = React.createClass({
       typeMess: 'success',
       newOptionSelectA: true
     });
+
+    this.props.onItemNewCar(true);
 
     setTimeout(function () {
       this.setState({

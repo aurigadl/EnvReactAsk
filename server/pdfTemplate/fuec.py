@@ -1,6 +1,7 @@
 import fpdf
 from datetime import datetime
 
+
 class TmpPdfFuec:
     # this will define the ELEMENTS that will
     # compose the template.
@@ -78,7 +79,7 @@ class TmpPdfFuec:
         text_last_date_d = self.text_last_date[2]
 
         for i in range(len(self.route)):
-            route += 'Ruta_'+ str(i) + ': ' + str(self.route[i][0]) + ' '
+            route += 'Ruta_' + str(i) + ': ' + str(self.route[i][0]) + ' '
 
         pdf = fpdf.FPDF(format='letter')
         pdf.set_margins(15, 15, 15)
@@ -118,7 +119,8 @@ class TmpPdfFuec:
         pdf.set_font("Arial", size=11)
         pdf.cell(w=101, h=2, txt='No. FUEC: ' + self.code_fuec, border=0, align='L')
         pdf.set_xy(123, 71)
-        pdf.cell(w=80, h=2, txt='Fecha de creacion: ' + datetime.now().strftime('%Y/%m/%d  %H:%M:%S'), border=0, align='L')
+        pdf.cell(w=80, h=2, txt='Fecha de creacion: ' + datetime.now().strftime('%Y/%m/%d  %H:%M:%S'), border=0,
+                 align='L')
         # table 3 rows and 2 columns
         # line split cell
         pdf.line(15, 75, 201, 75)
@@ -363,63 +365,84 @@ class TmpPdfFuec:
         pdf.set_font("Arial", 'B', size=9)
         pdf.cell(w=45, h=0, txt='VIGENCIA', border=0, align='C')
 
+        if len(self.data_drivers) >= 1:
+            # Content
+            data = self.data_drivers[0]
+            name = str(data[1] + ' ' + data[2])
+            id = str(data[4])
+            license = str(data[7])
+            date = data[8][:10]
 
-        # Content
-        # self.data_drivers
-        pdf.set_xy(15, 177)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
-        # Content
-        pdf.set_xy(70, 177)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt='Tercero', border=0, align='C')
-        # Content
-        pdf.set_xy(110, 177)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt='2015', border=0, align='C')
-        # Content
-        pdf.set_xy(155, 177)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt='345655', border=0, align='C')
+            # self.data_drivers
+            pdf.set_xy(15, 177)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=name, border=0, align='C')
+            # Content
+            pdf.set_xy(70, 177)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=45, h=0, txt=id, border=0, align='C')
+            # Content
+            pdf.set_xy(110, 177)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=45, h=0, txt=license, border=0, align='C')
+            # Content
+            pdf.set_xy(155, 177)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=45, h=0, txt=date, border=0, align='C')
 
+        if len(self.data_drivers) >= 2:
+            # Content
+            data = self.data_drivers[1]
+            name = str(data[1] + ' ' + data[2])
+            id = str(data[4])
+            license = str(data[7])
+            date = data[8][:10]
+            # Content
+            pdf.set_xy(15, 182)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=name, border=0, align='C')
+            # Content
+            pdf.set_xy(70, 182)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=id, border=0, align='C')
+            # Content
+            pdf.set_xy(110, 182)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=license, border=0, align='C')
+            # Content
+            pdf.set_xy(155, 182)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=date, border=0, align='C')
 
-        # Content
-        pdf.set_xy(15, 182)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
-        # Content
-        pdf.set_xy(70, 182)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Tercero', border=0, align='C')
-        # Content
-        pdf.set_xy(110, 182)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='2015', border=0, align='C')
-        # Content
-        pdf.set_xy(155, 182)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='235454', border=0, align='C')
+        if len(self.data_drivers) == 3:
+            # Content
+            data = self.data_drivers[2]
+            name = str(data[1] + ' ' + data[2])
+            id = str(data[4])
+            license = str(data[7])
+            date = data[8][:10]
+            # Content
+            pdf.set_xy(15, 187)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=name, border=0, align='C')
+            # Content
+            pdf.set_xy(70, 187)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=id, border=0, align='C')
+            # Content
+            pdf.set_xy(110, 187)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=license, border=0, align='C')
+            # Content
+            pdf.set_xy(155, 187)
+            pdf.set_font("Arial", size=9)
+            pdf.cell(w=55, h=0, txt=date, border=0, align='C')
 
-
-        # Content
-        pdf.set_xy(15, 187)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
-        # Content
-        pdf.set_xy(70, 187)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Tercero', border=0, align='C')
-        # Content
-        pdf.set_xy(110, 187)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='2015', border=0, align='C')
-        # Content
-        pdf.set_xy(155, 187)
-        pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='234234', border=0, align='C')
-
-
-
+        contractor = self.contractor_owner
+        name_c = str(contractor[1] + ' ' + contractor[2])
+        id_c = str(contractor[4])
+        tel_c = str(contractor[5])
+        dir_c = contractor[8][:10]
 
         # text title
         pdf.set_xy(17, 194)
@@ -433,9 +456,7 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(15, 203)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=55, h=0, txt='Camioneta Van', border=0, align='C')
-
-
+        pdf.cell(w=55, h=0, txt=name_c, border=0, align='C')
         # Title Path
         pdf.set_xy(70, 198)
         pdf.set_font("Arial", 'B', size=9)
@@ -443,7 +464,7 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(70, 203)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt='Tercero', border=0, align='C')
+        pdf.cell(w=45, h=0, txt=id_c, border=0, align='C')
 
         # Title Path
         pdf.set_xy(110, 198)
@@ -452,7 +473,7 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(110, 203)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt='2015', border=0, align='C')
+        pdf.cell(w=45, h=0, txt=tel_c, border=0, align='C')
 
         # Title Path
         pdf.set_xy(155, 198)
@@ -461,7 +482,7 @@ class TmpPdfFuec:
         # Content
         pdf.set_xy(155, 203)
         pdf.set_font("Arial", size=9)
-        pdf.cell(w=45, h=0, txt='345655', border=0, align='C')
+        pdf.cell(w=45, h=0, txt=dir_c, border=0, align='C')
 
         # Title Path
         pdf.set_xy(17, 211)
@@ -494,6 +515,6 @@ class TmpPdfFuec:
         pdf.cell(w=111, txt='Radicado No. 12342341234132445345', border=0, align='L')
 
         pdf.image(self.img_sign, 136, 241, 62, 20, 'png')
-        #return pdf.output()
+        # return pdf.output()
         return pdf.output('temp.pdf')
-        #return pdf.output('temp.pdf', 'S')
+        # return pdf.output('temp.pdf', 'S')

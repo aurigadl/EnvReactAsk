@@ -227,9 +227,10 @@ const PageTwo = React.createClass({
   },
 
   errorFormCreate: function (err) {
+    console.log(err);
     this.setState({
       showMessage: true,
-      contextText: 'No se Creo el FUEC',
+      contextText: err.message.error,
       typeMess: 'alert'
     });
     setTimeout(function () {
@@ -402,10 +403,11 @@ const PageTwo = React.createClass({
 
               <label>Vehiculo:
                 <SelectInput
-                  url="apiFuec/allCar"
+                  url="apiFuec/allCarWithPerson"
                   name="no_car"
                   ref="no_car"
                   newOption={this.state.newOptionCar}
+                  onItemNew={this.handleNewElementCar}
                   required/>
               </label>
 

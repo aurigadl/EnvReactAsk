@@ -126,6 +126,9 @@ def api_fuec_new():
 
     person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()
 
+    if person_car is None:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre personas y el vehiculo'}), 400
+
     for r in person_car:
         for rel in json.loads(r):
             d_person = Person.query.with_entities(Person.type_person
@@ -148,6 +151,12 @@ def api_fuec_new():
                 data_drivers.append(d_person)
             else:
                 contractor_owner = d_person
+
+    if contractor_owner is None:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre vehiculo y una persona contratante'}), 400
+
+    if data_drivers is None:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre vehiculo y un conductor'}), 400
 
     system_all = System.query.first()
     nameCompany = system_all.get_json()['name']

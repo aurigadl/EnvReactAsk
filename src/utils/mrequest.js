@@ -43,7 +43,8 @@ exports.makeRequest = function (opts) {
       } else {
         reject({
           status: this.status,
-          statusText: xhr.statusText
+          statusText: xhr.statusText,
+          message: JSON.parse(xhr.response)
         });
       }
     };

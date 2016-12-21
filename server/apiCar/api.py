@@ -3,7 +3,7 @@ from flask import Blueprint, request, abort, jsonify
 from server import db, rbac
 from models import ClassCar, Car
 from server.apiSystem.models import System
-
+from server.apiPersonCar.models import PersonCar
 
 apiCar = Blueprint('apiCar', __name__)
 
@@ -28,6 +28,15 @@ def api_fuec_classcar_all():
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def Car_all():
     Car_all = Car.query.with_entities(Car.id, Car.license_plate).all()
+    dict_Car_all = [dict(zip(('id', 'nomb'), r)) for r in Car_all]
+    return jsonify(dict(jsonrpc="2.0", result=dict_Car_all)), 200
+
+
+@apiCar.route('/apiFuec/allCarWithPerson', methods=['GET'])
+@rbac.allow(['admon', 'candidate'], methods=['GET'])
+def Car_with_person_all():
+    Car_all = Car.query.join(PersonCar).with_entities(Car.id, Car.license_plate).filter(
+        Car.id == PersonCar.id_car).all()
     dict_Car_all = [dict(zip(('id', 'nomb'), r)) for r in Car_all]
     return jsonify(dict(jsonrpc="2.0", result=dict_Car_all)), 200
 
