@@ -83,8 +83,6 @@ def update_marca_id():
     else:
         nit_2 = None
 
-
-
     if params.has_key('secuence_contract') and len(params['secuence_contract']) != 0:
         secuence_contract = params['secuence_contract']
         data.update(dict(secuence_contract=secuence_contract))
@@ -96,7 +94,6 @@ def update_marca_id():
         data.update(dict(id_company_legal=id_company_legal))
     else:
         id_company_legal = None
-
 
     if params.has_key('secuence_payroll') and len(params['secuence_payroll']) != 0:
         secuence_payroll = params['secuence_payroll']

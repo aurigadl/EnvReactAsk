@@ -2,7 +2,7 @@ from datetime import datetime
 
 from flask import Blueprint, request, abort, jsonify
 
-from server import db, rbac
+from server import db, rbac, g_data
 from models import Agreement
 from server.apiSystem.models import System
 
@@ -70,12 +70,27 @@ def new_agreement():
     else:
         last_date = None
 
+    if params.has_key('file_pdf') and params['file_pdf'] != None and len(params['file_pdf']) != 0:
+        pdf_data = params['file_pdf'].split(',')
+        image_dec = pdf_data[1].decode('base64')
+        type_data = pdf_data[0].split(':')[1].split(';')[0]
+        if type_data == 'application/pdf':
+            pdf_file = image_dec
+        else:
+            pdf_file = None
+    else:
+        pdf_file = None
+
+    created_by = g_data._user_obj.id
+
     new_agreement_db = Agreement(no_new_agreement
+                                 , created_by
                                  , no_trip
                                  , id_person
                                  , id_type_agreement
                                  , init_date
-                                 , last_date)
+                                 , last_date
+                                 , pdf_file)
 
     db.session.add(new_agreement_db)
     db.session.commit()
@@ -120,6 +135,13 @@ def update_agreement_id():
         except ValueError:
             return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters date'}), 400
             raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+
+    if params.has_key('pdf_file') and params['pdf_file'] != None and len(params['pdf_file']) != 0:
+        pdf_data = params['pdf_file'].split(',')
+        image_dec = pdf_data[1].decode('base64')
+        type_data = pdf_data[0].split(':')[1].split(';')[0]
+        if type_data == 'application/pdf':
+            data.update(dict(pdf_file=image_dec))
 
     if params.has_key('last_date') and len(params['last_date']) != 0:
         try:

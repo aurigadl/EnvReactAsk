@@ -4,7 +4,7 @@ import os, random
 from flask import Blueprint, jsonify, request
 
 from models import Fuec
-from server import rbac, db
+from server import db, rbac, g_data
 from server.apiPerson.models import Person
 from server.apiKindAgreement.models import KindAgreement
 from server.apiCar.models import Car, ClassCar
@@ -204,7 +204,10 @@ def api_fuec_new():
     os.remove(tmp_companyLogo)
     os.remove(tmp_img_sign)
 
+    created_by = g_data._user_obj.id
+
     new_fuec_db = Fuec(no_fuec
+                       , created_by
                        , nameCompany
                        , nit
                        , no_agreefuec

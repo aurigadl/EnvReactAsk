@@ -394,7 +394,7 @@ const PageTwo = React.createClass({
                         name={"selectRuta_" + i}
                         newOption={this.state.newOptionRuta}
                         onItemNew={this.handleNewElementRuta}
-                      />
+                     />
                     </div>
 
                   </div>
@@ -461,8 +461,8 @@ const PageTwo = React.createClass({
 
         <div className="columns small-12 medium-3">
           <FormContrato
-            newOptionRuta={this.state.newOptionRuta}
-            onItemNewRuta={this.handleNewElementRuta}
+            newOptionPerson={this.state.newOptionPerson}
+            onItemNewPerson={this.handleNewElementPerson}
             onItemNewAgreement={this.handleNewAgreement}
           />
         </div>

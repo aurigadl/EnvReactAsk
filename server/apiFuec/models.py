@@ -5,6 +5,8 @@ class Fuec(db.Model):
     __table_args__ = {'extend_existing': True}
     __tablename__ = 'fuec'
     id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     no_fuec = db.Column(db.String(20))
     social_object = db.Column(db.String(255), nullable=False)
     nit = db.Column(db.String(255))
@@ -33,6 +35,7 @@ class Fuec(db.Model):
 
     def __init__(self,
                  no_fuec,
+                 created_by,
                  social_object,
                  nit,
                  no_agreement,
@@ -59,6 +62,8 @@ class Fuec(db.Model):
 
         if no_fuec:
             self.no_fuec = no_fuec
+        if created_by:
+            self.created_by = created_by
         if social_object:
             self.social_object = social_object.lower()
         if nit:

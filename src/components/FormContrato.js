@@ -11,8 +11,9 @@ var FormConductor = React.createClass({
       newOptionSelectA: false,
       childSelectValue: undefined,
       newOptionSelectTiCon: false,
-
-
+      
+      file_pdf:'',
+      
       showMessage: false,
       typeMess: '',
       contextText: ''
@@ -20,14 +21,14 @@ var FormConductor = React.createClass({
   },
 
   componentWillReceiveProps: function (nextProps) {
-    var nextTiCon = nextProps.newOptionTiCon;
-    var prevTiCon = this.props.newOptionTiCon;
+    var nextTiCon = nextProps.newOptionPerson;
+    var prevTiCon = this.props.newOptionPerson;
 
     if (nextTiCon == true && nextTiCon != prevTiCon) {
       this.setState({
         newOptionSelectTiCon: true
       });
-      this.props.onItemNewTiCon(false);
+      this.props.onItemNewPerson(false);
     }
     if (nextTiCon == false && nextTiCon != prevTiCon) {
       this.setState({
@@ -108,6 +109,7 @@ var FormConductor = React.createClass({
     var id_type_agreement = ref.id_type_agreement.value;
     var init_date = ref.init_date.value;
     var last_date = ref.last_date.value;
+    var file_pdf = this.state.file_pdf;
 
     var params = {
       no_trip: no_trip
@@ -115,6 +117,7 @@ var FormConductor = React.createClass({
       , id_type_agreement: id_type_agreement
       , init_date: init_date
       , last_date: last_date
+      , file_pdf: file_pdf
     };
 
     if (selectAgreement === "") {
@@ -266,6 +269,23 @@ var FormConductor = React.createClass({
     }.bind(this), 3000);
   },
 
+  handleImagePdf: function(e){
+    e.preventDefault();
+
+    let reader = new FileReader();
+    let file = e.target.files[0];
+
+    reader.onloadend = function(event) {
+      this.setState({
+        file_pdf: event.target.result
+      });
+    }.bind(this);
+
+    if (file.type == "application/pdf"){
+      reader.readAsDataURL(file)
+    }
+  },
+
   errorFormDelete: function (err) {
     this.setState({
       showMessage: true,
@@ -329,7 +349,9 @@ var FormConductor = React.createClass({
             <SelectInput
               url="apiFuec/allPerson"
               ref="id_person"
-              name="id_person"/>
+              name="id_person"
+              newOption={this.state.newOptionSelectTiCon}
+            />
           </label>
 
           <label>Tipo de contrato
@@ -337,7 +359,6 @@ var FormConductor = React.createClass({
               url="apiFuec/allKindHiring"
               name="id_type_agreement"
               ref="id_type_agreement"
-              newOption={this.state.newOptionSelectTiCon}
             />
           </label>
 
@@ -357,6 +378,15 @@ var FormConductor = React.createClass({
               name="last_date"
               ref="last_date"
               required/>
+          </label>
+
+          <label> Docuento en formato PDF
+            <input name="file_pdf"
+                   type="file"
+                   ref="file_pdf"
+                   accept="application/pdf"
+                   placeholder=""
+                   onChange={this.handleImagePdf} />
           </label>
 
           <div className="row">

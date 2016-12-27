@@ -342,11 +342,10 @@ class TmpPdfFuec:
         pdf.set_font("Arial", size=9)
         pdf.cell(w=93, h=0, txt=self.car_operation, border=0, align='C')
 
-
         # text title
         pdf.set_xy(17, 167)
         pdf.set_font("Arial", 'B', size=9)
-        pdf.cell(w=199, h=0, txt='DATOS DEL CONDUCTOR', border=0, align='L')
+        pdf.cell(w=183, h=0, txt='DATOS DEL CONDUCTOR', border=0, align='L')
 
         # Title Path
         pdf.set_xy(15, 172)
@@ -404,15 +403,15 @@ class TmpPdfFuec:
             # Content
             pdf.set_xy(70, 182)
             pdf.set_font("Arial", size=9)
-            pdf.cell(w=55, h=0, txt=id, border=0, align='C')
+            pdf.cell(w=45, h=0, txt=id, border=0, align='C')
             # Content
             pdf.set_xy(110, 182)
             pdf.set_font("Arial", size=9)
-            pdf.cell(w=55, h=0, txt=license, border=0, align='C')
+            pdf.cell(w=45, h=0, txt=license, border=0, align='C')
             # Content
             pdf.set_xy(155, 182)
             pdf.set_font("Arial", size=9)
-            pdf.cell(w=55, h=0, txt=date, border=0, align='C')
+            pdf.cell(w=45, h=0, txt=date, border=0, align='C')
 
         if len(self.data_drivers) == 3:
             # Content
@@ -428,15 +427,15 @@ class TmpPdfFuec:
             # Content
             pdf.set_xy(70, 187)
             pdf.set_font("Arial", size=9)
-            pdf.cell(w=55, h=0, txt=id, border=0, align='C')
+            pdf.cell(w=45, h=0, txt=id, border=0, align='C')
             # Content
             pdf.set_xy(110, 187)
             pdf.set_font("Arial", size=9)
-            pdf.cell(w=55, h=0, txt=license, border=0, align='C')
+            pdf.cell(w=45, h=0, txt=license, border=0, align='C')
             # Content
             pdf.set_xy(155, 187)
             pdf.set_font("Arial", size=9)
-            pdf.cell(w=55, h=0, txt=date, border=0, align='C')
+            pdf.cell(w=45, h=0, txt=date, border=0, align='C')
 
         contractor = self.contractor_owner
         name_c = str(contractor[1] + ' ' + contractor[2])
