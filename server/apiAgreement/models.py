@@ -7,7 +7,7 @@ class Agreement(db.Model):
     __tablename__ = 'agreement'
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     no_agreement = db.Column(db.Integer, nullable=False, unique=True)
     no_trip = db.Column(db.Integer, nullable=False)
     id_person = db.Column(db.Integer, db.ForeignKey('person.id'))

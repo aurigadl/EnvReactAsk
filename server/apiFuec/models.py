@@ -6,7 +6,7 @@ class Fuec(db.Model):
     __tablename__ = 'fuec'
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'))
     no_fuec = db.Column(db.String(20))
     social_object = db.Column(db.String(255), nullable=False)
     nit = db.Column(db.String(255))

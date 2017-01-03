@@ -514,6 +514,6 @@ class TmpPdfFuec:
         pdf.cell(w=111, txt='Radicado No. 12342341234132445345', border=0, align='L')
 
         pdf.image(self.img_sign, 136, 241, 62, 20, 'png')
-        # return pdf.output()
-        return pdf.output('temp.pdf')
+        return pdf.output()
+        #return pdf.output('temp.pdf')
         # return pdf.output('temp.pdf', 'S')
