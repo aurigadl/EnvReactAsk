@@ -11,9 +11,9 @@ var FormConductor = React.createClass({
       newOptionSelectA: false,
       childSelectValue: undefined,
       newOptionSelectTiCon: false,
-      
+
       file_pdf:'',
-      
+
       showMessage: false,
       typeMess: '',
       contextText: ''
@@ -356,7 +356,7 @@ var FormConductor = React.createClass({
 
           <label>Tipo de contrato
             <SelectInput
-              url="apiFuec/allKindHiring"
+              url="apiFuec/allKindAgreement"
               name="id_type_agreement"
               ref="id_type_agreement"
             />

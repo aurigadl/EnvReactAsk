@@ -2,8 +2,10 @@ from datetime import datetime
 
 from flask import Blueprint, request, abort, jsonify
 
-from server import db, rbac, g_data
+from server.apiKindAgreement.models import KindAgreement
+from server import db, rbac, g_data, User
 from models import Agreement
+from server.apiPerson.models import Person
 from server.apiSystem.models import System
 
 apiAgreement = Blueprint('apiAgreement', __name__)
@@ -14,6 +16,37 @@ apiAgreement = Blueprint('apiAgreement', __name__)
 def Agreement_all():
     Agreement_all = Agreement.query.with_entities(Agreement.id, Agreement.no_agreement).all()
     dict_agreement_all = [dict(zip(('id', 'nomb'), r)) for r in Agreement_all]
+    return jsonify(dict(jsonrpc="2.0", result=dict_agreement_all)), 200
+
+
+@apiAgreement.route('/apiFuec/fullAllAgreement', methods=['GET'])
+@rbac.allow(['admon', 'candidate'], methods=['GET'])
+def full_Agreement_all():
+    full_Agreement_all = Agreement.query.join(KindAgreement, User, Person) \
+        .with_entities(Agreement.id,
+                       Agreement.created_at,
+                       User.first_name + ' ' + User.last_name,
+                       Agreement.no_agreement,
+                       Agreement.no_trip,
+                       Person.first_name + ' ' + Person.last_name,
+                       KindAgreement.name,
+                       Agreement.init_date,
+                       Agreement.last_date
+                       ).filter(
+        KindAgreement.id == Agreement.id_type_agreement,
+        User.id == Agreement.created_by,
+        Person.id == Agreement.id_person).all()
+
+    dict_agreement_all = [dict(zip(('id',
+                                    'created_at',
+                                    'created_by',
+                                    'no_agreement',
+                                    'no_trip',
+                                    'person',
+                                    'KindAgreement',
+                                    'init_date',
+                                    'last_date'), r)) for r in full_Agreement_all]
+
     return jsonify(dict(jsonrpc="2.0", result=dict_agreement_all)), 200
 
 

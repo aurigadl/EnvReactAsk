@@ -6,6 +6,7 @@ import FormPersona from './FormPersona.js'
 import FormContrato from './FormContrato.js'
 import MessageAlert from './MessageAlert.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
+import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 require('./formsPanels.css');
@@ -471,6 +472,10 @@ const PageTwo = React.createClass({
           <FormPersona
             onItemNew={this.handleNewElementPerson}
           />
+        </div>
+
+        <div className="columns">
+          <TableAgreement/>
         </div>
 
       </div>

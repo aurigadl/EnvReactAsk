@@ -11,7 +11,7 @@ class Agreement(db.Model):
     no_agreement = db.Column(db.Integer, nullable=False, unique=True)
     no_trip = db.Column(db.Integer, nullable=False)
     id_person = db.Column(db.Integer, db.ForeignKey('person.id'))
-    id_type_agreement = db.Column(db.Integer, db.ForeignKey('kind_hiring.id'))
+    id_type_agreement = db.Column(db.Integer, db.ForeignKey('kind_agreement.id'))
     init_date = db.Column(db.DateTime())
     last_date = db.Column(db.DateTime())
     file_pdf  = db.Column(db.LargeBinary)

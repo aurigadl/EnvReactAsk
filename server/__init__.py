@@ -38,7 +38,6 @@ from apiRole.api import apiRole
 from apiMarcas.api import apiMarca
 from apiSystem.api import apiSystem
 from apiRuta.api import apiRuta
-from apiKindHiring.api import apiKindHiring
 from apiKindAgreement.api import apiKindAgreement
 from apiObjectAgreement.api import apiObjectAgreement
 from apiModality.api import apiModality
@@ -53,7 +52,6 @@ app.register_blueprint(apiRole)
 app.register_blueprint(apiSystem)
 app.register_blueprint(apiMarca)
 app.register_blueprint(apiRuta)
-app.register_blueprint(apiKindHiring)
 app.register_blueprint(apiKindAgreement)
 app.register_blueprint(apiObjectAgreement)
 app.register_blueprint(apiModality)

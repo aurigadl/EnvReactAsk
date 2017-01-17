@@ -26,8 +26,6 @@ const App = React.createClass({
       <div>
 
         <header className="header">
-
-          <h1 className="headline">Formato Único De Extracto Del Contrato <small> FUEC </small></h1>
           <ul className="header-subnav">
             <li>
               {this.state.loggedIn ? (
