@@ -19,6 +19,25 @@ def Agreement_all():
     return jsonify(dict(jsonrpc="2.0", result=dict_agreement_all)), 200
 
 
+@apiAgreement.route('/apiFuec/fileAgreement', methods=['GET'])
+@rbac.allow(['admon', 'candidate'], methods=['GET'])
+def agreement_file():
+    agreement = request.args.get('agreement')
+
+    if not agreement or len(agreement) == 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    agreement_file = Agreement.query.with_entities(Agreement.file_pdf).filter(
+        Agreement.no_agreement == agreement).first()
+
+    if not agreement_file[0]:
+        return jsonify(dict(jsonrpc="2.0", result='')), 200
+
+    file_to_send = agreement_file[0].encode("base64")
+
+    return jsonify(dict(jsonrpc="2.0", result=file_to_send)), 200
+
+
 @apiAgreement.route('/apiFuec/fullAllAgreement', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def full_Agreement_all():

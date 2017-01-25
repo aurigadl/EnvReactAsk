@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from server import db
 
 
@@ -14,7 +15,7 @@ class Agreement(db.Model):
     id_type_agreement = db.Column(db.Integer, db.ForeignKey('kind_agreement.id'))
     init_date = db.Column(db.DateTime())
     last_date = db.Column(db.DateTime())
-    file_pdf  = db.Column(db.LargeBinary)
+    file_pdf = db.Column(db.LargeBinary)
 
     def __init__(self,
                  no_agreement=None,

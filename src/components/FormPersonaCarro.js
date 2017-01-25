@@ -14,7 +14,11 @@ var FormPersonaCarro = React.createClass({
       option: [{mod:'', person:''}],
       childSelectText: '',
       inputValue: '',
-      updateKey: ''
+      updateKey: '',
+
+      showMessage: false,
+      typeMess: '',
+      contextText: ''
     };
   },
 
@@ -95,7 +99,7 @@ var FormPersonaCarro = React.createClass({
       })
     }.bind(this), 3000);
   },
-
+  
 
   onChange(e) {
     this.setState({inputValue: e.target.value});
