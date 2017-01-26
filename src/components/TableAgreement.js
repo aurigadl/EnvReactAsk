@@ -197,7 +197,6 @@ var TableAgreement = React.createClass({
             width="500"
             height="500"
             alt="pdf"
-            pluginspage = "http://www.adobe.com/products/acrobat/readstep2.html"
             type="application/pdf"
             />
         </div>
