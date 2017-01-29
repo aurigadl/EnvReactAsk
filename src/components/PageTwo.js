@@ -1,5 +1,6 @@
 import React from 'react'
 import FormRuta from './FormRuta.js'
+import TableFuec from './TableFuec.js'
 import FormCarro from './FormCarro.js'
 import SelectInput from './SelectInput.js'
 import FormPersona from './FormPersona.js'
@@ -429,6 +430,10 @@ const PageTwo = React.createClass({
 
             </form>
           </div>
+        </div>
+
+        <div className="columns">
+          <TableFuec/>
         </div>
 
         <div className="columns small-12 medium-3">

@@ -337,6 +337,7 @@ var FormConductor = React.createClass({
               name="no_agreement"
               readOnly/>
           </label>
+
           <label>No. de Viaje
             <input
               type="number"
@@ -345,7 +346,7 @@ var FormConductor = React.createClass({
             />
           </label>
 
-          <label> Persona Juridica o Natural
+          <label> Contratante - Persona Juridica o Natural
             <SelectInput
               url="apiFuec/allPerson"
               ref="id_person"

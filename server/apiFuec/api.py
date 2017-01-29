@@ -1,10 +1,11 @@
 import json
-import os, random
+import os
+import random
 
 from flask import Blueprint, jsonify, request
 
 from models import Fuec
-from server import db, rbac, g_data
+from server import db, rbac, g_data, User
 from server.apiPerson.models import Person
 from server.apiKindAgreement.models import KindAgreement
 from server.apiCar.models import Car, ClassCar
@@ -127,7 +128,8 @@ def api_fuec_new():
     person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()
 
     if person_car is None:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre personas y el vehiculo'}), 400
+        return jsonify(
+            {"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre personas y el vehiculo'}), 400
 
     for r in person_car:
         for rel in json.loads(r):
@@ -153,24 +155,26 @@ def api_fuec_new():
                 contractor_owner = d_person
 
     if contractor_owner is None:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre vehiculo y una persona contratante'}), 400
+        return jsonify({"jsonrpc": "2.0", "result": False,
+                        "error": 'No existen relacion entre vehiculo y una persona contratante'}), 400
 
     if data_drivers is None:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre vehiculo y un conductor'}), 400
+        return jsonify(
+            {"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre vehiculo y un conductor'}), 400
 
     system_all = System.query.first()
     nameCompany = system_all.get_json()['name']
 
     companyLogo = system_all.get_json()['logo']
     data_logo = companyLogo.split(',')[1].decode('base64')
-    tmp_companyLogo = 'server/tmp/' + str(int(random.random()*1000000)) + '.png'
+    tmp_companyLogo = 'server/tmp/' + str(int(random.random() * 1000000)) + '.png'
     fcl = open(tmp_companyLogo, 'wb')
     fcl.write(data_logo)
     fcl.close()
 
     img_sign = system_all.get_json()['sign']
     data_sign = img_sign.split(',')[1].decode('base64')
-    tmp_img_sign = 'server/tmp/' + str(int(random.random()*1000000)) + '.png'
+    tmp_img_sign = 'server/tmp/' + str(int(random.random() * 1000000)) + '.png'
     fcs = open(tmp_img_sign, 'wb')
     fcs.write(data_sign)
     fcs.close()
@@ -199,7 +203,6 @@ def api_fuec_new():
                          tmp_img_sign)
 
     file_pdf = makeTmp()
-
 
     os.remove(tmp_companyLogo)
     os.remove(tmp_img_sign)
@@ -232,3 +235,85 @@ def api_fuec_new():
     db.session.add(new_fuec_db)
     db.session.commit()
     return jsonify({"jsonrpc": "2.0", "result": True, "id": new_fuec_db.id}), 201
+
+
+@apiFuec.route('/apiFuec/fullAllFuec', methods=['GET'])
+@rbac.allow(['admon', 'candidate'], methods=['GET'])
+def full_fuec_all():
+    full_fuec_all = Fuec.query.join(User).with_entities(
+          Fuec.id
+        , Fuec.created_at
+        , User.first_name + ' ' + User.last_name
+        , Fuec.no_fuec
+        , Fuec.social_object
+        , Fuec.nit
+        , Fuec.no_agreement
+        , Fuec.contractor
+        , Fuec.id_contractor
+        , Fuec.object_agreement
+        , Fuec.origin_destination
+        , Fuec.kind_hiring
+        , Fuec.kind_link
+
+        , Fuec.init_date
+        , Fuec.last_date
+
+        , Fuec.car_no
+        , Fuec.car_license_plate
+        , Fuec.car_model
+        , Fuec.car_brand
+        , Fuec.car_class_car
+        , Fuec.car_operation
+
+        , Fuec.data_driver_json
+        , Fuec.contractor_owner
+    ).filter(User.id == Fuec.created_by).all()
+
+    dict_agreement_all = [dict(zip((
+          'id'
+        , 'created_at'
+        , 'created_by'
+        , 'no_fuec'
+        , 'social_object'
+        , 'nit'
+        , 'no_agreement'
+        , 'contractor'
+        , 'id_contractor'
+        , 'object_agreement'
+        , 'origin_destination'
+        , 'kind_hiring'
+        , 'kind_link'
+
+        , 'init_date'
+        , 'last_date'
+
+        , 'car_no'
+        , 'car_license_plate'
+        , 'car_model'
+        , 'car_brand'
+        , 'car_class_car'
+        , 'car_operation'
+
+        , 'data_driver_json'
+        , 'contractor_owner'), r)) for r in full_fuec_all]
+
+    return jsonify(dict(jsonrpc="2.0", result=dict_agreement_all)), 200
+
+
+@apiFuec.route('/apiFuec/fileFuec', methods=['GET'])
+@rbac.allow(['admon', 'candidate'], methods=['GET'])
+def fuec_file():
+    fuec = request.args.get('fuec')
+
+    if not fuec or len(fuec) == 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    fuec_file = Fuec.query.with_entities(fuec.file_pdf).filter(
+        fuec.id == fuec).first()
+
+    if not fuec_file[0]:
+        return jsonify(dict(jsonrpc="2.0", result='')), 200
+
+    file_to_send = fuec_file[0].encode("base64")
+
+    return jsonify(dict(jsonrpc="2.0", result=file_to_send)), 200

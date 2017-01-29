@@ -167,8 +167,12 @@ var TableAgreement = React.createClass({
 
   render: function () {
 
+    var pdf;
+
     var showClass = this.state.filetoload ? 'show' : 'invisible';
-    var pdf = "data:application/pdf;base64," + this.state.filetoload;
+    if(pdf != undefined){
+      pdf = "data:application/pdf;base64," + this.state.filetoload;
+    }
 
     return (
       <div className="header callout secondary">
@@ -198,12 +202,12 @@ var TableAgreement = React.createClass({
             height="500"
             alt="pdf"
             type="application/pdf"
-            />
+          />
         </div>
       </div>
     )
-    }
+  }
 
-    });
+});
 
-    export default TableAgreement;
+export default TableAgreement;
