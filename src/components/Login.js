@@ -43,6 +43,10 @@ const Login = React.createClass({
     }
   },
 
+  componentDidMount() {
+    auth.logout()
+  },
+
   render() {
 
     var showClass = this.state.showHide ? 'show' : 'hide';

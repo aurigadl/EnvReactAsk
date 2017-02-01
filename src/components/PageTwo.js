@@ -253,7 +253,7 @@ const PageTwo = React.createClass({
   render: function () {
     return (
       <div className="row">
-        <div className="columns small-12 medium-9 large-6">
+        <div className="columns small-12 medium-6">
           <div className="header callout secondary">
 
             <div className="sign">
@@ -436,7 +436,7 @@ const PageTwo = React.createClass({
           <TableFuec/>
         </div>
 
-        <div className="columns small-12 medium-3">
+        <div className="columns small-12 medium-6">
           <FormPersonaCarro
             newOptionPerson={this.state.newOptionPerson}
             onItemNewPerson={this.handleNewElementPerson}
@@ -445,19 +445,19 @@ const PageTwo = React.createClass({
           />
         </div>
 
-        <div className="columns small-12 medium-3">
+        <div className="columns small-12 medium-6">
           <FormRuta
             onItemNew={this.handleNewElementRuta}
           />
         </div>
 
-        <div className="columns small-12 medium-3">
+        <div className="columns small-12 medium-6">
           <FormMarcaAuto
             onItemNew={this.handleNewElementMarca}
           />
         </div>
 
-        <div className="columns small-12 medium-3">
+        <div className="columns small-12 medium-6">
           <FormCarro
             newOptionMarca={this.state.newOptionMarca}
             onItemNewMarca={this.handleNewElementMarca}
@@ -465,7 +465,7 @@ const PageTwo = React.createClass({
           />
         </div>
 
-        <div className="columns small-12 medium-3">
+        <div className="columns small-12 medium-6">
           <FormContrato
             newOptionPerson={this.state.newOptionPerson}
             onItemNewPerson={this.handleNewElementPerson}
@@ -473,7 +473,7 @@ const PageTwo = React.createClass({
           />
         </div>
 
-        <div className="columns small-12 medium-3">
+        <div className="columns small-12 medium-6">
           <FormPersona
             onItemNew={this.handleNewElementPerson}
           />

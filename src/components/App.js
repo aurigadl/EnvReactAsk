@@ -1,7 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router'
+import {Link} from 'react-router'
 import auth from '../utils/auth'
-require ('./menu.css');
+require('./menu.css');
 
 const App = React.createClass({
 
@@ -30,16 +30,16 @@ const App = React.createClass({
             <li>
               {this.state.loggedIn ? (
                 <Link to="/logout">Salir</Link>
-              ) : (
-                <Link to="/login">Ingresar</Link>
-              )}
+              ) : null}
             </li>
 
-            <li><Link to="/">Inicio</Link></li>
+            {this.state.loggedIn ? (
+              <li><Link to="/PageOne">Admin</Link></li>)
+              : null}
 
             {this.state.loggedIn ? (
-              <li><Link to="/page2">Fuec</Link></li>
-            ): null}
+              <li><Link to="/pageTwo">Fuec</Link></li>)
+              : null}
           </ul>
 
         </header>

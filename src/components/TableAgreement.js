@@ -169,8 +169,8 @@ var TableAgreement = React.createClass({
 
     var pdf;
 
-    var showClass = this.state.filetoload ? 'show' : 'invisible';
-    if(pdf != undefined){
+    var showClass = this.state.filetoload ? '' : 'is-hidden';
+    if(this.state.filetoload != ""){
       pdf = "data:application/pdf;base64," + this.state.filetoload;
     }
 

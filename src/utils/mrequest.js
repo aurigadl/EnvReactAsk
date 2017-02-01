@@ -1,3 +1,4 @@
+import auth from './auth'
 /**
 {
   method: String,
@@ -40,6 +41,8 @@ exports.makeRequest = function (opts) {
     xhr.onload = function () {
       if (this.status >= 200 && this.status < 300) {
         resolve(JSON.parse(xhr.response));
+      } else if (this.status == 401) {
+        auth.logout();
       } else {
         reject({
           status: this.status,

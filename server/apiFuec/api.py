@@ -308,8 +308,8 @@ def fuec_file():
     if not fuec or len(fuec) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    fuec_file = Fuec.query.with_entities(fuec.file_pdf).filter(
-        fuec.id == fuec).first()
+    fuec_file = Fuec.query.with_entities(Fuec.file_pdf).filter(
+        Fuec.id == fuec).first()
 
     if not fuec_file[0]:
         return jsonify(dict(jsonrpc="2.0", result='')), 200
