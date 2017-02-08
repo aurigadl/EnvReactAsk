@@ -10,7 +10,6 @@ import FormMarcaAuto from './FormMarcaAuto.js'
 import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-require('./formsPanels.css');
 
 const PageTwo = React.createClass({
 

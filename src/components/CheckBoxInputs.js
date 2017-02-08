@@ -1,6 +1,5 @@
 import React from 'react'
 import {makeRequest as mReq} from '../utils/mrequest';
-require('./formsPanels.css');
 
 var CheckboxInputs = React.createClass({
 

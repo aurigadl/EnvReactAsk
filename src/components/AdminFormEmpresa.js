@@ -1,5 +1,4 @@
 import React from 'react'
-require('./formsPanels.css');
 import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 

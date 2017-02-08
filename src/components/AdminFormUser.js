@@ -2,7 +2,6 @@ import React from 'react'
 import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
-require('./formsPanels.css');
 
 var AdminFormUser = React.createClass({
 

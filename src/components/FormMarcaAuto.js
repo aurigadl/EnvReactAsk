@@ -1,5 +1,4 @@
 import React from 'react'
-require('./formsPanels.css');
 import SelectInput from './SelectInput.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import MessageAlert from './MessageAlert.js'

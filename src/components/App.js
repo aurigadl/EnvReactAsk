@@ -1,7 +1,6 @@
 import React from 'react'
 import {Link} from 'react-router'
 import auth from '../utils/auth'
-require('./menu.css');
 
 const App = React.createClass({
 

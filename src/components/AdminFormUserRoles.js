@@ -3,7 +3,6 @@ import SelectInput from './SelectInput.js'
 import MessageAlert from './MessageAlert.js'
 import CheckBoxInputs from './CheckBoxInputs.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-require('./formsPanels.css');
 
 var AdminFormUserRoles = React.createClass({
 

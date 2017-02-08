@@ -6,17 +6,21 @@ var webpack = require('webpack'),
   srcPath = path.join(__dirname, 'src');
 
 module.exports = {
+
   target: 'web',
   cache: true,
+  devtool: "source-map",
   entry: {
     module: path.join(srcPath, 'module.js'),
     common: ['react', 'react-router', 'alt']
   },
+
   resolve: {
     root: srcPath,
     extensions: ['', '.js'],
     modulesDirectories: ['node_modules', 'src']
   },
+
   output: {
     path: path.join(__dirname, 'server/static'),
     publicPath: '',
@@ -27,17 +31,15 @@ module.exports = {
 
   module: {
     loaders: [
-      {
-       test:    /\.js?$/,
-       exclude: /node_modules/,
-       loader: 'babel?cacheDirectory'
-      },
+      { test: /\.js?$/, exclude: /node_modules/, loader: 'babel?cacheDirectory' },
       { test: /\.css$/, loader: "style-loader!css-loader" },
       { test: /\.png$/, loader: "url-loader?limit=100000" },
       { test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/, loader: 'file-loader' },
-      { test: /\.jpg$/, loader: "file-loader" }
+      { test: /\.jpg$/, loader: "file-loader" },
+      { test: /\.less$/, loaders: ['style-loader', "css-loader?sourceMap", "less-loader?sourceMap"] }
     ]
   },
+
   plugins: [
     new webpack.optimize.CommonsChunkPlugin('common', 'common.js'),
     new HtmlWebpackPlugin({

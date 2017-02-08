@@ -2,7 +2,7 @@ import React from 'react'
 import SelectInput from './SelectInput.js'
 import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-require('./formsPanels.css');
+
 
 var FormPersona = React.createClass({
 

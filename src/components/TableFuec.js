@@ -3,8 +3,6 @@ import Griddle from 'griddle-react'
 import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 
-require('./formsPanels.css');
-
 var LinkComponent = React.createClass({
   handleGetFile: function (e) {
     e.preventDefault();
