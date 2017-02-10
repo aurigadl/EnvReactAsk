@@ -9,7 +9,6 @@ module.exports = {
 
   target: 'web',
   cache: true,
-  devtool: "source-map",
   entry: {
     module: path.join(srcPath, 'module.js'),
     common: ['react', 'react-router', 'alt']
@@ -31,12 +30,12 @@ module.exports = {
 
   module: {
     loaders: [
-      { test: /\.js?$/, exclude: /node_modules/, loader: 'babel?cacheDirectory' },
-      { test: /\.css$/, loader: "style-loader!css-loader" },
-      { test: /\.png$/, loader: "url-loader?limit=100000" },
-      { test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/, loader: 'file-loader' },
-      { test: /\.jpg$/, loader: "file-loader" },
-      { test: /\.less$/, loaders: ['style-loader', "css-loader?sourceMap", "less-loader?sourceMap"] }
+      {test: /\.js?$/, exclude: /node_modules/, loader: 'babel?cacheDirectory'},
+      {test: /\.css$/, loader: "style-loader!css-loader"},
+      {test: /\.png$/, loader: "url-loader?limit=100000"},
+      {test: /\.(ttf|otf|eot|svg|woff(2)?)(\?[a-z0-9=&.]+)?$/, loader: 'file-loader?name=fonts/[name].[ext]' },
+      {test: /\.(jpe?g|png|gif|svg)$/i, loader: "file-loader?name=/[name].[ext]"},
+      {test: /\.less$/, loaders: ['style-loader', "css-loader?sourceMap", "less-loader?sourceMap"]}
     ]
   },
 

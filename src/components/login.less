@@ -1,13 +1,105 @@
+@color_1: white;
+@color_2: rgba(255, 255, 255, 0.63);
+@color_3: rgb(255, 0, 0);
+@background_color_1: rgba(0, 0, 0, 0.52);
+
+#main {
+  min-height: 800px;
+  margin: 10px;
+  padding: 0px;
+  display: flex;
+  flex-flow: row;
+  color: @color_1;
+  h1{
+    margin-bottom: 15px;
+  }
+  > section {
+    max-width: 300px;
+    flex: 3 1 60%;
+    order: 1;
+    > article {
+      margin-top: 4px;
+      margin-right: 5px;
+      border-radius: 7px;
+      background-color: @background_color_1;
+      padding: 19px;
+    }
+    .ant-form-extra {
+      color: @color_2;
+      margin-bottom: 15px;
+    }
+    .has-error {
+      color: @color_3;
+    }
+  }
+  > aside {
+    margin: 4px;
+    padding: 5px;
+    border-radius: 7pt;
+    background-color: @background_color_1;
+    flex: 1 6 20%;
+    order: 2;
+  }
+  #bg {
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    z-index: -1000;
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      min-width: 50%;
+      min-height: 50%;
+    }
+  }
+}
 .login-form {
   max-width: 300px;
+  margin-top: 4px;
+  margin-right: 5px;
+  border-radius: 7px;
+  background-color: @background_color_1;
+  padding: 19px;
+  margin-bottom: 8px;
 }
+
 .login-form-forgot {
   float: right;
 }
 .login-form-button {
   width: 100%;
 }
-
-.ant-form-item-control{
+.ant-form-item-control {
   line-height: 15px;
+}
+
+
+/* Too narrow to support three columns */
+@media all and (max-width: 640px) {
+  #main {
+    flex-direction: column;
+    >article {
+      order: 0;
+    }
+    >aside {
+      order: 0;
+      margin-top: 4px;
+      margin-left: 0px;
+      margin-right: 5px;
+      min-height: 50px;
+      max-height: 50px;
+    }
+    >section {
+      max-width: 100%;
+    }
+  }
+  .login-form {
+    max-width: 100%;
+  }
 }

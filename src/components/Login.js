@@ -1,8 +1,9 @@
 import React from 'react'
 import {withRouter} from 'react-router'
 import auth from '../utils/auth.js'
-import {Form, Icon, Input, Button} from 'antd';
+import {Form, Icon, Input, Button, Row, Col} from 'antd';
 import css from './login.less';
+import bg from '../../server/static/bg.jpg'
 const FormItem = Form.Item;
 
 
@@ -16,14 +17,18 @@ const Login = Form.create()(React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
+    var email, pass, pass_c;
 
-    const email = this.refs.email.value;
-    const pass = this.refs.pass.value;
-    var pass_c = undefined;
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        email = values.email;
+        pass = values.pass;
 
-    if (this.state.showHide) {
-      pass_c = this.refs.pass_c.value;
-    }
+        if (this.state.showHide) {
+          pass_c = values.pass_c;
+        }
+      }
+    });
 
     auth.login(email, pass, pass_c, this.callbackFormLogin)
   },
@@ -52,52 +57,84 @@ const Login = Form.create()(React.createClass({
 
   render() {
 
-    var showClass = this.state.showHide ? '' : 'is-hidden';
+    const {getFieldDecorator} = this.props.form;
+    var showClass = this.state.showHide ? null : 'is-hidden';
 
     return (
-      <section className="code-box">
-        <Form onSubmit={this.handleSubmit} className="ant-form login-form">
+      <Row id="main">
+        <div id="bg">
+          <img src={bg} alt=""/>
+        </div>
+        <section>
+          <Form onSubmit={this.handleSubmit} className="ant-form login-form">
+            <h1>Ingreso</h1>
+            <FormItem>
+              {getFieldDecorator('email', {
+                initialValue: "admon@mi.co",
+                rules: [{required: true, message: 'Ingresa un usurio!'}],
+              })(
+                <Input
+                  addonBefore={<Icon type="user" />}
+                  type="text"
+                  placeholder="micorreo@ejemplo.com"
+                  required/>
+              )}
+            </FormItem>
 
-          <FormItem>
-            <Input addonBefore={<Icon type="user" />} type="text" ref="email" defaultValue="admon@mi.co"
-                   placeholder="micorreo@ejemplo.com"/>
-          </FormItem>
+            <FormItem>
+              {getFieldDecorator('pass', {
+                initialValue: "Abcd1234",
+                rules: [{required: true, message: 'Ingresa una contraseña!'}],
+              })(
+                <Input
+                  addonBefore={<Icon type="lock" />}
+                  aria-describedby="pass"
+                  pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
+                  type="password"
+                  placeholder="Contraseña"
+                  required/>
+              )}
+            </FormItem>
 
-          <FormItem>
-            <Input
-              addonBefore={<Icon type="lock" />}
-              defaultValue="Abcd1234"
-              aria-describedby="pass"
-              pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
-              type="password"
-              ref="pass"
-              placeholder="Contraseña"
-              required/>
             <div className="ant-form-extra">Contraseña minimo 8 caracteres y debe contener
-              mayusculas, minusculas y numeros.</div>
-          </FormItem>
+              mayusculas, minusculas y numeros.
+            </div>
 
-          <FormItem>
-            <label className={showClass}>Repetir nueva Contraseña
-              <Input
-                addonBefore={<Icon type="lock" />}
-                defaultValue=""
-                pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
-                type="password"
-                ref="pass_c"
-                placeholder="Contraseña"/>
-            </label>
+            { this.state.showResults ?
+              <FormItem className={showClass}>
+                {getFieldDecorator('passw', {
+                  initialValue: "Abcd1234",
+                  rules: [{message: 'Ingresa nuevamente la contraseña!'}],
+                })(
+                  <Input
+                    addonBefore={<Icon type="lock" />}
+                    pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
+                    type="password"
+                    placeholder="Contraseña"/>
+                )}
+                <div className="ant-form-extra">Repetir nueva Contraseña</div>
+              </FormItem> : null }
+
             <Button
               className="login-form-button"
               type="primary"
+              htmlType="submit"
               className="login-form-button">Ingresar</Button>
-          </FormItem>
+            {this.state.error && (
+              <p>Los datos no son correctos :(</p>
+            )}
 
-          {this.state.error && (
-            <p>Los datos no son correctos :(</p>
-          )}
-        </Form>
-      </section>
+          </Form>
+          <article>
+            <h2>Un numero</h2>
+            <p>En esta seccion estaran los numero y las lineas de soporte</p>
+          </article>
+        </section>
+        
+        <aside>
+        </aside>
+
+      </Row>
     )
   }
 }));
