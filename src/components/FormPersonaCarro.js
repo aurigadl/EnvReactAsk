@@ -2,6 +2,7 @@ import React from 'react'
 import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
+import {Card} from 'antd';
 
 
 var FormPersonaCarro = React.createClass({
@@ -99,7 +100,7 @@ var FormPersonaCarro = React.createClass({
       })
     }.bind(this), 3000);
   },
-  
+
 
   onChange(e) {
     this.setState({inputValue: e.target.value});
@@ -242,18 +243,11 @@ var FormPersonaCarro = React.createClass({
       option: newOption
     });
   },
-  
+
   render: function () {
     return (
-      <div className="header callout secondary">
 
-        <div className="sign">
-          <h1>Personas de Carros y Camiones</h1>
-        </div>
-        <p>Selecciona un elemento para editarlo o eliminarlo
-          o llena el campo inferior sin seleccionar elemento
-          para crear uno nuevo</p>
-
+      <Card title="Relación de Personas y Carros" bordered={false}>
         <form onSubmit={this.handleSubmitForm} ref="personCar">
 
           <div className="row">
@@ -325,9 +319,8 @@ var FormPersonaCarro = React.createClass({
               />
             </div>
           </div>
-
         </form>
-      </div>
+      </Card>
     )
   }
 

@@ -81,7 +81,8 @@ const Login = Form.create()(React.createClass({
               )}
             </FormItem>
 
-            <FormItem>
+            <FormItem extra="Contraseña minimo 8 caracteres y debe contener
+              mayusculas, minusculas y numeros.">
               {getFieldDecorator('pass', {
                 initialValue: "Abcd1234",
                 rules: [{required: true, message: 'Ingresa una contraseña!'}],
@@ -96,8 +97,7 @@ const Login = Form.create()(React.createClass({
               )}
             </FormItem>
 
-            <div className="ant-form-extra">Contraseña minimo 8 caracteres y debe contener
-              mayusculas, minusculas y numeros.
+            <div className="ant-form-extra">
             </div>
 
             { this.state.showResults ?

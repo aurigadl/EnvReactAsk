@@ -10,6 +10,10 @@ import FormMarcaAuto from './FormMarcaAuto.js'
 import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
 import {makeRequest as mReq} from '../utils/mrequest';
+import {Layout, Menu, Icon, Card, Form, Input, Col, Row } from 'antd';
+
+const { Header, Content, Footer } = Layout;
+const FormItem = Form.Item;
 
 const PageTwo = React.createClass({
 
@@ -250,239 +254,259 @@ const PageTwo = React.createClass({
   },
 
   render: function () {
+
+    const formItemLayout = {
+      labelCol: { span: 10  },
+      wrapperCol: { span: 14  },
+    };
+
     return (
-      <div className="row">
-        <div className="columns small-12 medium-6">
-          <div className="header callout secondary">
+      <Layout>
 
-            <div className="sign">
-              <h1>Formato Único De Extracto Del Contrato Del Servicio Público De
-                Transporte Terrestre Automotor Especial</h1>
-            </div>
+        <Header>
+          <Menu selectedKeys={[this.state.current]} mode="horizontal" >
+            <Menu.Item key="mail">
+              <Icon type="mail" />Navigation One
+            </Menu.Item>
+            <Menu.Item key="m3ail">
+              <Icon type="mail" />Navigation One
+            </Menu.Item>
+            <Menu.Item key="mxail">
+              <Icon type="mail" />Navigation One
+            </Menu.Item>
+            <Menu.Item key="alipay">
+              <a href="https://ant.design" target="_blank" rel="noopener noreferrer">Navigation Four - Link</a>
+            </Menu.Item>
+          </Menu>
+        </Header>
 
-            <form onSubmit={this.handleSubmitForm}>
+        <Content style={{ margin: '30px 16px 30px 30px' }}>
+          <Card title="Contrato Del Servicio Público De Transporte Terrestre Automotor Especial" bordered={false}>
+              <Form inline onSubmit={this.handleSubmitForm}>
+                <Row>
 
-              <label>No. FUEC
-                <input
-                  name="no_fuec"
-                  ref="no_fuec"
-                  type="text"
-                  value={this.state.no_fuec}
-                  readOnly/>
-              </label>
-
-              <label>Razón social:
-                <input
-                  name="social_object"
-                  ref="social_object"
-                  value={this.state.social_object}
-                  type="text"
-                  readOnly/>
-              </label>
-
-              <label>Nit:
-                <input
-                  name="nit"
-                  ref="nit"
-                  value={this.state.no_nit}
-                  type="text"
-                  readOnly/>
-              </label>
-
-              <label>No. Contrato:
-                <input
-                  value={this.state.no_agreefuec}
-                  name="no_agreefuec"
-                  ref="no_agreefuec"
-                  type="text"
-                  onChange={this.handleChangeNoAgreement}
-                  required/>
-              </label>
-
-              <label>Contratante:
-                <SelectInput
-                  name="contractor"
-                  ref="contractor"
-                  url="apiFuec/allPerson"
-                  newOption={this.state.newOptionPerson}
-                  onItemNew={this.handleNewElementPerson}
-                  required/>
-              </label>
-
-              <label>Objeto del contrato:
-                <SelectInput
-                  name="agreement_object"
-                  ref="agreement_object"
-                  url="apiFuec/allObjectAgreement"
-                  required/>
-              </label>
-
-              <label>Tipo de contrato:
-                <SelectInput
-                  name="kind_agreement"
-                  ref="kind_agreement"
-                  url="apiFuec/allKindAgreement"
-                  required/>
-              </label>
-
-              <label>Con:
-                <SelectInput
-                  name="kind_agreement_link"
-                  ref="kind_agreement_link"
-                  url="apiFuec/allPerson"
-                  newOption={this.state.newOptionPerson}
-                  onItemNew={this.handleNewElementPerson}
-                  required/>
-              </label>
-
-              <label>Fecha Inicial
-                <input
-                  type="date"
-                  pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-                  name="init_date"
-                  ref="init_date"
-                  required/>
-              </label>
-
-              <label>Fecha Final
-                <input
-                  type="date"
-                  pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-                  name="last_date"
-                  ref="last_date"
-                  required/>
-              </label>
-
-              <div className="row">
-
-                <div className="small-2 columns">
-                  <label>&nbsp;&nbsp;</label>
-                  <a onClick={this.addNewRuta} className="button">
-                    <i className="fi-plus"></i>
-                  </a>
-                </div>
-
-                <div className="small-10 columns">
-                  <label>Ruta: Origen - Destino</label>
-                  <SelectInput
-                    className="input-group-field"
-                    url="apiFuec/allRuta"
-                    name={"selectRuta"}
-                    ref={"selectRuta"}
-                    newOption={this.state.newOptionRuta}
-                    onItemNew={this.handleNewElementRuta}
-                    required/>
-                </div>
-
-              </div>
-
-              {this.state.option.map(function (data, i) {
-                return (
-                  <div key={i} ref={i} className="row">
-
-                    <div className="small-2 columns">
-                      <a data-key={i}
-                         onClick={this.delRelRuta}
-                         className="button">
-                        <i className="fi-minus"></i>
-                      </a>
-                    </div>
-
-                    <div className="small-10 columns">
+                  <Col span={8}>
+                    <FormItem {...formItemLayout} label="No. FUEC" >
+                      <Input
+                        name="no_fuec"
+                        ref="no_fuec"
+                        type="text"
+                        value={this.state.no_fuec}
+                        readOnly/>
+                    </FormItem>
+                    <FormItem {...formItemLayout} label="No. Contrato" >
+                      <Input
+                        value={this.state.no_agreefuec}
+                        name="no_agreefuec"
+                        ref="no_agreefuec"
+                        type="text"
+                        onChange={this.handleChangeNoAgreement}
+                        required/>
+                    </FormItem>
+                    <FormItem {...formItemLayout} label="Tipo de contrato" >
                       <SelectInput
-                        className="input-group-field"
-                        url="apiFuec/allRuta"
-                        name={"selectRuta_" + i}
-                        newOption={this.state.newOptionRuta}
-                        onItemNew={this.handleNewElementRuta}
-                     />
-                    </div>
+                        name="kind_agreement"
+                        ref="kind_agreement"
+                        url="apiFuec/allKindAgreement"
+                        required/>
+                    </FormItem>
+                  </Col>
 
+                  <Col span={8}>
+                    <FormItem {...formItemLayout} label="Razón social" >
+                      <Input
+                        name="social_object"
+                        ref="social_object"
+                        value={this.state.social_object}
+                        type="text"
+                        readOnly/>
+                    </FormItem>
+                    <FormItem {...formItemLayout} label="Contratante" >
+                      <SelectInput
+                        name="contractor"
+                        ref="contractor"
+                        url="apiFuec/allPerson"
+                        newOption={this.state.newOptionPerson}
+                        onItemNew={this.handleNewElementPerson}
+                        required/>
+                    </FormItem>
+                    <FormItem {...formItemLayout} label="Con" >
+                      <SelectInput
+                        name="kind_agreement_link"
+                        ref="kind_agreement_link"
+                        url="apiFuec/allPerson"
+                        newOption={this.state.newOptionPerson}
+                        onItemNew={this.handleNewElementPerson}
+                        required/>
+                    </FormItem>
+                  </Col>
+
+                  <Col span={8}>
+                    <FormItem {...formItemLayout} label="Nit" >
+                      <Input
+                        name="nit"
+                        ref="nit"
+                        value={this.state.no_nit}
+                        type="text"
+                        readOnly/>
+                    </FormItem>
+                    <FormItem {...formItemLayout} label="Objeto del contrato" >
+                      <SelectInput
+                        name="agreement_object"
+                        ref="agreement_object"
+                        url="apiFuec/allObjectAgreement"
+                        required/>
+                    </FormItem>
+                    <FormItem {...formItemLayout} label="Fecha Inicial" >
+                      <input
+                        type="date"
+                        pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
+                        name="init_date"
+                        ref="init_date"
+                        required/>
+                    </FormItem>
+                    <FormItem {...formItemLayout} label="Fecha Final" >
+                      <input
+                        type="date"
+                        pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
+                        name="last_date"
+                        ref="last_date"
+                        required/>
+                    </FormItem>
+                  </Col>
+                </Row>
+
+
+
+                <div className="row">
+
+                  <div className="small-2 columns">
+                    <label>&nbsp;&nbsp;</label>
+                    <a onClick={this.addNewRuta} className="button">
+                      <i className="fi-plus"></i>
+                    </a>
                   </div>
-                )
-              }, this)}
 
-              <label>Vehiculo:
-                <SelectInput
-                  url="apiFuec/allCarWithPerson"
-                  name="no_car"
-                  ref="no_car"
-                  newOption={this.state.newOptionCar}
-                  onItemNew={this.handleNewElementCar}
-                  required/>
-              </label>
+                  <div className="small-10 columns">
+                    <label>Ruta: Origen - Destino</label>
+                    <SelectInput
+                      className="input-group-field"
+                      url="apiFuec/allRuta"
+                      name={"selectRuta"}
+                      ref={"selectRuta"}
+                      newOption={this.state.newOptionRuta}
+                      onItemNew={this.handleNewElementRuta}
+                      required/>
+                  </div>
 
-              <div className="row">
-                <div className="shrink columns">
-                  <input type="submit" className="success button" value="Grabar"/>
-                  <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
                 </div>
-                <div className="columns">
-                  <MessageAlert
-                    showHide={this.state.showMessage}
-                    type={this.state.typeMess}
-                    contextText={this.state.contextText}
-                    onclickMessage={this.onClickMessage}
-                  />
+
+                {this.state.option.map(function (data, i) {
+                  return (
+                    <div key={i} ref={i} className="row">
+
+                      <div className="small-2 columns">
+                        <a data-key={i}
+                           onClick={this.delRelRuta}
+                           className="button">
+                          <i className="fi-minus"></i>
+                        </a>
+                      </div>
+
+                      <div className="small-10 columns">
+                        <SelectInput
+                          className="input-group-field"
+                          url="apiFuec/allRuta"
+                          name={"selectRuta_" + i}
+                          newOption={this.state.newOptionRuta}
+                          onItemNew={this.handleNewElementRuta}
+                        />
+                      </div>
+
+                    </div>
+                  )
+                }, this)}
+
+                <label>Vehiculo:
+                  <SelectInput
+                    url="apiFuec/allCarWithPerson"
+                    name="no_car"
+                    ref="no_car"
+                    newOption={this.state.newOptionCar}
+                    onItemNew={this.handleNewElementCar}
+                    required/>
+                </label>
+
+                <div className="row">
+                  <div className="shrink columns">
+                    <input type="submit" className="success button" value="Grabar"/>
+                    <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
+                  </div>
+                  <div className="columns">
+                    <MessageAlert
+                      showHide={this.state.showMessage}
+                      type={this.state.typeMess}
+                      contextText={this.state.contextText}
+                      onclickMessage={this.onClickMessage}
+                    />
+                  </div>
                 </div>
-              </div>
 
-            </form>
-          </div>
-        </div>
+              </Form>
 
-        <div className="columns">
-          <TableFuec/>
-        </div>
+              <TableFuec/>
 
-        <div className="columns small-12 medium-6">
+          </Card>
+
           <FormPersonaCarro
             newOptionPerson={this.state.newOptionPerson}
             onItemNewPerson={this.handleNewElementPerson}
             newOptionCar={this.state.newOptionCar}
             onItemNewCar={this.handleNewElementCar}
           />
-        </div>
 
-        <div className="columns small-12 medium-6">
-          <FormRuta
-            onItemNew={this.handleNewElementRuta}
-          />
-        </div>
+            <div className="columns small-12 medium-6">
+              <FormRuta
+                onItemNew={this.handleNewElementRuta}
+              />
+            </div>
 
-        <div className="columns small-12 medium-6">
-          <FormMarcaAuto
-            onItemNew={this.handleNewElementMarca}
-          />
-        </div>
+            <div className="columns small-12 medium-6">
+              <FormMarcaAuto
+                onItemNew={this.handleNewElementMarca}
+              />
+            </div>
 
-        <div className="columns small-12 medium-6">
-          <FormCarro
-            newOptionMarca={this.state.newOptionMarca}
-            onItemNewMarca={this.handleNewElementMarca}
-            onItemNewCar={this.handleNewElementCar}
-          />
-        </div>
+            <div className="columns small-12 medium-6">
+              <FormCarro
+                newOptionMarca={this.state.newOptionMarca}
+                onItemNewMarca={this.handleNewElementMarca}
+                onItemNewCar={this.handleNewElementCar}
+              />
+            </div>
 
-        <div className="columns small-12 medium-6">
-          <FormContrato
-            newOptionPerson={this.state.newOptionPerson}
-            onItemNewPerson={this.handleNewElementPerson}
-            onItemNewAgreement={this.handleNewAgreement}
-          />
-        </div>
+            <div className="columns small-12 medium-6">
+              <FormContrato
+                newOptionPerson={this.state.newOptionPerson}
+                onItemNewPerson={this.handleNewElementPerson}
+                onItemNewAgreement={this.handleNewAgreement}
+              />
+            </div>
 
-        <div className="columns small-12 medium-6">
-          <FormPersona
-            onItemNew={this.handleNewElementPerson}
-          />
-        </div>
+            <div className="columns small-12 medium-6">
+              <FormPersona
+                onItemNew={this.handleNewElementPerson}
+              />
+            </div>
 
-        <div className="columns">
-          <TableAgreement/>
-        </div>
-
-      </div>
+            <div className="columns">
+              <TableAgreement/>
+            </div>
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>
+          Ant Design ©2016 Created by Ant UED
+        </Footer>
+      </Layout>
     );
   }
 });

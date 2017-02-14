@@ -1,12 +1,15 @@
 import React from 'react'
 import {Link} from 'react-router'
 import auth from '../utils/auth'
+import {Layout, Menu, Icon} from 'antd';
+const {Sider} = Layout;
 
 const App = React.createClass({
 
   getInitialState() {
     return {
-      loggedIn: auth.loggedIn()
+      loggedIn: auth.loggedIn(),
+      collapsed: true,
     }
   },
 
@@ -20,32 +23,50 @@ const App = React.createClass({
     auth.onChange = this.updateAuth
   },
 
-  render() {
+
+  onCollapse(collapsed){
+    console.log(collapsed);
+    this.setState({collapsed});
+  },
+
+
+  render(){
     return (
-      <div>
-
-        <header className="header">
-          <ul className="header-subnav">
-            <li>
-              {this.state.loggedIn ? (
-                <Link to="/logout">Salir</Link>
-              ) : null}
-            </li>
-
-            {this.state.loggedIn ? (
-              <li><Link to="/PageOne">Admin</Link></li>)
-              : null}
-
-            {this.state.loggedIn ? (
-              <li><Link to="/pageTwo">Fuec</Link></li>)
-              : null}
-          </ul>
-
-        </header>
+      <Layout id="initFormat">
+        {this.state.loggedIn ? (
+          <Sider
+            collapsible
+            collapsedWidth={40}
+            collapsed={this.state.collapsed}
+            onCollapse={this.onCollapse}
+          >
+            <div className="logo"/>
+            <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+              <Menu.Item key="1">
+                <Link to="/PageOne">
+                  <Icon type="eye-o" />
+                  <span className="nav-text">Admin</span>
+                </Link>
+              </Menu.Item>
+              <Menu.Item key="2">
+                <Link to="/pageTwo">
+                  <Icon type="file-text" />
+                  <span className="nav-text">Fuec</span>
+                </Link>
+              </Menu.Item>
+              <Menu.Item key="3">
+                <Link to="/logout">
+                  <Icon type="logout" />
+                  <span className="nav-text">Salir</span>
+                </Link>
+              </Menu.Item>
+            </Menu>
+          </Sider>
+        ) : null}
 
         {this.props.children}
 
-      </div>
+      </Layout>
     )
   }
 });

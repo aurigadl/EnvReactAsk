@@ -1,5 +1,8 @@
 import React from 'react'
 import {makeRequest as mReq} from '../utils/mrequest';
+import { Select  } from 'antd';
+const Option = Select.Option;
+
 
 var SelectInput = React.createClass({
   propTypes: {
@@ -11,6 +14,7 @@ var SelectInput = React.createClass({
     return {
       options: [],
       name: React.PropTypes.string.isRequired,
+      valueSelect: ''
     }
   },
 
@@ -44,42 +48,35 @@ var SelectInput = React.createClass({
 
   successHandler: function (data) {
     var arrayData = [];
-    arrayData.push(<option key='' value=''></option>);
+    arrayData.push(<Option key='' value='-- Ninguno --'></Option>);
     for (var i = 0; i < data.length; i++) {
       var option = data[i];
       arrayData.push(
-        <option key={i} value={option.id}>{option.nomb}</option>
+        <Option key={i.toString()} value={option.id.toString()}>{option.nomb}</Option>
       );
     }
     this.setState({options: arrayData})
   },
 
-  handleChange: function (e) {
-    var index = e.nativeEvent.target.selectedIndex;
-    var text = e.nativeEvent.target[index].text;
-    var user = this.refs.selectValue.value;
+  handleChange: function (value, label) {
     if (typeof this.props.onUserSelect === "function"){
       this.props.onUserSelect(
-        user, text
+        value, label
       );
     }
+    this.setState({ valueSelect: value});
   },
 
   render: function () {
-    var value_selected = undefined;
-    if(this.props.selectstate){
-      value_selected = this.props.selectstate;
-    }
     return (
-      <select
-        value={value_selected}
-        className={this.props.class}
+      <Select
+        value={this.state.valueSelect}
         onChange={this.handleChange}
-        ref="selectValue"
+        ref="valueSelect"
         required={this.props.required}
         name={this.props.name}>
         {this.state.options}
-      </select>
+      </Select>
     )
   }
 
