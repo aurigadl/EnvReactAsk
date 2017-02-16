@@ -5,15 +5,16 @@ import FormCarro from './FormCarro.js'
 import SelectInput from './SelectInput.js'
 import FormPersona from './FormPersona.js'
 import FormContrato from './FormContrato.js'
-import MessageAlert from './MessageAlert.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
 import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-import {Layout, Menu, Icon, Card, Form, Input, Col, Row } from 'antd';
+import {message, DatePicker, Layout, Menu, Icon, Card, Form, Input, Col, Row, Button} from 'antd';
+import enUS from 'antd/lib/date-picker/locale/en_US';
 
 const { Header, Content, Footer } = Layout;
 const FormItem = Form.Item;
+const InputGroup = Input.Group;
 
 const PageTwo = React.createClass({
 
@@ -32,9 +33,9 @@ const PageTwo = React.createClass({
       id_company_legal: '',
       option: [],
 
-      showMessage: false,
-      typeMess: '',
-      contextText: ''
+      startValue: null,
+      endValue: null,
+      endOpen: false,
     }
   },
 
@@ -78,18 +79,7 @@ const PageTwo = React.createClass({
   },
 
   errorHandlerSelect: function (remoteData) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Conexion rechazada',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.error('Conexion rechazada');
   },
 
 
@@ -149,6 +139,7 @@ const PageTwo = React.createClass({
       option: newOption
     });
   },
+
 
   handleChangeNoAgreement: function (e) {
     var id_company_legal = this.state.id_company_legal;
@@ -216,35 +207,11 @@ const PageTwo = React.createClass({
   },
 
   successFormCreate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se creo un nuevo FUEC',
-      typeMess: 'success'
-    });
-
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.success('Se creo un nuevo FUEC');
   },
 
   errorFormCreate: function (err) {
-    console.log(err);
-    this.setState({
-      showMessage: true,
-      contextText: err.message.error,
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.error(err.message.error);
   },
 
   handleReset: function (e) {
@@ -253,12 +220,49 @@ const PageTwo = React.createClass({
     });
   },
 
+  disabledStartDate : function (startValue){
+    const endValue = this.state.endValue;
+    if (!startValue || !endValue) {
+      return false;
+    }
+    return startValue.valueOf() > endValue.valueOf();
+  },
+
+  disabledEndDate: function (endValue){
+    const startValue = this.state.startValue;
+    if (!endValue || !startValue) {
+      return false;
+    }
+    return endValue.valueOf() <= startValue.valueOf();
+  },
+
+  onChange: function (field, value) {
+    this.setState({
+      [field]: value,
+    });
+  },
+
+  onStartChange: function (value){
+    this.onChange('startValue', value);
+  },
+
+  onEndChange: function (value){
+        this.onChange('endValue', value);
+  },
+
+  handleStartOpenChange: function(open){
+    if (!open) {
+      this.setState({ endOpen: true  });
+    }
+  },
+
+  handleEndOpenChange: function(open){
+    this.setState({ endOpen: open  });
+  },
+
   render: function () {
 
-    const formItemLayout = {
-      labelCol: { span: 10  },
-      wrapperCol: { span: 14  },
-    };
+    const { startValue, endValue, endOpen  } = this.state
 
     return (
       <Layout>
@@ -282,180 +286,155 @@ const PageTwo = React.createClass({
 
         <Content style={{ margin: '30px 16px 30px 30px' }}>
           <Card title="Contrato Del Servicio Público De Transporte Terrestre Automotor Especial" bordered={false}>
-              <Form inline onSubmit={this.handleSubmitForm}>
-                <Row>
+            <Form onSubmit={this.handleSubmitForm}>
+              <Row gutter={30}>
 
-                  <Col span={8}>
-                    <FormItem {...formItemLayout} label="No. FUEC" >
-                      <Input
-                        name="no_fuec"
-                        ref="no_fuec"
-                        type="text"
-                        value={this.state.no_fuec}
-                        readOnly/>
-                    </FormItem>
-                    <FormItem {...formItemLayout} label="No. Contrato" >
-                      <Input
-                        value={this.state.no_agreefuec}
-                        name="no_agreefuec"
-                        ref="no_agreefuec"
-                        type="text"
-                        onChange={this.handleChangeNoAgreement}
-                        required/>
-                    </FormItem>
-                    <FormItem {...formItemLayout} label="Tipo de contrato" >
-                      <SelectInput
-                        name="kind_agreement"
-                        ref="kind_agreement"
-                        url="apiFuec/allKindAgreement"
-                        required/>
-                    </FormItem>
-                  </Col>
-
-                  <Col span={8}>
-                    <FormItem {...formItemLayout} label="Razón social" >
-                      <Input
-                        name="social_object"
-                        ref="social_object"
-                        value={this.state.social_object}
-                        type="text"
-                        readOnly/>
-                    </FormItem>
-                    <FormItem {...formItemLayout} label="Contratante" >
-                      <SelectInput
-                        name="contractor"
-                        ref="contractor"
-                        url="apiFuec/allPerson"
-                        newOption={this.state.newOptionPerson}
-                        onItemNew={this.handleNewElementPerson}
-                        required/>
-                    </FormItem>
-                    <FormItem {...formItemLayout} label="Con" >
-                      <SelectInput
-                        name="kind_agreement_link"
-                        ref="kind_agreement_link"
-                        url="apiFuec/allPerson"
-                        newOption={this.state.newOptionPerson}
-                        onItemNew={this.handleNewElementPerson}
-                        required/>
-                    </FormItem>
-                  </Col>
-
-                  <Col span={8}>
-                    <FormItem {...formItemLayout} label="Nit" >
-                      <Input
-                        name="nit"
-                        ref="nit"
-                        value={this.state.no_nit}
-                        type="text"
-                        readOnly/>
-                    </FormItem>
-                    <FormItem {...formItemLayout} label="Objeto del contrato" >
-                      <SelectInput
-                        name="agreement_object"
-                        ref="agreement_object"
-                        url="apiFuec/allObjectAgreement"
-                        required/>
-                    </FormItem>
-                    <FormItem {...formItemLayout} label="Fecha Inicial" >
-                      <input
-                        type="date"
-                        pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-                        name="init_date"
-                        ref="init_date"
-                        required/>
-                    </FormItem>
-                    <FormItem {...formItemLayout} label="Fecha Final" >
-                      <input
-                        type="date"
-                        pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-                        name="last_date"
-                        ref="last_date"
-                        required/>
-                    </FormItem>
-                  </Col>
-                </Row>
-
-
-
-                <div className="row">
-
-                  <div className="small-2 columns">
-                    <label>&nbsp;&nbsp;</label>
-                    <a onClick={this.addNewRuta} className="button">
-                      <i className="fi-plus"></i>
-                    </a>
-                  </div>
-
-                  <div className="small-10 columns">
-                    <label>Ruta: Origen - Destino</label>
-                    <SelectInput
-                      className="input-group-field"
-                      url="apiFuec/allRuta"
-                      name={"selectRuta"}
-                      ref={"selectRuta"}
-                      newOption={this.state.newOptionRuta}
-                      onItemNew={this.handleNewElementRuta}
+                <Col span={8}>
+                  <FormItem  label="No. FUEC" >
+                    <Input
+                      name="no_fuec"
+                      ref="no_fuec"
+                      type="text"
+                      value={this.state.no_fuec}
+                      readOnly/>
+                  </FormItem>
+                  <FormItem  label="No. Contrato" >
+                    <Input
+                      value={this.state.no_agreefuec}
+                      name="no_agreefuec"
+                      ref="no_agreefuec"
+                      type="text"
+                      onChange={this.handleChangeNoAgreement}
                       required/>
-                  </div>
+                  </FormItem>
 
-                </div>
+                  <FormItem label="Tipo de contrato" >
+                    <SelectInput
+                      name="kind_agreement"
+                      ref="kind_agreement"
+                      url="apiFuec/allKindAgreement"
+                      required/>
+                  </FormItem>
 
-                {this.state.option.map(function (data, i) {
-                  return (
-                    <div key={i} ref={i} className="row">
+                  <FormItem label="Ruta: Origen - Destino" >
+                    <InputGroup size="large" compact>
+                      <Button onClick={this.addNewRuta}  type="primary"  shape="circle" icon="plus"/>
+                      <SelectInput
+                        style={{ width: '88%' }}
+                        url="apiFuec/allRuta"
+                        name={"selectRuta"}
+                        ref={"selectRuta"}
+                        newOption={this.state.newOptionRuta}
+                        onItemNew={this.handleNewElementRuta}
+                        required/>
+                    </InputGroup>
 
-                      <div className="small-2 columns">
-                        <a data-key={i}
-                           onClick={this.delRelRuta}
-                           className="button">
-                          <i className="fi-minus"></i>
-                        </a>
-                      </div>
-
-                      <div className="small-10 columns">
+                    {this.state.option.map(function (data, i) {
+                    return (
+                    <div key={i} ref={i}>
+                      <InputGroup compact>
+                        <Button data-key={i} onClick={this.delRelRuta} type="danger" shape="circle" icon="minus"/>
                         <SelectInput
-                          className="input-group-field"
+                          style={{ width: '88%' }}
                           url="apiFuec/allRuta"
                           name={"selectRuta_" + i}
                           newOption={this.state.newOptionRuta}
                           onItemNew={this.handleNewElementRuta}
                         />
-                      </div>
-
+                      </InputGroup>
                     </div>
-                  )
-                }, this)}
+                    )
+                    }, this)}
 
-                <label>Vehiculo:
-                  <SelectInput
-                    url="apiFuec/allCarWithPerson"
-                    name="no_car"
-                    ref="no_car"
-                    newOption={this.state.newOptionCar}
-                    onItemNew={this.handleNewElementCar}
-                    required/>
-                </label>
+                  </FormItem>
 
-                <div className="row">
-                  <div className="shrink columns">
-                    <input type="submit" className="success button" value="Grabar"/>
-                    <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-                  </div>
-                  <div className="columns">
-                    <MessageAlert
-                      showHide={this.state.showMessage}
-                      type={this.state.typeMess}
-                      contextText={this.state.contextText}
-                      onclickMessage={this.onClickMessage}
+                </Col>
+
+                <Col span={8}>
+                  <FormItem label="Razón social" >
+                    <Input
+                      name="social_object"
+                      ref="social_object"
+                      value={this.state.social_object}
+                      type="text"
+                      readOnly/>
+                  </FormItem>
+                  <FormItem label="Contratante" >
+                    <SelectInput
+                      name="contractor"
+                      ref="contractor"
+                      url="apiFuec/allPerson"
+                      newOption={this.state.newOptionPerson}
+                      onItemNew={this.handleNewElementPerson}
+                      required/>
+                  </FormItem>
+                  <FormItem label="Con" >
+                    <SelectInput
+                      name="kind_agreement_link"
+                      ref="kind_agreement_link"
+                      url="apiFuec/allPerson"
+                      newOption={this.state.newOptionPerson}
+                      onItemNew={this.handleNewElementPerson}
+                      required/>
+                  </FormItem>
+                  <FormItem label="Vehiculo:" >
+                    <SelectInput
+                      url="apiFuec/allCarWithPerson"
+                      name="no_car"
+                      ref="no_car"
+                      newOption={this.state.newOptionCar}
+                      onItemNew={this.handleNewElementCar}
+                      required/>
+                  </FormItem>
+                </Col>
+
+                <Col span={8}>
+                  <FormItem label="Nit" >
+                    <Input
+                      name="nit"
+                      ref="nit"
+                      value={this.state.no_nit}
+                      type="text"
+                      readOnly/>
+                  </FormItem>
+                  <FormItem label="Objeto del contrato" >
+                    <SelectInput
+                      name="agreement_object"
+                      ref="agreement_object"
+                      url="apiFuec/allObjectAgreement"
+                      required/>
+                  </FormItem>
+
+                  <FormItem label="Fecha del contrato Inicial - Final" >
+                    <DatePicker
+                      locale={enUS}
+                      disabledDate={this.disabledStartDate}
+                      format="DD-MM-YYYY"
+                      value={startValue}
+                      placeholder="Inicio"
+                      onChange={this.onStartChange}
+                      onOpenChange={this.handleStartOpenChange}
                     />
-                  </div>
-                </div>
+                    <DatePicker
+                      locale={enUS}
+                      disabledDate={this.disabledEndDate}
+                      format="DD-MM-YYYY"
+                      value={endValue}
+                      placeholder="Fin"
+                      onChange={this.onEndChange}
+                      open={endOpen}
+                      onOpenChange={this.handleEndOpenChange}
+                    />
+                  </FormItem>
+                  <FormItem>
+                    <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                    <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                  </FormItem>
+                </Col>
+              </Row>
+            </Form>
 
-              </Form>
-
-              <TableFuec/>
-
+            <TableFuec/>
           </Card>
 
           <FormPersonaCarro
@@ -503,9 +482,6 @@ const PageTwo = React.createClass({
               <TableAgreement/>
             </div>
         </Content>
-        <Footer style={{ textAlign: 'center' }}>
-          Ant Design ©2016 Created by Ant UED
-        </Footer>
       </Layout>
     );
   }

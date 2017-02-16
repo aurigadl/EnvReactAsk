@@ -70,10 +70,10 @@ var SelectInput = React.createClass({
   render: function () {
     return (
       <Select
+        {...this.props}
         value={this.state.valueSelect}
         onChange={this.handleChange}
         ref="valueSelect"
-        required={this.props.required}
         name={this.props.name}>
         {this.state.options}
       </Select>

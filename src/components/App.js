@@ -31,8 +31,12 @@ const App = React.createClass({
 
 
   render(){
+    console.log('Esta registrado ' + this.state.loggedIn);
+    if(!this.state.loggedIn){
+      var bg = {background: 'transparent'};
+    }
     return (
-      <Layout id="initFormat">
+      <Layout style={bg} id="initFormat">
         {this.state.loggedIn ? (
           <Sider
             collapsible
@@ -43,7 +47,7 @@ const App = React.createClass({
             <div className="logo"/>
             <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
               <Menu.Item key="1">
-                <Link to="/PageOne">
+                <Link to="/pageOne">
                   <Icon type="eye-o" />
                   <span className="nav-text">Admin</span>
                 </Link>

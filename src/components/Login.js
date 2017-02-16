@@ -51,10 +51,6 @@ const Login = Form.create()(React.createClass({
     }
   },
 
-  componentDidMount() {
-    auth.logout()
-  },
-
   render() {
 
     const {getFieldDecorator} = this.props.form;
@@ -130,7 +126,7 @@ const Login = Form.create()(React.createClass({
             <p>En esta seccion estaran los numero y las lineas de soporte</p>
           </article>
         </section>
-        
+
         <aside>
         </aside>
 

@@ -1,7 +1,7 @@
 import React from 'react'
-import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
+import { message} from 'antd';
 
 var AdminFormUser = React.createClass({
 
@@ -17,11 +17,7 @@ var AdminFormUser = React.createClass({
       display_name: undefined,
       new_user: false,
 
-      showHide: false,
-
-      showMessage: false,
-      typeMess: '',
-      contextText: ''
+      showHide: false
     };
   },
 
@@ -79,18 +75,7 @@ var AdminFormUser = React.createClass({
   },
 
   errorHandlerSelect: function(remoteData){
-    this.setState({
-      showMessage: true,
-      contextText: 'Conexion rechazada',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.error('Conexion rechazada', 10)
   },
 
   clickNewUser: function () {
@@ -187,76 +172,22 @@ var AdminFormUser = React.createClass({
   },
 
   successFormCreate: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Creo el usuario',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-    
+    message.success('Se creo el usuario', 10);
     this.props.onItemNew(true);
-    
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormCreate: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Creo el usuario. El correo electronico ya esta registrado',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.error('No se creo el usuario',10);
   },
 
   successFormUpdate: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Actualizo el usuario',
-      typeMess: 'success'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.success('Se actulizo el usuario', 10);
   },
 
   errorFormUpdate: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Actualizo el usuario',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.error('No se actualizo el usuario',10);
   },
 
-  onClickMessage: function(event) {
-    this.setState({
-      showMessage: false,
-      contextText: ''
-    })
-  },
 
   handleReset: function (e) {
     this.setState({
@@ -369,14 +300,6 @@ var AdminFormUser = React.createClass({
             <div className="shrink columns">
               <input type="submit" className="success button" value="Grabar"/>
               <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-            </div>
-            <div className="columns">
-              <MessageAlert
-                showHide={this.state.showMessage}
-                type={this.state.typeMess}
-                contextText={this.state.contextText}
-                onclickMessage={this.onClickMessage}
-              />
             </div>
           </div>
 

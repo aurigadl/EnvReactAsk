@@ -1,15 +1,11 @@
 import React from 'react'
-import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-
+import { message } from 'antd';
 
 var AdminFormEmpresa = React.createClass({
 
   getInitialState: function () {
     return {
-      showHide: false,
-      typeMess: '',
-      contextText: '',
       fileSign:'',
       fileLogo:''
     };
@@ -117,33 +113,11 @@ var AdminFormEmpresa = React.createClass({
   },
 
   successFormUpdate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Actualizaron los datos',
-      typeMess: 'success'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.success('Se actualizaron los datos de la empresa', 10);
   },
 
   errorFormUpdate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Actualizaron los datos',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+    message.error('No se actualizaron los datos de la empresa', 10)
   },
 
   handleImageLogo: function(e){
@@ -195,7 +169,7 @@ var AdminFormEmpresa = React.createClass({
     if (imgSign) {
       imagePreviewSign = (<img src={imgSign}/>);
     }
-    
+
     return (
       <div className="header callout secondary">
 
@@ -322,14 +296,6 @@ var AdminFormEmpresa = React.createClass({
           <div className="row">
             <div className="shrink columns">
               <input type="submit" className="success button" value="Grabar"/>
-            </div>
-            <div className="columns">
-              <MessageAlert
-                showHide={this.state.showMessage}
-                type={this.state.typeMess}
-                contextText={this.state.contextText}
-                onclickMessage={this.onClickMessage}
-              />
             </div>
           </div>
 

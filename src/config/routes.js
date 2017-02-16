@@ -16,7 +16,7 @@ export default {
       path: '/logout',
       getComponent: (nextState, cb) => {
         require.ensure([], (require) => {
-          cb(null, require('../components/Login').default)
+          cb(null, require('../components/Logout'))
         })
       }
     },
@@ -33,6 +33,18 @@ export default {
         return require.ensure([], (require) => {
           cb(null, require('../components/Login').default)
         })
+      },
+
+      indexRoute: {
+        getComponent: (nextState, cb) => {
+          // Only load if we're logged in
+          if (auth.loggedIn()) {
+            return require.ensure([], (require) => {
+              cb(null, require('../components/PageTwo').default)
+            })
+          }
+          return cb()
+        }
       }
     },
 
@@ -53,7 +65,7 @@ export default {
     },
 
     {
-      path: '/PageOne',
+      path: '/pageOne',
 
       getComponent: (nextState, cb) => {
         // Share the path
@@ -66,19 +78,8 @@ export default {
         return require.ensure([], (require) => {
           cb(null, require('../components/Login').default)
         })
-      },
-
-      indexRoute: {
-        getComponent: (nextState, cb) => {
-          // Only load if we're logged in
-          if (auth.loggedIn()) {
-            return require.ensure([], (require) => {
-              cb(null, require('../components/PageTwo').default)
-            })
-          }
-          return cb()
-        }
       }
+
 
     }
 
