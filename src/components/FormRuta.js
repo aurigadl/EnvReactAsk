@@ -216,7 +216,6 @@ var FormRuta = React.createClass({
       })
     }.bind(this), 3000);
   },
-  
 
   onClickMessage: function (event) {
     this.setState({
@@ -227,7 +226,7 @@ var FormRuta = React.createClass({
 
   render: function () {
     return (
-      <div className="header callout secondary">
+      <div id={this.props.id} className="header callout secondary">
 
         <div className="sign">
           <h1>Rutas</h1>

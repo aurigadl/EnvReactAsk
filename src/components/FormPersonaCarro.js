@@ -2,8 +2,9 @@ import React from 'react'
 import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
-import {Card} from 'antd';
-
+import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
 
 var FormPersonaCarro = React.createClass({
 
@@ -247,79 +248,58 @@ var FormPersonaCarro = React.createClass({
   render: function () {
     return (
 
-      <Card title="Relación de Personas y Carros" bordered={false}>
-        <form onSubmit={this.handleSubmitForm} ref="personCar">
+      <Card id={this.props.id} title="Relación de Personas y Carros" bordered={false}>
+        <Form onSubmit={this.handleSubmitForm} ref="personCar">
 
-          <div className="row">
-            <div className="small-2 columns">
-              <label>&nbsp;&nbsp;</label>
-              <a onClick={this.addNewRelPerCar} className="button"><i className="fi-plus"></i></a>
-            </div>
-            <div className="small-10 columns">
-              <label>Carro</label>
-              <SelectInput
-                url="apiFuec/allCar"
-                name="selectCar"
-                ref="selectCar"
-                newOption={this.state.newOptionSelectCar}
-                onUserSelect={this.handleUserSelect}
-              />
-            </div>
-          </div>
+          <Row gutter={15}>
+            <Col span={8}>
+              <FormItem  label="Carro">
+                <InputGroup compact>
+                  <Button onClick={this.addNewRelPerCar}  type="primary"  shape="circle" icon="plus"/>
+                  <SelectInput
+                    style={{ width: '88%' }}
+                    url="apiFuec/allCar"
+                    name="selectCar"
+                    ref="selectCar"
+                    newOption={this.state.newOptionSelectCar}
+                    onUserSelect={this.handleUserSelect}
+                  />
+                </InputGroup>
+              </FormItem>
+              <FormItem>
+                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+              </FormItem>
+            </Col>
 
-          {this.state.option.map(function (data, i) {
-            return (
-              <div key={i} ref={i} className="row">
-
-                <div className="small-2 columns">
-                  <label>&nbsp;&nbsp;</label>
-                  <a data-key={i}
-                     onClick={this.delRelPerCar}
-                     className="button">
-                    <i className="fi-minus"></i>
-                  </a>
-                </div>
-
-                <div className="small-6 columns">
-                  <label> Persona
+            <Col span={16}>
+              <FormItem label="Relación: Persona - Modalidad">
+                {this.state.option.map(function (data, i) {
+                return (
+                <div key={i} ref={i} className="row">
+                  <InputGroup compact>
+                    <Button data-key={i} onClick={this.delRelPerCar} type="primary"  shape="circle" icon="minus"/>
                     <SelectInput
+                      style={{ width: '47%' }}
                       selectstate={data.person}
                       className="input-group-field"
                       url="apiFuec/allPerson"
                       name={"selectPersonaCarro_" + i}
                       newOption={this.state.newOptionSelectPerson}
                     />
-                  </label>
-                </div>
-
-                <div className="small-4 columns">
-                  <label> Modalidad
                     <SelectInput
+                      style={{ width: '47%' }}
                       selectstate={data.mod}
                       url="apiFuec/allModality"
                       name={"selectModalidad_" + i}
                     />
-                  </label>
-                </div>
-              </div>
-            )
-          }, this)}
-
-          <div className="row">
-            <div className="shrink columns">
-              <input type="submit" className="success button" value="Grabar"/>
-              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-            </div>
-            <div className="columns">
-              <MessageAlert
-                showHide={this.state.showMessage}
-                type={this.state.typeMess}
-                contextText={this.state.contextText}
-                onclickMessage={this.onClickMessage}
-              />
-            </div>
-          </div>
-        </form>
+                  </InputGroup>
+                </div>)
+                }, this)}
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
       </Card>
     )
   }

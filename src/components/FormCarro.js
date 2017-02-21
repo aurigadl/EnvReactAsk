@@ -33,7 +33,6 @@ var FormCarro = React.createClass({
       });
     }
   },
-  
   getRemoteData: function (parreq, cb_success, cb_error) {
     mReq(parreq)
       .then(function (response) {
@@ -235,7 +234,7 @@ var FormCarro = React.createClass({
 
   render: function () {
     return (
-      <div className="header callout secondary">
+      <div id={this.props.id} className="header callout secondary">
 
         <div className="sign">
           <h1>Carro</h1>

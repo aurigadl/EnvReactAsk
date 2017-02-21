@@ -1,8 +1,31 @@
 import React from 'react'
 import {Link} from 'react-router'
 import auth from '../utils/auth'
-import {Layout, Menu, Icon} from 'antd';
+import {Affix, Popover, Layout, Icon, Button} from 'antd';
 const {Sider} = Layout;
+
+const content = (
+    <ul id='fistMenu'>
+      <li>
+        <Link to='/pageOne'>
+          <Button size={'large'} type="dashed" shape="circle" icon="setting"/>
+          Admin
+        </Link>
+      </li>
+      <li>
+        <Link to='/pageTwo'>
+          <Button size={'large'} type="dashed" shape="circle" icon="solution"/>
+          Fuec
+        </Link>
+      </li>
+      <li>
+        <Link to='/logout'>
+          <Button size={'large'} type="dashed" shape="circle" icon="logout"/>
+          Salir
+        </Link>
+      </li>
+    </ul>
+    );
 
 const App = React.createClass({
 
@@ -25,51 +48,26 @@ const App = React.createClass({
 
 
   onCollapse(collapsed){
-    console.log(collapsed);
     this.setState({collapsed});
   },
 
 
   render(){
-    console.log('Esta registrado ' + this.state.loggedIn);
     if(!this.state.loggedIn){
       var bg = {background: 'transparent'};
     }
     return (
       <Layout style={bg} id="initFormat">
+        {this.props.children}
         {this.state.loggedIn ? (
-          <Sider
-            collapsible
-            collapsedWidth={40}
-            collapsed={this.state.collapsed}
-            onCollapse={this.onCollapse}
-          >
-            <div className="logo"/>
-            <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-              <Menu.Item key="1">
-                <Link to="/pageOne">
-                  <Icon type="eye-o" />
-                  <span className="nav-text">Admin</span>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key="2">
-                <Link to="/pageTwo">
-                  <Icon type="file-text" />
-                  <span className="nav-text">Fuec</span>
-                </Link>
-              </Menu.Item>
-              <Menu.Item key="3">
-                <Link to="/logout">
-                  <Icon type="logout" />
-                  <span className="nav-text">Salir</span>
-                </Link>
-              </Menu.Item>
-            </Menu>
+          <Sider  width={45} style={{ background: '#dcdcdc', padding: '5px'}}>
+            <Affix offsetTop={5} >
+              <Popover placement="leftTop" content={content} trigger="click">
+                <Button  size={'large'} type="primary" ghost  shape="circle" icon="appstore"/>
+              </Popover>
+            </Affix>
           </Sider>
         ) : null}
-
-        {this.props.children}
-
       </Layout>
     )
   }

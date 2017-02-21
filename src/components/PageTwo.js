@@ -9,10 +9,10 @@ import FormMarcaAuto from './FormMarcaAuto.js'
 import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-import {message, DatePicker, Layout, Menu, Icon, Card, Form, Input, Col, Row, Button} from 'antd';
-import enUS from 'antd/lib/date-picker/locale/en_US';
+import {Tooltip, message, DatePicker, Layout, Menu, BackTop
+  , Card , Form , Input , Col, Row, Button, Icon} from 'antd';
 
-const { Header, Content, Footer } = Layout;
+const { Header, Content} = Layout;
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
@@ -265,199 +265,220 @@ const PageTwo = React.createClass({
     const { startValue, endValue, endOpen  } = this.state
 
     return (
-      <Layout>
+          <Content>
 
-        <Header>
-          <Menu selectedKeys={[this.state.current]} mode="horizontal" >
-            <Menu.Item key="mail">
-              <Icon type="mail" />Navigation One
-            </Menu.Item>
-            <Menu.Item key="m3ail">
-              <Icon type="mail" />Navigation One
-            </Menu.Item>
-            <Menu.Item key="mxail">
-              <Icon type="mail" />Navigation One
-            </Menu.Item>
-            <Menu.Item key="alipay">
-              <a href="https://ant.design" target="_blank" rel="noopener noreferrer">Navigation Four - Link</a>
-            </Menu.Item>
-          </Menu>
-        </Header>
+            <div className="hiperLink">
 
-        <Content style={{ margin: '30px 16px 30px 30px' }}>
-          <Card title="Contrato Del Servicio Público De Transporte Terrestre Automotor Especial" bordered={false}>
-            <Form onSubmit={this.handleSubmitForm}>
-              <Row gutter={30}>
+              <Tooltip placement="left" title={'Fuec'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#fuec">Fu</a></Button>
+              </Tooltip>
 
-                <Col span={8}>
-                  <FormItem  label="No. FUEC" >
-                    <Input
-                      name="no_fuec"
-                      ref="no_fuec"
-                      type="text"
-                      value={this.state.no_fuec}
-                      readOnly/>
-                  </FormItem>
-                  <FormItem  label="No. Contrato" >
-                    <Input
-                      value={this.state.no_agreefuec}
-                      name="no_agreefuec"
-                      ref="no_agreefuec"
-                      type="text"
-                      onChange={this.handleChangeNoAgreement}
-                      required/>
-                  </FormItem>
+              <Tooltip placement="left" title={'Persona - Carro'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#personaCarro">Pc</a></Button>
+              </Tooltip>
 
-                  <FormItem label="Tipo de contrato" >
-                    <SelectInput
-                      name="kind_agreement"
-                      ref="kind_agreement"
-                      url="apiFuec/allKindAgreement"
-                      required/>
-                  </FormItem>
+              <Tooltip placement="left" title={'Ruta'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#ruta">Ru</a></Button>
+              </Tooltip>
 
-                  <FormItem label="Ruta: Origen - Destino" >
-                    <InputGroup size="large" compact>
-                      <Button onClick={this.addNewRuta}  type="primary"  shape="circle" icon="plus"/>
-                      <SelectInput
-                        style={{ width: '88%' }}
-                        url="apiFuec/allRuta"
-                        name={"selectRuta"}
-                        ref={"selectRuta"}
-                        newOption={this.state.newOptionRuta}
-                        onItemNew={this.handleNewElementRuta}
+              <Tooltip placement="left" title={'Marca'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#marca">Ma</a></Button>
+              </Tooltip>
+
+              <Tooltip placement="left" title={'Carro'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#carro">Ca</a></Button>
+              </Tooltip>
+
+              <Tooltip placement="left" title={'Contrato'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#contrato">Co</a></Button>
+              </Tooltip>
+
+              <Tooltip placement="left" title={'Persona'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#persona">Pe</a></Button>
+              </Tooltip>
+
+            </div>
+
+            <Header>
+              <h2>
+                <Icon type="solution"/>
+                FUEC - Contrato Del Servicio Público
+              </h2>
+            </Header>
+
+            <Card id='fuec' title="FUEC - Contrato Automotor Especial" bordered={false}>
+              <Form onSubmit={this.handleSubmitForm}>
+                <Row gutter={15}>
+                  <Col span={8}>
+                    <FormItem  label="No. FUEC" >
+                      <Input
+                        name="no_fuec"
+                        ref="no_fuec"
+                        type="text"
+                        value={this.state.no_fuec}
+                        readOnly/>
+                    </FormItem>
+                    <FormItem  label="No. Contrato" >
+                      <Input
+                        value={this.state.no_agreefuec}
+                        name="no_agreefuec"
+                        ref="no_agreefuec"
+                        type="text"
+                        onChange={this.handleChangeNoAgreement}
                         required/>
-                    </InputGroup>
+                    </FormItem>
 
-                    {this.state.option.map(function (data, i) {
-                    return (
-                    <div key={i} ref={i}>
-                      <InputGroup compact>
-                        <Button data-key={i} onClick={this.delRelRuta} type="danger" shape="circle" icon="minus"/>
+                    <FormItem label="Tipo de contrato" >
+                      <SelectInput
+                        name="kind_agreement"
+                        ref="kind_agreement"
+                        url="apiFuec/allKindAgreement"
+                        required/>
+                    </FormItem>
+
+                    <FormItem label="Ruta: Origen - Destino" >
+                      <InputGroup size="large" compact>
+                        <Button onClick={this.addNewRuta}  type="primary"  shape="circle" icon="plus"/>
                         <SelectInput
                           style={{ width: '88%' }}
                           url="apiFuec/allRuta"
-                          name={"selectRuta_" + i}
+                          name={"selectRuta"}
+                          ref={"selectRuta"}
                           newOption={this.state.newOptionRuta}
                           onItemNew={this.handleNewElementRuta}
-                        />
+                          required/>
                       </InputGroup>
-                    </div>
-                    )
-                    }, this)}
 
-                  </FormItem>
+                      {this.state.option.map(function (data, i) {
+                      return (
+                      <div key={i} ref={i}>
+                        <InputGroup compact>
+                          <Button data-key={i} onClick={this.delRelRuta} type="danger" shape="circle" icon="minus"/>
+                          <SelectInput
+                            style={{ width: '88%' }}
+                            url="apiFuec/allRuta"
+                            name={"selectRuta_" + i}
+                            newOption={this.state.newOptionRuta}
+                            onItemNew={this.handleNewElementRuta}
+                          />
+                        </InputGroup>
+                      </div>
+                      )
+                      }, this)}
 
-                </Col>
+                    </FormItem>
 
-                <Col span={8}>
-                  <FormItem label="Razón social" >
-                    <Input
-                      name="social_object"
-                      ref="social_object"
-                      value={this.state.social_object}
-                      type="text"
-                      readOnly/>
-                  </FormItem>
-                  <FormItem label="Contratante" >
-                    <SelectInput
-                      name="contractor"
-                      ref="contractor"
-                      url="apiFuec/allPerson"
-                      newOption={this.state.newOptionPerson}
-                      onItemNew={this.handleNewElementPerson}
-                      required/>
-                  </FormItem>
-                  <FormItem label="Con" >
-                    <SelectInput
-                      name="kind_agreement_link"
-                      ref="kind_agreement_link"
-                      url="apiFuec/allPerson"
-                      newOption={this.state.newOptionPerson}
-                      onItemNew={this.handleNewElementPerson}
-                      required/>
-                  </FormItem>
-                  <FormItem label="Vehiculo:" >
-                    <SelectInput
-                      url="apiFuec/allCarWithPerson"
-                      name="no_car"
-                      ref="no_car"
-                      newOption={this.state.newOptionCar}
-                      onItemNew={this.handleNewElementCar}
-                      required/>
-                  </FormItem>
-                </Col>
+                  </Col>
 
-                <Col span={8}>
-                  <FormItem label="Nit" >
-                    <Input
-                      name="nit"
-                      ref="nit"
-                      value={this.state.no_nit}
-                      type="text"
-                      readOnly/>
-                  </FormItem>
-                  <FormItem label="Objeto del contrato" >
-                    <SelectInput
-                      name="agreement_object"
-                      ref="agreement_object"
-                      url="apiFuec/allObjectAgreement"
-                      required/>
-                  </FormItem>
+                  <Col span={8}>
+                    <FormItem label="Razón social" >
+                      <Input
+                        name="social_object"
+                        ref="social_object"
+                        value={this.state.social_object}
+                        type="text"
+                        readOnly/>
+                    </FormItem>
+                    <FormItem label="Contratante" >
+                      <SelectInput
+                        name="contractor"
+                        ref="contractor"
+                        url="apiFuec/allPerson"
+                        newOption={this.state.newOptionPerson}
+                        onItemNew={this.handleNewElementPerson}
+                        required/>
+                    </FormItem>
+                    <FormItem label="Con" >
+                      <SelectInput
+                        name="kind_agreement_link"
+                        ref="kind_agreement_link"
+                        url="apiFuec/allPerson"
+                        newOption={this.state.newOptionPerson}
+                        onItemNew={this.handleNewElementPerson}
+                        required/>
+                    </FormItem>
+                    <FormItem label="Vehiculo:" >
+                      <SelectInput
+                        url="apiFuec/allCarWithPerson"
+                        name="no_car"
+                        ref="no_car"
+                        newOption={this.state.newOptionCar}
+                        onItemNew={this.handleNewElementCar}
+                        required/>
+                    </FormItem>
+                  </Col>
 
-                  <FormItem label="Fecha del contrato Inicial - Final" >
-                    <DatePicker
-                      locale={enUS}
-                      disabledDate={this.disabledStartDate}
-                      format="DD-MM-YYYY"
-                      value={startValue}
-                      placeholder="Inicio"
-                      onChange={this.onStartChange}
-                      onOpenChange={this.handleStartOpenChange}
-                    />
-                    <DatePicker
-                      locale={enUS}
-                      disabledDate={this.disabledEndDate}
-                      format="DD-MM-YYYY"
-                      value={endValue}
-                      placeholder="Fin"
-                      onChange={this.onEndChange}
-                      open={endOpen}
-                      onOpenChange={this.handleEndOpenChange}
-                    />
-                  </FormItem>
-                  <FormItem>
-                    <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                    <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
-                  </FormItem>
-                </Col>
-              </Row>
-            </Form>
+                  <Col span={8}>
+                    <FormItem label="Nit" >
+                      <Input
+                        name="nit"
+                        ref="nit"
+                        value={this.state.no_nit}
+                        type="text"
+                        readOnly/>
+                    </FormItem>
+                    <FormItem label="Objeto del contrato" >
+                      <SelectInput
+                        name="agreement_object"
+                        ref="agreement_object"
+                        url="apiFuec/allObjectAgreement"
+                        required/>
+                    </FormItem>
 
-            <TableFuec/>
-          </Card>
+                    <FormItem label="Fecha del contrato Inicial - Final" >
+                      <DatePicker
+                        disabledDate={this.disabledStartDate}
+                        format="DD-MM-YYYY"
+                        value={startValue}
+                        placeholder="Inicio"
+                        onChange={this.onStartChange}
+                        onOpenChange={this.handleStartOpenChange}
+                      />
+                      <DatePicker
+                        disabledDate={this.disabledEndDate}
+                        format="DD-MM-YYYY"
+                        value={endValue}
+                        placeholder="Fin"
+                        onChange={this.onEndChange}
+                        open={endOpen}
+                        onOpenChange={this.handleEndOpenChange}
+                      />
+                    </FormItem>
+                    <FormItem>
+                      <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                      <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                    </FormItem>
+                  </Col>
+                </Row>
+                </Form>
 
-          <FormPersonaCarro
-            newOptionPerson={this.state.newOptionPerson}
-            onItemNewPerson={this.handleNewElementPerson}
-            newOptionCar={this.state.newOptionCar}
-            onItemNewCar={this.handleNewElementCar}
-          />
+              </Card>
+
+              <FormPersonaCarro
+                id='personaCarro'
+                newOptionPerson={this.state.newOptionPerson}
+                onItemNewPerson={this.handleNewElementPerson}
+                newOptionCar={this.state.newOptionCar}
+                onItemNewCar={this.handleNewElementCar}
+              />
 
             <div className="columns small-12 medium-6">
               <FormRuta
+                id="ruta"
                 onItemNew={this.handleNewElementRuta}
               />
             </div>
 
             <div className="columns small-12 medium-6">
               <FormMarcaAuto
+                id="marca"
                 onItemNew={this.handleNewElementMarca}
               />
             </div>
 
             <div className="columns small-12 medium-6">
               <FormCarro
+                id='carro'
                 newOptionMarca={this.state.newOptionMarca}
                 onItemNewMarca={this.handleNewElementMarca}
                 onItemNewCar={this.handleNewElementCar}
@@ -466,6 +487,7 @@ const PageTwo = React.createClass({
 
             <div className="columns small-12 medium-6">
               <FormContrato
+                id='contrato'
                 newOptionPerson={this.state.newOptionPerson}
                 onItemNewPerson={this.handleNewElementPerson}
                 onItemNewAgreement={this.handleNewAgreement}
@@ -474,6 +496,7 @@ const PageTwo = React.createClass({
 
             <div className="columns small-12 medium-6">
               <FormPersona
+                id="persona"
                 onItemNew={this.handleNewElementPerson}
               />
             </div>
@@ -481,8 +504,9 @@ const PageTwo = React.createClass({
             <div className="columns">
               <TableAgreement/>
             </div>
-        </Content>
-      </Layout>
+
+            <BackTop/>
+          </Content>
     );
   }
 });

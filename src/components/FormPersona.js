@@ -311,7 +311,7 @@ var FormPersona = React.createClass({
   render: function () {
 
     return (
-      <div className="header callout secondary">
+      <div id={this.props.id} className="header callout secondary">
 
         <div className="sign">
           <h1>Personas</h1>

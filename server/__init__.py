@@ -109,6 +109,11 @@ def get_current_user():
         return response
 
 
+# ------  Not found
+@app.errorhandler(404)
+def page_not_found(error):
+    return app.send_static_file('index.html')
+
 # ------ Routes
 @app.route('/', methods=['GET'])
 @rbac.allow(['anonymous'], methods=['GET'], with_children=False)
