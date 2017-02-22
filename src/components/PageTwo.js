@@ -35,7 +35,7 @@ const PageTwo = React.createClass({
 
       startValue: null,
       endValue: null,
-      endOpen: false,
+      endOpen: false
     }
   },
 

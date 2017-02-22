@@ -1,8 +1,12 @@
 import React from 'react'
-import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
 
+import {message, DatePicker, Card , Form , Input ,
+  Col, Row, Button, Icon} from 'antd';
+
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
 
 var FormConductor = React.createClass({
 
@@ -14,9 +18,9 @@ var FormConductor = React.createClass({
 
       file_pdf:'',
 
-      showMessage: false,
-      typeMess: '',
-      contextText: ''
+      startValue: null,
+      endValue: null,
+      endOpen: false
     };
   },
 
@@ -85,18 +89,6 @@ var FormConductor = React.createClass({
   },
 
   errorHandlerSelect: function (remoteData) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Conexion rechazada',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   handleSubmitForm: function (e) {
@@ -153,76 +145,15 @@ var FormConductor = React.createClass({
   },
 
   successFormCreate: function (data) {
-    this.refs.no_agreement.value = data.result.id;
-    this.setState({
-      showMessage: true,
-      contextText: 'Se creo el contrato',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-    this.props.onItemNewAgreement(true);
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormCreate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Creo el contrato. Alguno de los datos no corresponde',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   successFormUpdate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Actualizo el contrato',
-      typeMess: 'success'
-    });
-    this.props.onItemNewAgreement(true);
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   errorFormUpdate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Actualizo el contrato',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
-  },
-
-
-  onClickMessage: function (event) {
-    this.setState({
-      showMessage: false,
-      contextText: ''
-    })
   },
 
   handleReset: function (e) {
@@ -252,21 +183,6 @@ var FormConductor = React.createClass({
   },
 
   successFormDelete: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se borro el contrato',
-      typeMess: 'success',
-      newOptionSelectA: true,
-      inputValue: ''
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   handleImagePdf: function(e){
@@ -287,126 +203,148 @@ var FormConductor = React.createClass({
   },
 
   errorFormDelete: function (err) {
+  },
+
+  disabledStartDate : function (startValue){
+    const endValue = this.state.endValue;
+    if (!startValue || !endValue) {
+      return false;
+    }
+    return startValue.valueOf() > endValue.valueOf();
+  },
+
+  disabledEndDate: function (endValue){
+    const startValue = this.state.startValue;
+    if (!endValue || !startValue) {
+      return false;
+    }
+    return endValue.valueOf() <= startValue.valueOf();
+  },
+
+  onChange: function (field, value) {
     this.setState({
-      showMessage: true,
-      contextText: 'No se borro el contrato',
-      typeMess: 'alert'
+      [field]: value,
     });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
+  },
+
+  onStartChange: function (value){
+    this.onChange('startValue', value);
+  },
+
+  onEndChange: function (value){
+        this.onChange('endValue', value);
+  },
+
+  handleStartOpenChange: function(open){
+    if (!open) {
+      this.setState({ endOpen: true  });
+    }
+  },
+
+  handleEndOpenChange: function(open){
+    this.setState({ endOpen: open  });
   },
 
   render: function () {
+
+    const { startValue, endValue, endOpen  } = this.state
+
     return (
-      <div id={this.props.id} className="header callout secondary">
+        <Card id={this.props.id} title="Contrato" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm}>
 
-        <div className="sign">
-          <h1>Contrato de Vinculación</h1>
-        </div>
-        <p>Selecciona un elemento para editarlo o eliminarlo
-          o llena el campo inferior sin seleccionar elemento
-          para crear uno nuevo</p>
+            <Row gutter={15}>
+              <Col span={8}>
+                <FormItem  label="Contratos Existentes">
+                  <InputGroup compact>
+                    <SelectInput
+                      style={{ width: '88%' }}
+                      class="input-group-field"
+                      url="apiFuec/allAgreement"
+                      name="selectAgreement"
+                      ref="selectAgreement"
+                      newOption={this.state.newOptionSelectA}
+                      onUserSelect={this.handleContratoSelect}
+                    />
+                    <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
+                  </InputGroup>
+                </FormItem>
 
-        <form onSubmit={this.handleSubmitForm}>
-          <div className="input-group">
+                <FormItem label="No. de Contrato">
+                  <Input
+                    type="number"
+                    ref="no_agreement"
+                    name="no_agreement"
+                    readOnly/>
+                </FormItem>
 
-            <SelectInput
-              class="input-group-field"
-              url="apiFuec/allAgreement"
-              name="selectAgreement"
-              ref="selectAgreement"
-              newOption={this.state.newOptionSelectA}
-              onUserSelect={this.handleContratoSelect}
-            />
+                <FormItem label="No. de Viaje">
+                  <Input
+                    type="number"
+                    ref="no_trip"
+                    name="no_trip"
+                  />
+                </FormItem>
+              </Col>
 
-            <div className="input-group-button">
-              <input type="button" className="alert button" onClick={this.handleDelete} value="Borrar"/>
-            </div>
+              <Col span={8}>
+                <FormItem label="Contratante - Persona Juridica o Natural">
+                  <SelectInput
+                    url="apiFuec/allPerson"
+                    ref="id_person"
+                    name="id_person"
+                    newOption={this.state.newOptionSelectTiCon}
+                  />
+                </FormItem>
 
-          </div>
+                <FormItem label="Tipo de contrato">
+                  <SelectInput
+                    url="apiFuec/allKindAgreement"
+                    name="id_type_agreement"
+                    ref="id_type_agreement"
+                  />
+                </FormItem>
 
-          <label>No. de Contrato
-            <input
-              type="number"
-              ref="no_agreement"
-              name="no_agreement"
-              readOnly/>
-          </label>
+                <FormItem label="Fecha del Inicial - Final" >
+                  <DatePicker
+                    disabledDate={this.disabledStartDate}
+                    format="DD-MM-YYYY"
+                    value={startValue}
+                    placeholder="Inicio"
+                    onChange={this.onStartChange}
+                    onOpenChange={this.handleStartOpenChange}
+                  />
+                  <DatePicker
+                    disabledDate={this.disabledEndDate}
+                    format="DD-MM-YYYY"
+                    value={endValue}
+                    placeholder="Fin"
+                    onChange={this.onEndChange}
+                    open={endOpen}
+                    onOpenChange={this.handleEndOpenChange}
+                  />
+                </FormItem>
+              </Col>
 
-          <label>No. de Viaje
-            <input
-              type="number"
-              ref="no_trip"
-              name="no_trip"
-            />
-          </label>
+              <Col span={8}>
+                <FormItem label="Docuento en formato PDF" >
+                  <Input name="file_pdf"
+                    type="file"
+                    ref="file_pdf"
+                    accept="application/pdf"
+                    placeholder=""
+                    onChange={this.handleImagePdf} />
+                </FormItem>
 
-          <label> Contratante - Persona Juridica o Natural
-            <SelectInput
-              url="apiFuec/allPerson"
-              ref="id_person"
-              name="id_person"
-              newOption={this.state.newOptionSelectTiCon}
-            />
-          </label>
+                <FormItem>
+                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                </FormItem>
+              </Col>
 
-          <label>Tipo de contrato
-            <SelectInput
-              url="apiFuec/allKindAgreement"
-              name="id_type_agreement"
-              ref="id_type_agreement"
-            />
-          </label>
-
-          <label>Fecha Inicial
-            <input
-              type="date"
-              pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-              name="init_date"
-              ref="init_date"
-              required/>
-          </label>
-
-          <label>Fecha Final
-            <input
-              type="date"
-              pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-              name="last_date"
-              ref="last_date"
-              required/>
-          </label>
-
-          <label> Docuento en formato PDF
-            <input name="file_pdf"
-                   type="file"
-                   ref="file_pdf"
-                   accept="application/pdf"
-                   placeholder=""
-                   onChange={this.handleImagePdf} />
-          </label>
-
-          <div className="row">
-            <div className="shrink columns">
-              <input type="submit" className="success button" value="Grabar"/>
-              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-            </div>
-            <div className="columns">
-              <MessageAlert
-                showHide={this.state.showMessage}
-                type={this.state.typeMess}
-                contextText={this.state.contextText}
-                onclickMessage={this.onClickMessage}
-              />
-            </div>
-          </div>
-
-        </form>
-      </div>
+            </Row>
+          </Form>
+        </Card>
     )
   }
 

@@ -1,8 +1,9 @@
 import React from 'react'
 import SelectInput from './SelectInput.js'
-import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-
+import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
 
 var FormPersona = React.createClass({
 
@@ -11,10 +12,6 @@ var FormPersona = React.createClass({
       newOptionSelectA: false,
       childSelectValue: undefined,
       selectedOption: undefined,
-
-      showMessage: false,
-      typeMess: '',
-      contextText: ''
     };
   },
 
@@ -102,18 +99,6 @@ var FormPersona = React.createClass({
   },
 
   errorHandlerSelect: function (remoteData) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Conexion rechazada',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   handleSubmitForm: function (e) {
@@ -178,68 +163,16 @@ var FormPersona = React.createClass({
   },
 
   successFormCreate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se creo persona',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-
     this.props.onItemNew(true);
-
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormCreate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Creo el usuario. El correo electronico, o el nombre o la identificación ya esta registrado',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   successFormUpdate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Actualizo el usuario',
-      typeMess: 'success'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   errorFormUpdate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Actualizo el usuario',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   onClickMessage: function (event) {
@@ -270,156 +203,114 @@ var FormPersona = React.createClass({
   },
 
   successFormDelete: function (data) {
-
-    this.setState({
-      showMessage: true,
-      contextText: 'Se borro la Marca',
-      typeMess: 'success',
-      newOptionSelectA: true,
-      inputValue: ''
-    });
-
     this.refs.person.getDOMNode().reset();
-
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
-
   },
 
   errorFormDelete: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se borro la Marca',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
 
   render: function () {
 
     return (
-      <div id={this.props.id} className="header callout secondary">
+        <Card id={this.props.id} title="Personas" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm} ref="person">
+            <Row gutter={15}>
+              <Col span={8}>
 
-        <div className="sign">
-          <h1>Personas</h1>
-        </div>
+                <FormItem label="Personas Existentes" >
+                  <InputGroup size="large" compact>
 
-        <form onSubmit={this.handleSubmitForm} ref="person">
-          <div className="input-group">
-            <SelectInput
-              class="input-group-field"
-              url="apiFuec/allPerson"
-              name="selectPerson"
-              ref="selectPerson"
-              newOption={this.state.newOptionSelectA}
-              onUserSelect={this.handlePersonSelect}
-            />
-            <div className="input-group-button">
-              <input type="button" className="alert button" onClick={this.handleDelete} value="Borrar"/>
-            </div>
-          </div>
+                    <SelectInput
+                      style={{ width: '88%' }}
+                      class="input-group-field"
+                      url="apiFuec/allPerson"
+                      name="selectPerson"
+                      ref="selectPerson"
+                      newOption={this.state.newOptionSelectA}
+                      onUserSelect={this.handlePersonSelect}
+                    />
+                    <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
+                  </InputGroup>
+                </FormItem>
 
-          <fieldset>
-            <label>Tipo de persona</label>
-            <input
-              type="radio"
-              name="type_person"
-              value="0"
-              id="personN"
-              checked={this.state.selectedOption === "0"}
-              onChange={this.handleOptionChange}
-              required
-            />
-            <label htmlFor="personN">Natural</label>
+                <FormItem label="Tipo de persona" >
+                  <Input
+                    type="radio"
+                    name="type_person"
+                    value="0"
+                    id="personN"
+                    checked={this.state.selectedOption === "0"}
+                    onChange={this.handleOptionChange}
+                    required
+                  />
+                </FormItem>
 
-            <input
-              type="radio"
-              name="type_person"
-              id="personJ"
-              value="1"
-              checked={this.state.selectedOption === "1"}
-              onChange={this.handleOptionChange}
-            />
-            <label htmlFor="personJ">Juridica</label>
-          </fieldset>
+                <FormItem label="Natural" >
 
-          <label> Nombre
-            <input ref="first_name" name="first_name" type="text" placeholder="" required/>
-          </label>
-          <label> Apellido
-            <input ref="last_name" name="last_name" type="text" placeholder=""/>
-          </label>
+                  <Input
+                    type="radio"
+                    name="type_person"
+                    id="personJ"
+                    value="1"
+                    checked={this.state.selectedOption === "1"}
+                    onChange={this.handleOptionChange}
+                  />
+                </FormItem>
+                <FormItem label="Dirección">
+                  <Input ref="address" name="address" type="text" placeholder=""/>
+                </FormItem>
+              </Col>
 
-          <label> Correo Electronico
-            <input ref="email" name="email" type="text" placeholder="" required/>
-          </label>
+              <Col span={8}>
+                <FormItem label="Nombres" >
+                  <Input ref="first_name" name="first_name" type="text" placeholder="" required/>
+                </FormItem>
+                <FormItem label="Apellidos" >
+                  <Input ref="last_name" name="last_name" type="text" placeholder=""/>
+                </FormItem>
+                <FormItem label="Correo Electronico" >
+                  <Input ref="email" name="email" type="text" placeholder="" required/>
+                </FormItem>
+                <FormItem label="Licencia">
+                  <Input ref="license" name="license" type="text" placeholder=""/>
+                </FormItem>
+              </Col>
 
-          <label> Telefono
-            <input ref="phone" name="phone" type="text" placeholder=""/>
-          </label>
+              <Col span={8}>
+                <FormItem label="Telefono" >
+                  <Input ref="phone" name="phone" type="text" placeholder=""/>
+                </FormItem>
+                <FormItem label="Tipo de Identificación">
+                  <SelectInput
+                    url="apiFuec/allIdType"
+                    name="id_type"
+                    id='id_type'
+                    ref="id_type"
+                    onUserSelect={this.handleIdTypeSelect}
+                    required
+                  />
+                </FormItem>
+                <FormItem label="Identificación">
+                  <Input ref="id_number" name="id_number" type="text" placeholder="" required/>
+                </FormItem>
+                <FormItem label="Vigencia">
+                  <Input
+                    ref="effective_date"
+                    name="effective_date"
+                    type="date"
+                    pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
+                    placeholder=""/>
+                </FormItem>
+                <FormItem>
+                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                </FormItem>
+              </Col>
 
-          <label> Tipo de Identificación
-            <SelectInput
-              url="apiFuec/allIdType"
-              name="id_type"
-              id='id_type'
-              ref="id_type"
-              onUserSelect={this.handleIdTypeSelect}
-              required
-            />
-          </label>
-
-          <label> Identificación
-            <input ref="id_number" name="id_number" type="text" placeholder="" required/>
-          </label>
-
-          <label> Licencia
-            <input ref="license" name="license" type="text" placeholder=""/>
-          </label>
-
-          <label> Vigencia
-            <input
-              ref="effective_date"
-              name="effective_date"
-              type="date"
-              pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-              placeholder=""/>
-          </label>
-
-          <label> Dirección
-            <input ref="address" name="address" type="text" placeholder=""/>
-          </label>
-
-          <div className="row">
-            <div className="shrink columns">
-              <input type="submit" className="success button" value="Grabar"/>
-              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-            </div>
-            <div className="columns">
-              <MessageAlert
-                showHide={this.state.showMessage}
-                type={this.state.typeMess}
-                contextText={this.state.contextText}
-                onclickMessage={this.onClickMessage}
-              />
-            </div>
-          </div>
-
-        </form>
-      </div>
+            </Row>
+          </Form>
+        </Card>
     )
   }
 

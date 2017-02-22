@@ -3,6 +3,10 @@ import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
 
+import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
+
 
 var FormRuta = React.createClass({
 
@@ -226,62 +230,50 @@ var FormRuta = React.createClass({
 
   render: function () {
     return (
-      <div id={this.props.id} className="header callout secondary">
+        <Card id={this.props.id} title="Rutas" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm}>
 
-        <div className="sign">
-          <h1>Rutas</h1>
-        </div>
-        <p>Selecciona un elemento para editarlo o eliminarlo
-          o llena el campo inferior sin seleccionar elemento
-          para crear uno nuevo</p>
+            <Row gutter={15}>
+              <Col span={8}>
+                <FormItem>
+                  <InputGroup compact>
+                    <SelectInput
+                      style={{ width: '88%' }}
+                      class="input-group-field"
+                      url="apiFuec/allRuta"
+                      name="selectRuta"
+                      ref="selectRuta"
+                      newOption={this.state.newOptionSelectA}
+                      onUserSelect={this.handleUserSelect}
+                    />
+                    <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
+                  </InputGroup>
+                </FormItem>
+              </Col>
+              <Col span={8}>
+                <FormItem>
+                  <Input type="textarea"
+                    name="rutaEdit"
+                    ref="rutaEdit"
+                    placeholder="Editar o crear..."
+                    className="input-group-field"
+                    onChange={this.onChange}
+                    value={this.state.inputValue}
+                    type="text"/>
+                </FormItem>
+              </Col>
+              <Col span={8}>
 
-        <form onSubmit={this.handleSubmitForm}>
-          <div className="input-group">
+                <FormItem>
+                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                </FormItem>
 
-            <SelectInput
-              class="input-group-field"
-              url="apiFuec/allRuta"
-              name="selectRuta"
-              ref="selectRuta"
-              newOption={this.state.newOptionSelectA}
-              onUserSelect={this.handleUserSelect}
-            />
+              </Col>
 
-            <div className="input-group-button">
-              <input type="button" className="alert button" onClick={this.handleDelete} value="Borrar"/>
-            </div>
-
-          </div>
-
-          <div className="input-group">
-
-            <textarea
-              name="rutaEdit"
-              ref="rutaEdit"
-              placeholder="Editar o crear..."
-              className="input-group-field"
-              onChange={this.onChange}
-              value={this.state.inputValue}
-              type="text"/>
-
-            <div className="input-group-button">
-              <input type="submit" className="success button" value="Grabar"/>
-              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-            </div>
-
-          </div>
-
-          <div className="columns">
-            <MessageAlert
-              showHide={this.state.showMessage}
-              type={this.state.typeMess}
-              contextText={this.state.contextText}
-              onclickMessage={this.onClickMessage}
-            />
-          </div>
-
-        </form>
-      </div>
+            </Row>
+          </Form>
+        </Card>
     )
   }
 

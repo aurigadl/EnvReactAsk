@@ -1,7 +1,10 @@
 import React from 'react'
 import SelectInput from './SelectInput.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-import MessageAlert from './MessageAlert.js'
+
+import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
 
 var FormMarcaAuto = React.createClass({
 
@@ -86,78 +89,18 @@ var FormMarcaAuto = React.createClass({
   },
 
   successFormCreate: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Creo la Marca',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-
     this.props.onItemNew(true);
-    
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormCreate: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Creo la marca.',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   successFormUpdate: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Actualizo la Marca',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormUpdate: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Actualizo la Marca',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
-  onClickMessage: function(event) {
-    this.setState({
-      showMessage: false,
-      contextText: ''
-    })
-  },
 
   handleDelete: function(e){
     e.preventDefault();
@@ -179,98 +122,51 @@ var FormMarcaAuto = React.createClass({
   },
 
   successFormDelete: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se borro la Marca',
-      typeMess: 'success',
-      newOptionSelectA: true,
-      inputValue: ''
-    });
-
     this.props.onItemNew(true);
-    
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormDelete: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se borro la Marca',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
 
   render: function () {
     return (
-      <div id={this.props.id} className="header callout secondary">
-
-        <div className="sign">
-          <h1>Marcas de Carros y Camiones</h1>
-        </div>
-        <p>Selecciona un elemento para editarlo o eliminarlo
-          o llena el campo inferior sin seleccionar elemento
-          para crear uno nuevo</p>
-
-        <form onSubmit={this.handleSubmitForm}>
-          <div className="input-group">
-
-            <SelectInput
-              class="input-group-field"
-              url="apiFuec/allMarca"
-              name="selectMarca"
-              ref="selectMarca"
-              newOption={this.state.newOptionSelectA}
-              onUserSelect={this.handleUserSelect}
-            />
-
-            <div className="input-group-button">
-              <input type="button" className="alert button" onClick={this.handleDelete} value="Borrar"/>
-            </div>
-
-          </div>
-
-          <div className="input-group">
-
-            <input name="marcaEdit"
-                   placeholder="Editar o crear..."
-                   className="input-group-field"
-                   type="text"
-                   onChange={this.onChange}
-                   value={this.state.inputValue}/>
-
-            <div className="input-group-button">
-              <input type="submit" className="success button" value="Grabar"/>
-              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-            </div>
-
-          </div>
-
-          <div className="columns">
-            <MessageAlert
-                showHide={this.state.showMessage}
-                type={this.state.typeMess}
-                contextText={this.state.contextText}
-                onclickMessage={this.onClickMessage}
-            />
-          </div>
-
-        </form>
-      </div>
+        <Card id={this.props.id} title="Marca de Carros" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm}>
+            <Row gutter={15}>
+              <Col span={8}>
+                <InputGroup compact>
+                  <SelectInput
+                    style={{ width: '88%' }}
+                    class="input-group-field"
+                    url="apiFuec/allMarca"
+                    name="selectMarca"
+                    ref="selectMarca"
+                    newOption={this.state.newOptionSelectA}
+                    onUserSelect={this.handleUserSelect}
+                  />
+                  <Button onClick={this.handleDelete} type="primary" shape="circle" icon="minus"/>
+                </InputGroup>
+              </Col>
+              <Col span={8}>
+                <FormItem>
+                  <Input name="marcaEdit"
+                    placeholder="Editar o crear..."
+                    className="input-group-field"
+                    type="text"
+                    onChange={this.onChange}
+                    value={this.state.inputValue}/>
+                </FormItem>
+              </Col>
+              <Col span={8}>
+                <FormItem>
+                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                </FormItem>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
     )
   }
 

@@ -17,10 +17,6 @@ var FormPersonaCarro = React.createClass({
       childSelectText: '',
       inputValue: '',
       updateKey: '',
-
-      showMessage: false,
-      typeMess: '',
-      contextText: ''
     };
   },
 
@@ -194,38 +190,10 @@ var FormPersonaCarro = React.createClass({
   },
 
   successFormUpdate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se actualizo la relación carro y personas',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-
     this.props.onItemNewCar(true);
-
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormUpdate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se actualizaron los registros',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   addNewRelPerCar: function () {

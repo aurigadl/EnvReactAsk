@@ -3,6 +3,10 @@ import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
 
+import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
+
 
 var FormCarro = React.createClass({
 
@@ -234,108 +238,97 @@ var FormCarro = React.createClass({
 
   render: function () {
     return (
-      <div id={this.props.id} className="header callout secondary">
+        <Card id={this.props.id} title="Carro" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm}>
+            <Row gutter={15}>
+              <Col span={8}>
 
-        <div className="sign">
-          <h1>Carro</h1>
-        </div>
+                <FormItem label="Carros Existentes">
+                  <InputGroup compact>
+                    <SelectInput
+                      style={{ width: '88%' }}
+                      class="input-group-field"
+                      url="apiFuec/allCar"
+                      name="selectCar"
+                      ref="selectCar"
+                      newOption={this.state.newOptionSelectA}
+                      onUserSelect={this.handleCarSelect}
+                    />
+                    <Button type="danger" htmlType="submit" shape="circle"> Borrar </Button>
+                  </InputGroup>
+                </FormItem>
 
-        <p>Selecciona un elemento para editarlo o eliminarlo
-          o llena el campo inferior sin seleccionar elemento
-          para crear uno nuevo</p>
+                <FormItem label="No. de Carro">
+                  <Input
+                    type="number"
+                    ref="no_car"
+                    name="no_car"
+                    readOnly/>
+                </FormItem>
 
-        <form onSubmit={this.handleSubmitForm}>
-          <div className="input-group">
+                <FormItem label="Marca">
+                  <SelectInput
+                    url="apiFuec/allMarca"
+                    name="brand"
+                    ref="brand"
+                    newOption={this.state.newOptionSelectMarca}
+                    required/>
+                </FormItem>
 
-            <SelectInput
-              class="input-group-field"
-              url="apiFuec/allCar"
-              name="selectCar"
-              ref="selectCar"
-              newOption={this.state.newOptionSelectA}
-              onUserSelect={this.handleCarSelect}
-            />
+              </Col>
+              <Col span={8}>
 
-            <div className="input-group-button">
-              <input type="submit" className="alert button" value="Borrar"/>
-            </div>
-          </div>
+                <FormItem label="Placa">
+                  <Input
+                    ref="license_plate"
+                    name="license_plate"
+                    type="text"
+                    placeholder=""
+                    required/>
+                </FormItem>
 
-          <label>No. de Carro
-            <input
-              type="number"
-              ref="no_car"
-              name="no_car"
-              readOnly/>
-          </label>
+                <FormItem label="Modelo">
+                  <Input
+                    ref="model"
+                    name="model"
+                    type="number"
+                    pattern="^\d{4}$"
+                    min="2010"
+                    max="2020"
+                    placeholder="YYYY"
+                    required/>
+                </FormItem>
 
-          <label>Placa
-            <input
-              ref="license_plate"
-              name="license_plate"
-              type="text"
-              placeholder=""
-              required/>
-          </label>
+              </Col>
+              <Col span={8}>
 
-          <label>Modelo
-            <input
-              ref="model"
-              name="model"
-              type="number"
-              pattern="^\d{4}$"
-              min="2010"
-              max="2020"
-              placeholder="YYYY"
-              required/>
-          </label>
+                <FormItem label="Clase">
+                  <SelectInput
+                    url="apiFuec/allClassCar"
+                    ref="class_car"
+                    name="class_car"
+                    placeholder=""
+                    required/>
+                </FormItem>
 
-          <label>Marca
-            <SelectInput
-              url="apiFuec/allMarca"
-              name="brand"
-              ref="brand"
-              newOption={this.state.newOptionSelectMarca}
-              required/>
-          </label>
+                <FormItem label="Tarjeta de openación">
+                  <Input
+                    ref="operation_card"
+                    name="operation_card"
+                    type="text"
+                    placeholder=""
+                    required/>
+                </FormItem>
 
-          <label>Clase
-            <SelectInput
-              url="apiFuec/allClassCar"
-              ref="class_car"
-              name="class_car"
-              placeholder=""
-              required/>
-          </label>
+                <FormItem>
+                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                </FormItem>
 
-
-          <label>Tarjeta de openación
-            <input
-              ref="operation_card"
-              name="operation_card"
-              type="text"
-              placeholder=""
-              required/>
-          </label>
-
-          <div className="row">
-            <div className="shrink columns">
-              <input type="submit" className="success button" value="Grabar"/>
-              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-
-            </div>
-            <div className="columns">
-              <MessageAlert
-                showHide={this.state.showMessage}
-                type={this.state.typeMess}
-                contextText={this.state.contextText}
-                onclickMessage={this.onClickMessage}
-              />
-            </div>
-          </div>
-
-        </form>
-      </div>
+              </Col>
+            </Row>
+          </Form>
+        </Card>
     )
   }
 });
