@@ -3,7 +3,7 @@ import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
 
 import {message, DatePicker, Card , Form , Input ,
-  Col, Row, Button, Icon} from 'antd';
+Upload,  Col, Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
@@ -305,7 +305,23 @@ var FormConductor = React.createClass({
                   />
                 </FormItem>
 
-                <FormItem label="Fecha del Inicial - Final" >
+                <FormItem>
+                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                </FormItem>
+
+              </Col>
+
+              <Col span={8}>
+                <FormItem label="Docuento en formato PDF" >
+                  <Upload name="logo" listType="picture" onChange={this.handleImagePdf}>
+                    <Button>
+                      <Icon type="upload" /> Cargar PDF
+                    </Button>
+                  </Upload>
+                </FormItem>
+
+                <FormItem label="Fecha Inicial y Final" >
                   <DatePicker
                     disabledDate={this.disabledStartDate}
                     format="DD-MM-YYYY"
@@ -324,22 +340,7 @@ var FormConductor = React.createClass({
                     onOpenChange={this.handleEndOpenChange}
                   />
                 </FormItem>
-              </Col>
 
-              <Col span={8}>
-                <FormItem label="Docuento en formato PDF" >
-                  <Input name="file_pdf"
-                    type="file"
-                    ref="file_pdf"
-                    accept="application/pdf"
-                    placeholder=""
-                    onChange={this.handleImagePdf} />
-                </FormItem>
-
-                <FormItem>
-                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
-                </FormItem>
               </Col>
 
             </Row>

@@ -1,7 +1,7 @@
 import React from 'react'
 import Griddle from 'griddle-react'
-import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
+import {Card, Col, Row, Button, Icon} from 'antd';
 
 var LinkComponent = React.createClass({
 
@@ -19,8 +19,6 @@ var LinkComponent = React.createClass({
 });
 
 var TableAgreement = React.createClass({
-
-
   metadata: [
     {
       "columnName": "id",
@@ -123,11 +121,6 @@ var TableAgreement = React.createClass({
   },
 
   errorLoadData: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Cargo el contenido de la tabla',
-      typeMess: 'alert'
-    });
   },
 
 
@@ -156,11 +149,6 @@ var TableAgreement = React.createClass({
   },
 
   errorLoadFile: function () {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Cargo el archivo',
-      typeMess: 'alert'
-    });
   },
 
   render: function () {
@@ -173,36 +161,24 @@ var TableAgreement = React.createClass({
     }
 
     return (
-      <div className="header callout secondary">
-        <MessageAlert
-          showHide={this.state.showMessage}
-          type={this.state.typeMess}
-          contextText={this.state.contextText}
-          onclickMessage={this.onClickMessage}
-        />
-        <div className="sign">
-          <h1>La tabla</h1>
-          <div className="columns">
-            <Griddle
-              columnMetadata={this.metadata}
-              results={this.state.dataValue}
-              columns={["no_agreement", "created_at", "KindAgreement", "created_by"]}
-              showFilter={true}
-              showSettings={true}
-              onRowClick={this.handleGetFile}
-            />
-          </div>
-
+        <Card title="Listado de contratos" bordered={false}>
+          <Griddle
+            columnMetadata={this.metadata}
+            results={this.state.dataValue}
+            columns={["no_agreement", "created_at", "KindAgreement", "created_by"]}
+            showFilter={true}
+            showSettings={true}
+            onRowClick={this.handleGetFile}
+          />
           <iframe
             src={pdf}
             className={showClass}
-            width="500"
-            height="500"
+            width="100%"
+            height="500px"
             alt="pdf"
             type="application/pdf"
           />
-        </div>
-      </div>
+        </Card>
     )
   }
 

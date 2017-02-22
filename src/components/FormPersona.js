@@ -1,8 +1,10 @@
 import React from 'react'
 import SelectInput from './SelectInput.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+import {DatePicker, Card , Form , Input, Radio, Col, Row, Button, Icon} from 'antd';
+
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 const InputGroup = Input.Group;
 
 var FormPersona = React.createClass({
@@ -12,6 +14,7 @@ var FormPersona = React.createClass({
       newOptionSelectA: false,
       childSelectValue: undefined,
       selectedOption: undefined,
+      valueCheckbox: 0
     };
   },
 
@@ -44,7 +47,7 @@ var FormPersona = React.createClass({
 
   handleOptionChange: function (e) {
     this.setState({
-      selectedOption: e.target.value
+      valueCheckbox: e.target.value
     });
   },
 
@@ -209,6 +212,9 @@ var FormPersona = React.createClass({
   errorFormDelete: function (err) {
   },
 
+  onChangeDate: function(date, dateString) {
+      console.log(date, dateString);
+  },
 
   render: function () {
 
@@ -220,7 +226,6 @@ var FormPersona = React.createClass({
 
                 <FormItem label="Personas Existentes" >
                   <InputGroup size="large" compact>
-
                     <SelectInput
                       style={{ width: '88%' }}
                       class="input-group-field"
@@ -235,30 +240,16 @@ var FormPersona = React.createClass({
                 </FormItem>
 
                 <FormItem label="Tipo de persona" >
-                  <Input
-                    type="radio"
-                    name="type_person"
-                    value="0"
-                    id="personN"
-                    checked={this.state.selectedOption === "0"}
-                    onChange={this.handleOptionChange}
-                    required
-                  />
-                </FormItem>
-
-                <FormItem label="Natural" >
-
-                  <Input
-                    type="radio"
-                    name="type_person"
-                    id="personJ"
-                    value="1"
-                    checked={this.state.selectedOption === "1"}
-                    onChange={this.handleOptionChange}
-                  />
+                  <RadioGroup onChange={this.handleOptionChange} value={this.state.valueCheckbox}>
+                    <Radio value={0}>Natural</Radio>
+                    <Radio value={1}>Juridica</Radio>
+                  </RadioGroup>
                 </FormItem>
                 <FormItem label="Dirección">
                   <Input ref="address" name="address" type="text" placeholder=""/>
+                </FormItem>
+                <FormItem label="Licencia">
+                  <Input ref="license" name="license" type="text" placeholder=""/>
                 </FormItem>
               </Col>
 
@@ -272,8 +263,8 @@ var FormPersona = React.createClass({
                 <FormItem label="Correo Electronico" >
                   <Input ref="email" name="email" type="text" placeholder="" required/>
                 </FormItem>
-                <FormItem label="Licencia">
-                  <Input ref="license" name="license" type="text" placeholder=""/>
+                <FormItem label="Vigencia">
+                  <DatePicker onChange={this.onChangeDate}/>
                 </FormItem>
               </Col>
 
@@ -293,14 +284,6 @@ var FormPersona = React.createClass({
                 </FormItem>
                 <FormItem label="Identificación">
                   <Input ref="id_number" name="id_number" type="text" placeholder="" required/>
-                </FormItem>
-                <FormItem label="Vigencia">
-                  <Input
-                    ref="effective_date"
-                    name="effective_date"
-                    type="date"
-                    pattern="(0[1-9]|1[0-9]|2[0-9]|3[01])-(0[1-9]|1[012])-[0-9]{4}"
-                    placeholder=""/>
                 </FormItem>
                 <FormItem>
                   <Button type="primary" htmlType="submit" size="large">Grabar</Button>
