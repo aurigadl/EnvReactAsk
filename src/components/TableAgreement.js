@@ -1,89 +1,41 @@
 import React from 'react'
-import Griddle from 'griddle-react'
 import {makeRequest as mReq} from '../utils/mrequest';
-import {Card, Col, Row, Button, Icon} from 'antd';
+import {Table, Card, Col, Row, Button, Icon} from 'antd';
 
-var LinkComponent = React.createClass({
+const columns = [{
+  title: 'No del contrato',
+  dataIndex: 'no_agreement',
+  key: 'no_agreement',
+  render: text => <Button type="primary" shape="circle" icon="download"/>,
+}, {
+  title: 'Fecha de creación',
+    dataIndex: 'created_at',
+    key: 'created_at',
 
-  handleGetFile: function (e) {
-    e.preventDefault();
-  },
+}, {
+  title: 'Creado Por',
+    dataIndex: 'created_by',
+    key: 'created_by',
+}, {
+  title: 'Fecha Inicial',
+    dataIndex: 'init_date',
+    key: 'init_date',
+}, {
+  title: 'Fecha Final',
+    dataIndex: 'last_date',
+    key: 'last_date',
+}, {
+  title: 'No del viaje',
+    dataIndex: 'no_trip',
+    key: 'no_trip',
+}, {
+  title: 'Contratante',
+    dataIndex: 'person',
+    key: 'person',
+}];
 
-  render: function () {
-    return (
-      <div>
-        <a target="_blank" onClick={this.handleGetFile}>{this.props.data}</a>
-      </div>)
-  }
-
-});
 
 var TableAgreement = React.createClass({
-  metadata: [
-    {
-      "columnName": "id",
-      "order": 1,
-      "locked": false,
-      "visible": false
-    },
-    {
-      "columnName": "no_agreement",
-      "order": 2,
-      "locked": false,
-      "visible": true,
-      "displayName": "No Contrato",
-      "customComponent": LinkComponent
-    },
-    {
-      "columnName": "created_at",
-      "order": 3,
-      "locked": false,
-      "visible": true,
-      "displayName": "Fecha Creación"
-    },
-    {
-      "columnName": "KindAgreement",
-      "order": 4,
-      "locked": false,
-      "visible": true,
-      "displayName": "Contrato"
-    },
-    {
-      "columnName": "created_by",
-      "order": 5,
-      "locked": false,
-      "visible": true,
-      "displayName": "Creador"
-    },
-    {
-      "columnName": "init_date",
-      "order": 6,
-      "locked": false,
-      "visible": true,
-      "displayName": "Fecha Inicial"
-    },
-    {
-      "columnName": "last_date",
-      "order": 7,
-      "locked": false,
-      "visible": true,
-      "displayName": "Fecha Final"
-    },
-    {
-      "columnName": "no_trip",
-      "order": 8,
-      "locked": false,
-      "visible": false,
-      "displayName": "Viaje"
-    },
-    {
-      "columnName": "person",
-      "order": 9,
-      "locked": false,
-      "visible": true,
-      "displayName": "Persona"
-    }
-  ],
 
   getInitialState: function () {
     return {
@@ -124,10 +76,10 @@ var TableAgreement = React.createClass({
   },
 
 
-  handleGetFile: function (e) {
+  handleGetFile: function (record, index) {
 
     var params = {
-      'agreement': e.props.data.no_agreement
+      'agreement': record.no_agreement
     };
 
     var parreq = {
@@ -162,14 +114,7 @@ var TableAgreement = React.createClass({
 
     return (
         <Card title="Listado de contratos" bordered={false}>
-          <Griddle
-            columnMetadata={this.metadata}
-            results={this.state.dataValue}
-            columns={["no_agreement", "created_at", "KindAgreement", "created_by"]}
-            showFilter={true}
-            showSettings={true}
-            onRowClick={this.handleGetFile}
-          />
+          <Table rowKey="id" onRowClick={this.handleGetFile} dataSource={this.state.dataValue} columns={columns} />
           <iframe
             src={pdf}
             className={showClass}

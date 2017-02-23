@@ -1,6 +1,5 @@
 import React from 'react'
 import Griddle from 'griddle-react'
-import MessageAlert from './MessageAlert.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 
 var LinkComponent = React.createClass({
@@ -138,11 +137,6 @@ var TableFuec = React.createClass({
   },
 
   errorLoadData: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Cargo el contenido de la tabla',
-      typeMess: 'alert'
-    });
   },
 
 
@@ -171,11 +165,6 @@ var TableFuec = React.createClass({
   },
 
   errorLoadFile: function () {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Cargo el archivo',
-      typeMess: 'alert'
-    });
   },
 
   render: function () {
@@ -187,12 +176,6 @@ var TableFuec = React.createClass({
 
     return (
       <div className="header callout secondary">
-        <MessageAlert
-          showHide={this.state.showMessage}
-          type={this.state.typeMess}
-          contextText={this.state.contextText}
-          onclickMessage={this.onClickMessage}
-        />
         <div className="sign">
           <h1>La tabla</h1>
           <div className="columns">
