@@ -9,7 +9,7 @@ import FormMarcaAuto from './FormMarcaAuto.js'
 import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
 import {makeRequest as mReq} from '../utils/mrequest';
-import {Tooltip, message, DatePicker, Layout, Menu, BackTop
+import {Tooltip, message, DatePicker, Layout, BackTop
   , Card , Form , Input , Col, Row, Button, Icon} from 'antd';
 
 const { Header, Content} = Layout;
@@ -459,51 +459,33 @@ const PageTwo = React.createClass({
                 newOptionPerson={this.state.newOptionPerson}
                 onItemNewPerson={this.handleNewElementPerson}
                 newOptionCar={this.state.newOptionCar}
-                onItemNewCar={this.handleNewElementCar}
-              />
+                onItemNewCar={this.handleNewElementCar} />
 
-            <div className="columns small-12 medium-6">
               <FormRuta
                 id="ruta"
-                onItemNew={this.handleNewElementRuta}
-              />
-            </div>
+                onItemNew={this.handleNewElementRuta} />
 
-            <div className="columns small-12 medium-6">
               <FormMarcaAuto
                 id="marca"
-                onItemNew={this.handleNewElementMarca}
-              />
-            </div>
+                onItemNew={this.handleNewElementMarca} />
 
-            <div className="columns small-12 medium-6">
               <FormCarro
                 id='carro'
                 newOptionMarca={this.state.newOptionMarca}
                 onItemNewMarca={this.handleNewElementMarca}
-                onItemNewCar={this.handleNewElementCar}
-              />
-            </div>
+                onItemNewCar={this.handleNewElementCar} />
 
-            <div className="columns small-12 medium-6">
               <FormContrato
                 id='contrato'
                 newOptionPerson={this.state.newOptionPerson}
                 onItemNewPerson={this.handleNewElementPerson}
-                onItemNewAgreement={this.handleNewAgreement}
-              />
-            </div>
+                onItemNewAgreement={this.handleNewAgreement} />
 
-            <div className="columns small-12 medium-6">
               <FormPersona
                 id="persona"
-                onItemNew={this.handleNewElementPerson}
-              />
-            </div>
+                onItemNew={this.handleNewElementPerson} />
 
-            <div className="columns">
               <TableAgreement/>
-            </div>
 
             <BackTop/>
           </Content>

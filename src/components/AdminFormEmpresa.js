@@ -1,6 +1,9 @@
 import React from 'react'
 import {makeRequest as mReq} from '../utils/mrequest';
-import { message } from 'antd';
+
+import {Card , Form , Input , Col, Row, Button, Icon, message} from 'antd';
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
 
 var AdminFormEmpresa = React.createClass({
 
@@ -171,136 +174,132 @@ var AdminFormEmpresa = React.createClass({
     }
 
     return (
-      <div className="header callout secondary">
+        <Card id={this.props.id} title="Empresa" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm}>
+            <Row gutter={15}>
+              <Col span={8}>
+                <FormItem label="Razón social">
+                  <Input name="name"
+                    type="text"
+                    ref="name"
+                    placeholder=""
+                    required/>
+                </FormItem>
 
-        <div className="sign">
-          <h1>Empresa</h1>
-        </div>
+                <FormItem label="Dirección">
+                  <Input name="address"
+                        type="text"
+                        ref="address"
+                        placeholder=""
+                        required/>
+                </FormItem>
 
-        <form onSubmit={this.handleSubmitForm}>
+                <FormItem label="Telefono">
+                  <Input name="phone"
+                    type="text"
+                    ref="phone"
+                    placeholder=""
+                    required/>
+                </FormItem>
 
-          <label>Razón social
-            <input name="name"
-                   type="text"
-                   ref="name"
-                   placeholder=""
-                   required/>
-          </label>
+                <FormItem label="Correo electronico">
+                  <Input name="email"
+                    type="email"
+                    ref="email"
+                    placeholder=""
+                    required/>
+                </FormItem>
 
-          <label>Dirección
-            <input name="address"
-                   type="text"
-                   ref="address"
-                   placeholder=""
-                   required/>
-          </label>
+              </Col>
 
-          <label>Telefono
-            <input name="phone"
-                   type="text"
-                   ref="phone"
-                   placeholder=""
-                   required/>
-          </label>
+              <Col span={8}>
+                <FormItem label="Nit - Consecutivo de identificación">
+                  <InputGroup compact>
+                    <Input
+                      style={{ width: '70%'  }}
+                      name="nit_1"
+                      type="number"
+                      placeholder=""
+                      ref="nit_1"
+                      required/>
 
-          <label>Correo electronico
-            <input name="email"
-                   type="email"
-                   ref="email"
-                   placeholder=""
-                   required/>
-          </label>
+                    <Input
+                      style={{ width: '30%' }}
+                      name="nit_2"
+                      type="number"
+                      placeholder=""
+                      ref="nit_2"
+                      required/>
+                  </InputGroup>
+                </FormItem>
 
-          <div className="row">
-            <div className="small-7 columns">
-              <label>Nit - Consecutivo de identificación
-                <input name="nit_1"
-                       type="number"
-                       placeholder=""
-                       ref="nit_1"
-                       required/>
-              </label>
-            </div>
-            <div className="small-5 columns">
-              <label>Nit - Digito de verificación
-                <input name="nit_2"
-                       type="number"
-                       placeholder=""
-                       ref="nit_2"
-                       required/>
-              </label>
-            </div>
-          </div>
+                <FormItem label="Identificación de la empresa">
+                  <Input name="id_company_legal"
+                    type="number"
+                    placeholder=""
+                    ref="id_company_legal"
+                    required/>
+                </FormItem>
 
-          <label>Identificación de la empresa
-            <input name="id_company_legal"
-                   type="number"
-                   placeholder=""
-                   ref="id_company_legal"
-                   required/>
-          </label>
+                <FormItem label="Consecutivo contratos">
+                  <Input name="secuence_contract"
+                    type="number"
+                    placeholder=""
+                    ref="secuence_contract"
+                    required/>
+                </FormItem>
 
+                <FormItem label="Consecutivo Planilla">
+                  <Input name="secuence_payroll"
+                    type="number"
+                    placeholder=""
+                    ref="secuence_payroll"
+                    required/>
+                </FormItem>
+              </Col>
 
-          <label>Consecutivo contratos
-            <input name="secuence_contract"
-                   type="number"
-                   placeholder=""
-                   ref="secuence_contract"
-                   required/>
-          </label>
+              <Col span={8}>
+                <FormItem label="Consecutivo Planilla">
+                  <Input name="secuence_vehicle"
+                    type="number"
+                    placeholder=""
+                    ref="secuence_vehicle"
+                    required/>
+                </FormItem>
 
-          <label>Consecutivo Planilla
-            <input name="secuence_payroll"
-                   type="number"
-                   placeholder=""
-                   ref="secuence_payroll"
-                   required/>
-          </label>
+                <FormItem label="Representante Legal o Gerente">
+                  <Input name="owner"
+                    type="text"
+                    ref="owner"
+                    placeholder=""
+                    required/>
+                </FormItem>
 
-          <label>Consecutivo Vehiculo
-            <input name="secuence_vehicle"
-                   type="number"
-                   placeholder=""
-                   ref="secuence_vehicle"
-                   required/>
-          </label>
+                <FormItem label="Firma 'Grafico en PNG'">
+                  <Input name="sign"
+                    type="file"
+                    ref="sign"
+                    accept="image/png"
+                    placeholder=""
+                    onChange={this.handleImageSign} />
+                </FormItem>
+                {imagePreviewSign}
 
-          <label>Representante Legal o Gerente
-            <input name="owner"
-                   type="text"
-                   ref="owner"
-                   placeholder=""
-                   required/>
-          </label>
+                <FormItem label="Logo 'Grafico en PNG'">
+                  <Input name="logo"
+                    type="file"
+                    ref="logo"
+                    accept="image/png"
+                    placeholder=""
+                    onChange={this.handleImageLogo} />
+                </FormItem>
+                {imagePreviewLogo}
 
-          <label> Firma "Dibujo en PNG"
-            <input name="sign"
-                   type="file"
-                   ref="sign"
-                   accept="image/png"
-                   placeholder=""
-                   onChange={this.handleImageSign} />
-          </label>
-          {imagePreviewSign}
-
-          <label> Logo "Dibujo en PNG"
-            <input name="logo"
-                   type="file"
-                   ref="logo"
-                   accept="image/png"
-                   placeholder=""
-                   onChange={this.handleImageLogo} />
-          </label>
-          {imagePreviewLogo}
-
-          <div className="row">
-            <div className="shrink columns">
-              <input type="submit" className="success button" value="Grabar"/>
-            </div>
-          </div>
-
-        </form>
-      </div>
+                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+              </Col>
+            </Row>
+        </Form>
+      </Card>
     )
   }
 

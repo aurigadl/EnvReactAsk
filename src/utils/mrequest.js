@@ -1,4 +1,4 @@
-import auth from './auth'
+import { browserHistory  } from 'react-router'
 /**
 {
   method: String,
@@ -9,6 +9,13 @@ import auth from './auth'
 **/
 
 exports.makeRequest = function (opts) {
+
+  var timeTowait = 2000;
+
+  if(localStorage.unauthorized401){
+    timeTowait = 0;
+  }
+
 
   return new Promise(function (resolve, reject) {
 
@@ -42,7 +49,8 @@ exports.makeRequest = function (opts) {
       if (this.status >= 200 && this.status < 300) {
         resolve(JSON.parse(xhr.response));
       } else if (this.status == 401) {
-        auth.logout();
+        localStorage.setItem('unauthorized401', true);
+        browserHistory.push(`/logout`)
       } else {
         reject({
           status: this.status,
@@ -59,6 +67,7 @@ exports.makeRequest = function (opts) {
       });
     };
 
+
     if(method === 'GET'){
       xhr.send();
     }
@@ -67,6 +76,8 @@ exports.makeRequest = function (opts) {
       xhr.send(JSON.stringify(params));
     }
 
-  });
+    xhr.timeout = timeTowait;
+
+  })
 
 };

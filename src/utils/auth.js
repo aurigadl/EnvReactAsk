@@ -10,7 +10,8 @@ module.exports = {
     }
     pretendRequest(email, pass, pass_c, (res) => {
       if (res.authenticated) {
-        localStorage.token = res.token;
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('unauthorized401', false);
       }
       cb(res);
       this.onChange(res.authenticated)
@@ -21,14 +22,20 @@ module.exports = {
     return localStorage.token
   },
 
-  logout: function (cb) {
-    logOutRequest((res) => {
-      if (res) {
-        if (cb) cb();
-        this.onChange(false);
-      }
-      delete localStorage.token;
-    });
+  logout: function () {
+    var parreq = {
+      method: 'PUT',
+      params: {},
+      url: 'apiUser/logout'
+    };
+
+    if (!localStorage.unauthorized401) {
+      mReq(parreq)
+      .catch(function (err) {
+        console.log('logout Augh, there was an error!', err.statusText);
+      });
+    };
+    this.onChange(false);
     delete localStorage.token;
   },
 
@@ -65,21 +72,5 @@ function pretendRequest(email, pass, pass_c ,cb) {
     .catch(function (err) {
       cb({authenticated: false, error: err});
       console.log('login Augh, there was an error!', err.statusText);
-    });
-}
-
-function logOutRequest(cb) {
-  var parreq = {
-    method: 'PUT',
-    params: {},
-    url: 'apiUser/logout'
-  };
-
-  mReq(parreq)
-    .then(function (datums) {
-      cb({authenticated: false})
-    })
-    .catch(function (err) {
-      console.log('logout Augh, there was an error!', err.statusText);
     });
 }

@@ -1,10 +1,9 @@
 from model import RoleMixin, UserMixin, anonymous
 import itertools
 from accessControl import AccessControlList
-from flask import request, abort
 
 
-from flask import request, abort, _request_ctx_stack
+from flask import request, abort, _request_ctx_stack, jsonify
 
 try:
     from flask import _app_ctx_stack
@@ -269,9 +268,8 @@ class RBAC(object):
 
         current_user = self._user_loader()
         if current_user is not None and not isinstance(current_user, self._user_model):
-            raise TypeError(
-                "%s is not an instance of %s" %
-                (current_user, self._user_model.__class__))
+            return jsonify({"jsonrpc": "2.0", "result": False, "error": "%s is not an instance of %s" %
+                (current_user, self._user_model.__class__)}), 401
 
         endpoint = request.endpoint
         resource = app.view_functions.get(endpoint, None)

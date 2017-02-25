@@ -254,7 +254,7 @@ var FormCarro = React.createClass({
                       newOption={this.state.newOptionSelectA}
                       onUserSelect={this.handleCarSelect}
                     />
-                    <Button type="danger" htmlType="submit" shape="circle"> Borrar </Button>
+                    <Button type="danger" htmlType="submit" shape="circle"/>
                   </InputGroup>
                 </FormItem>
 
