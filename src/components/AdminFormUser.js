@@ -2,6 +2,10 @@ import React from 'react'
 import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
 import { message} from 'antd';
+import {Checkbox ,Card, Form , Input , Col, Row, Button, Icon} from 'antd';
+
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
 
 var AdminFormUser = React.createClass({
 
@@ -205,106 +209,88 @@ var AdminFormUser = React.createClass({
     var showClass = this.state.showHide ? 'show' : 'invisible';
 
     return (
-      <div className="header callout secondary">
+        <Card id={this.props.id} title="Usuarios del sistema" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm}>
+            <Row gutter={15}>
 
-        <div className="sign">
-          <h1>Crea y edita usuarios</h1>
-        </div>
-        <p>Selecciona un Usuario para editarlo
-          o llena los campos sin seleccionar elemento
-          para crear uno nuevo</p>
+              <FormItem label="Usuarios Existentes" >
+                <SelectInput
+                  class="input-group-field"
+                  url="apiUser/allUser"
+                  name="user"
+                  newOption={this.state.newOptionSelectA}
+                  onUserSelect={this.handleUserSelect}
+                />
+              </FormItem>
 
-        <form onSubmit={this.handleSubmitForm}>
+              <FormItem label="Correo Electronico" >
+                <Input
+                  type="email"
+                  name="email"
+                  ref="email"
+                  value={this.state.email || ""}
+                  aria-describedby="emailHelpText"
+                  placeholder="Correo Electronico"
+                  onChange={this.onChangeInputEmail}
+                  required
+                />
+                <div className={"ant-form-extra" + showClass}>No modificable.</div>
+              </FormItem>
 
-          <label>Usuarios del sistema</label>
+              <FormItem label="Nombres" >
+                <Input
+                  type="text"
+                  name="first_name"
+                  ref="first_name"
+                  value={this.state.first_name || ""}
+                  onChange={this.onChangeInputFirstName}
+                  placeholder="Nombres para el usuario"
+                  required
+                />
+              </FormItem>
 
-          <SelectInput
-            class="input-group-field"
-            url="apiUser/allUser"
-            name="user"
-            newOption={this.state.newOptionSelectA}
-            onUserSelect={this.handleUserSelect}
-          />
+              <FormItem label="Apellidos" >
+                <Input
+                  type="text"
+                  name="last_name"
+                  ref="last_name"
+                  value={this.state.last_name || ""}
+                  onChange={this.onChangeInputLastName}
+                  placeholder="Apellidos para el usuario"
+                />
+              </FormItem>
 
-          <label>Correo Electronico
-            <input
-              type="email"
-              name="email"
-              ref="email"
-              value={this.state.email || ""}
-              aria-describedby="emailHelpText"
-              placeholder="Correo Electronico"
-              onChange={this.onChangeInputEmail}
-              required
-            />
-          </label>
+              <FormItem label="Nombre a mostrar" >
+                <Input
+                  type="text"
+                  name="display_name"
+                  ref="display_name"
+                  value={this.state.display_name || ""}
+                  onChange={this.onChangeInputDisplayName}
+                  placeholder="Un alias o el mismo nombre"
+                  required
+                />
+              </FormItem>
 
-          <p className={"help-text " + showClass} id="emailHelpText">
-            No modificable.
-          </p>
+              <FormItem>
+                <Checkbox
+                  onChange={this.clickActive}>
+                  Estado
+                </Checkbox>
+                <Checkbox
+                  onChange={this.clickNewUser}>
+                  Usuario Nuevo
+                </Checkbox>
+              </FormItem>
 
-          <label>Nombres
-            <input
-              type="text"
-              name="first_name"
-              ref="first_name"
-              value={this.state.first_name || ""}
-              onChange={this.onChangeInputFirstName}
-              placeholder="Nombres para el usuario"
-              required
-            />
-          </label>
+              <FormItem>
+                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+              </FormItem>
 
-          <label>Apellidos
-            <input
-              type="text"
-              name="last_name"
-              ref="last_name"
-              value={this.state.last_name || ""}
-              onChange={this.onChangeInputLastName}
-              placeholder="Apellidos para el usuario"
-            />
-          </label>
-
-          <label>Nombre a mostrar
-            <input
-              type="text"
-              name="display_name"
-              ref="display_name"
-              value={this.state.display_name || ""}
-              onChange={this.onChangeInputDisplayName}
-              placeholder="Un alias o el mismo nombre"
-              required
-            />
-          </label>
-
-          <input
-            id="checkbox1"
-            type="checkbox"
-            name="active"
-            checked={this.state.active }
-            onClick={this.clickActive}
-          />
-          <label>Activo</label>
-
-          <input
-            id="checkbox2"
-            type="checkbox"
-            checked={this.state.new_user}
-            onClick={this.clickNewUser}
-            name="new_user"
-          />
-          <label>Nuevo</label>
-
-          <div className="row">
-            <div className="shrink columns">
-              <input type="submit" className="success button" value="Grabar"/>
-              <input type="reset" className="alert button" onClick={this.handleReset} value="Limpiar"/>
-            </div>
-          </div>
-
-        </form>
-      </div>
+            </Row>
+          </Form>
+        </Card>
     )
   }
 });

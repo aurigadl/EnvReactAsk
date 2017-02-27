@@ -6,6 +6,7 @@ from logging import FileHandler
 import jwt
 from flask import Flask, request, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS, cross_origin
 from flask import g
 
 from rbac import RBAC as r
@@ -23,6 +24,8 @@ g_data = g
 
 # Configuration
 app = Flask(__name__, static_folder=config.config.STATIC_FOLDER, static_url_path='')
+CORS(app)
+
 if appEnv == 'DEV':
     app.config.from_object(config.devConfig1)
 if appEnv == 'PRO':

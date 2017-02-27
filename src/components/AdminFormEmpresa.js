@@ -1,7 +1,7 @@
 import React from 'react'
 import {makeRequest as mReq} from '../utils/mrequest';
-
-import {Card , Form , Input , Col, Row, Button, Icon, message} from 'antd';
+import {Upload, Card , Form , Input , Col
+  , Row, Button, Icon, message} from 'antd';
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
@@ -40,8 +40,6 @@ var AdminFormEmpresa = React.createClass({
     this.refs.nit_2.value = data.nit_2;
     this.refs.secuence_contract.value = data.secuence_contract;
     this.refs.id_company_legal.value = data.id_company_legal;
-    this.refs.secuence_payroll.value = data.secuence_payroll;
-    this.refs.secuence_vehicle.value = data.secuence_vehicle;
 
     this.setState({
       fileSign: data.sign,
@@ -161,16 +159,17 @@ var AdminFormEmpresa = React.createClass({
   render: function () {
 
     var imgLogo = this.state.fileLogo;
+    console.log(imgLogo);
     var imagePreviewLogo;
     var imgSign = this.state.fileSign;
     var imagePreviewSign;
 
     if (imgLogo) {
-      imagePreviewLogo = (<img src={imgLogo}/>);
+      imagePreviewLogo = (<div className="showprev"><img width='100%' src={imgLogo}/></div>);
     }
 
     if (imgSign) {
-      imagePreviewSign = (<img src={imgSign}/>);
+      imagePreviewSign = (<div className="showprev"><img width='100%' src={imgSign}/></div>);
     }
 
     return (
@@ -202,13 +201,18 @@ var AdminFormEmpresa = React.createClass({
                     required/>
                 </FormItem>
 
-                <FormItem label="Correo electronico">
-                  <Input name="email"
-                    type="email"
-                    ref="email"
-                    placeholder=""
-                    required/>
+                <FormItem label="Firma 'Grafico en PNG'">
+                  <Upload
+                    name="sign"
+                    listType="picture"
+                    onChange={this.handleImageSign}>
+                    <Button>
+                      <Icon type="upload" /> Cargar Firma
+                    </Button>
+                  </Upload>
                 </FormItem>
+
+                {imagePreviewSign}
 
               </Col>
 
@@ -249,13 +253,21 @@ var AdminFormEmpresa = React.createClass({
                     required/>
                 </FormItem>
 
-                <FormItem label="Consecutivo Planilla">
-                  <Input name="secuence_payroll"
-                    type="number"
-                    placeholder=""
-                    ref="secuence_payroll"
-                    required/>
+                <FormItem label="Logo 'Grafico en PNG'">
+                  <Upload
+                    name="logo"
+                    listType="picture"
+                    onChange={this.handleImageLogo}>
+                    <Button>
+                      <Icon type="upload" /> Cargar Logo
+                    </Button>
+                  </Upload>
                 </FormItem>
+
+                <FormItem>
+                  {imagePreviewLogo}
+                </FormItem>
+
               </Col>
 
               <Col span={8}>
@@ -275,25 +287,13 @@ var AdminFormEmpresa = React.createClass({
                     required/>
                 </FormItem>
 
-                <FormItem label="Firma 'Grafico en PNG'">
-                  <Input name="sign"
-                    type="file"
-                    ref="sign"
-                    accept="image/png"
+                <FormItem label="Correo electronico">
+                  <Input name="email"
+                    type="email"
+                    ref="email"
                     placeholder=""
-                    onChange={this.handleImageSign} />
+                    required/>
                 </FormItem>
-                {imagePreviewSign}
-
-                <FormItem label="Logo 'Grafico en PNG'">
-                  <Input name="logo"
-                    type="file"
-                    ref="logo"
-                    accept="image/png"
-                    placeholder=""
-                    onChange={this.handleImageLogo} />
-                </FormItem>
-                {imagePreviewLogo}
 
                 <Button type="primary" htmlType="submit" size="large">Grabar</Button>
               </Col>

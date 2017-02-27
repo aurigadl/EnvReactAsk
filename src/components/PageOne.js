@@ -2,8 +2,8 @@ import React from 'react'
 import AdminFormUser from './AdminFormUser.js'
 import AdminFormEmpresa from './AdminFormEmpresa.js'
 import AdminFormUserRoles from './AdminFormUserRoles.js'
-import {Tooltip, message, Layout, Menu,
-  BackTop, Button, Icon} from 'antd';
+import {Row, Tooltip, message, Layout,
+ Col, BackTop, Button, Icon} from 'antd';
 
 const { Header, Content} = Layout;
 
@@ -53,14 +53,21 @@ const PageOne = React.createClass({
         <AdminFormEmpresa
           id="empresa"/>
 
-        <AdminFormUser
-          id="usuario"
-          onItemNew={this.handleNewElement} />
+        <Row>
+          <Col span="12">
 
-        <AdminFormUserRoles
-          id="usuarioroles"
-          newOption={this.state.newOption}
-          onItemNew={this.handleNewElement} />
+            <AdminFormUser
+              id="usuario"
+              onItemNew={this.handleNewElement} />
+          </Col>
+          <Col span="12">
+
+            <AdminFormUserRoles
+              id="usuarioroles"
+              newOption={this.state.newOption}
+              onItemNew={this.handleNewElement} />
+          </Col>
+        </Row>
 
         <BackTop/>
 

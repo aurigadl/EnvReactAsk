@@ -134,7 +134,7 @@ var FormMarcaAuto = React.createClass({
         <Card id={this.props.id} title="Marca de Carros" bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
             <Row gutter={15}>
-              <Col span={8}>
+              <FormItem>
                 <InputGroup compact>
                   <SelectInput
                     style={{ width: '88%' }}
@@ -147,23 +147,20 @@ var FormMarcaAuto = React.createClass({
                   />
                   <Button onClick={this.handleDelete} type="primary" shape="circle" icon="minus"/>
                 </InputGroup>
-              </Col>
-              <Col span={8}>
-                <FormItem>
-                  <Input name="marcaEdit"
-                    placeholder="Editar o crear..."
-                    className="input-group-field"
-                    type="text"
-                    onChange={this.onChange}
-                    value={this.state.inputValue}/>
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem>
-                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
-                </FormItem>
-              </Col>
+              </FormItem>
+              <FormItem>
+                <Input name="marcaEdit"
+                  placeholder="Editar o crear..."
+                  className="input-group-field"
+                  type="text"
+                  onChange={this.onChange}
+                  value={this.state.inputValue}/>
+              </FormItem>
+              <FormItem>
+                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+              </FormItem>
+
             </Row>
           </Form>
         </Card>

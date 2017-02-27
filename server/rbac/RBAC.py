@@ -11,7 +11,7 @@ except ImportError:
     _app_ctx_stack = None
 
 try:
-    from flask.ext.login import current_user
+    from flask_login import current_user
 except ImportError:
     current_user = None
 

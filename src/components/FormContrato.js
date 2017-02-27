@@ -305,10 +305,6 @@ var FormConductor = React.createClass({
                   />
                 </FormItem>
 
-                <FormItem>
-                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
-                </FormItem>
 
               </Col>
 
@@ -339,6 +335,11 @@ var FormConductor = React.createClass({
                     open={endOpen}
                     onOpenChange={this.handleEndOpenChange}
                   />
+                </FormItem>
+
+                <FormItem>
+                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
                 </FormItem>
 
               </Col>

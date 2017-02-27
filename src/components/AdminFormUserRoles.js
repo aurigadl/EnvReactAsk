@@ -1,8 +1,13 @@
 import React from 'react'
 import SelectInput from './SelectInput.js'
-import MessageAlert from './MessageAlert.js'
 import CheckBoxInputs from './CheckBoxInputs.js'
 import {makeRequest as mReq} from '../utils/mrequest';
+
+import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+
+const FormItem = Form.Item;
+const InputGroup = Input.Group;
+
 
 var AdminFormUserRoles = React.createClass({
 
@@ -116,51 +121,38 @@ var AdminFormUserRoles = React.createClass({
     })
   },
 
+  render: function () {
+    return (
+        <Card id={this.props.id} title="Usuarios y Roles" bordered={false}>
+          <Form onSubmit={this.handleSubmitForm}>
+            <Row gutter={15}>
 
-    render: function () {
-      return (
-        <div className="header callout secondary">
-
-          <div className="sign">
-            <h1>Usuario Role</h1>
-          </div>
-
-          <form onSubmit={this.handleSubmitForm}>
-            <label>Usuarios del sistema
-              <SelectInput
-                class="input-group-field"
-                url="apiUser/allUser"
-                name="usuario"
-                newOption={this.state.newOptionSelectA}
-                onUserSelect={this.handleUserSelect}
-              />
-            </label>
-
-            <label>Perfiles de acceso
-              <CheckBoxInputs
-                url="apiAdmin/allRoles"
-                ck_name="roles"
-                idsCheckSelected={this.state.childSelectValue}
-              />
-            </label>
-
-            <div className="row">
-              <div className="shrink columns">
-                <input type="submit" className="success button" value="Grabar"/>
-              </div>
-              <div className="columns">
-                <MessageAlert
-                  showHide={this.state.showMessage}
-                  type={this.state.typeMess}
-                  contextText={this.state.contextText}
-                  onclickMessage={this.onClickMessage}
+              <FormItem label="Usuarios Existentes" >
+                <SelectInput
+                  class="input-group-field"
+                  url="apiUser/allUser"
+                  name="usuario"
+                  newOption={this.state.newOptionSelectA}
+                  onUserSelect={this.handleUserSelect}
                 />
-              </div>
-            </div>
-          </form>
-        </div>
-      )
-    }
+              </FormItem>
+
+              <FormItem label="Perfiles de acceso" >
+                <CheckBoxInputs
+                  url="apiAdmin/allRoles"
+                  ck_name="roles"
+                  idsCheckSelected={this.state.childSelectValue}
+                />
+              </FormItem>
+
+              <FormItem>
+                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+              </FormItem>
+            </Row>
+          </Form>
+        </Card>
+     )
+  }
   });
 
 export default AdminFormUserRoles;

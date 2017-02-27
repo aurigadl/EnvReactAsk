@@ -461,13 +461,18 @@ const PageTwo = React.createClass({
                 newOptionCar={this.state.newOptionCar}
                 onItemNewCar={this.handleNewElementCar} />
 
-              <FormRuta
-                id="ruta"
-                onItemNew={this.handleNewElementRuta} />
-
-              <FormMarcaAuto
-                id="marca"
-                onItemNew={this.handleNewElementMarca} />
+              <Row>
+                <Col span="12">
+                  <FormRuta
+                    id="ruta"
+                    onItemNew={this.handleNewElementRuta} />
+                </Col>
+                <Col span="12">
+                  <FormMarcaAuto
+                    id="marca"
+                    onItemNew={this.handleNewElementMarca} />
+                </Col>
+              </Row>
 
               <FormCarro
                 id='carro'

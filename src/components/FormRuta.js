@@ -234,42 +234,37 @@ var FormRuta = React.createClass({
           <Form onSubmit={this.handleSubmitForm}>
 
             <Row gutter={15}>
-              <Col span={8}>
-                <FormItem>
-                  <InputGroup compact>
-                    <SelectInput
-                      style={{ width: '88%' }}
-                      class="input-group-field"
-                      url="apiFuec/allRuta"
-                      name="selectRuta"
-                      ref="selectRuta"
-                      newOption={this.state.newOptionSelectA}
-                      onUserSelect={this.handleUserSelect}
-                    />
-                    <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
-                  </InputGroup>
-                </FormItem>
-              </Col>
-              <Col span={8}>
-                <FormItem>
-                  <Input type="textarea"
-                    name="rutaEdit"
-                    ref="rutaEdit"
-                    placeholder="Editar o crear..."
-                    className="input-group-field"
-                    onChange={this.onChange}
-                    value={this.state.inputValue}
-                    type="text"/>
-                </FormItem>
-              </Col>
-              <Col span={8}>
+              <FormItem>
+                <InputGroup compact>
+                  <SelectInput
+                    style={{ width: '88%' }}
+                    class="input-group-field"
+                    url="apiFuec/allRuta"
+                    name="selectRuta"
+                    ref="selectRuta"
+                    newOption={this.state.newOptionSelectA}
+                    onUserSelect={this.handleUserSelect}
+                  />
+                  <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
+                </InputGroup>
+              </FormItem>
 
-                <FormItem>
-                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
-                </FormItem>
+              <FormItem>
+                <Input type="textarea"
+                  name="rutaEdit"
+                  ref="rutaEdit"
+                  placeholder="Editar o crear..."
+                  className="input-group-field"
+                  onChange={this.onChange}
+                  value={this.state.inputValue}
+                  type="text"/>
+              </FormItem>
 
-              </Col>
+              <FormItem>
+                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+              </FormItem>
+
 
             </Row>
           </Form>
