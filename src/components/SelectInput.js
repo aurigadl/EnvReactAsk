@@ -48,7 +48,6 @@ var SelectInput = React.createClass({
 
   successHandler: function (data) {
     var arrayData = [];
-    arrayData.push(<Option key='' value='-- Ninguno --'></Option>);
     for (var i = 0; i < data.length; i++) {
       var option = data[i];
       arrayData.push(
@@ -71,10 +70,10 @@ var SelectInput = React.createClass({
     return (
       <Select
         {...this.props}
-        value={this.state.valueSelect}
         onChange={this.handleChange}
         ref="valueSelect"
-        name={this.props.name}>
+        filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
+        showSearch>
         {this.state.options}
       </Select>
     )

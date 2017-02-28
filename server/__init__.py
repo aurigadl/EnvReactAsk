@@ -24,7 +24,7 @@ g_data = g
 
 # Configuration
 app = Flask(__name__, static_folder=config.config.STATIC_FOLDER, static_url_path='')
-CORS(app)
+CORS(app, supports_credentials=True)
 
 if appEnv == 'DEV':
     app.config.from_object(config.devConfig1)

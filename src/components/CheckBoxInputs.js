@@ -1,5 +1,6 @@
 import React from 'react'
 import {makeRequest as mReq} from '../utils/mrequest';
+import {Checkbox} from 'antd';
 
 var CheckboxInputs = React.createClass({
 
@@ -93,32 +94,30 @@ var CheckboxInputs = React.createClass({
 
   render_Checkbox: function (result, i) {
     return(
-    <label key={i}>
-      <input type="checkbox"
-             key={i}
-             name={this.props.ck_name}
-             checked={result.selected}
-             onChange={this.linkCheckbox}
-             value={result.value}/>
-      {result.label}
-    </label>)
+        <Checkbox
+          key={i}
+          name={this.props.ck_name}
+          checked={result.selected}
+          onChange={this.linkCheckbox}
+          value={result.value}>
+          {result.label}
+        </Checkbox>)
   },
 
   render: function () {
     var list = this.state.dataList;
     var listCheck = list.map(this.render_Checkbox);
-    return (<div>
-        <label>
-          <input
+    return (
+        <div>
+          <Checkbox
             type="checkbox"
             name={'all' + this.props.ck_name}
             checked={this.state.globalCheckbox}
-            onChange={this.linkGlobalCheckbox}
-          />
-          Todos
-        </label>
-        {listCheck}
-      </div>
+            onChange={this.linkGlobalCheckbox}>
+            Todos
+          </Checkbox>
+          {listCheck}
+        </div>
     );
   }
 });
