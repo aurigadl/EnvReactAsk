@@ -12,3 +12,4 @@ wsgiref==0.1.2
 requests==2.10.0
 flup==1.0.2
 fpdf==1.7.2
+Flask-Cors==3.0.2
