@@ -7,13 +7,11 @@ const Option = Select.Option;
 var SelectInput = React.createClass({
   propTypes: {
     url: React.PropTypes.string.isRequired,
-    name: React.PropTypes.string.isRequired,
   },
 
   getInitialState: function () {
     return {
       options: [],
-      name: React.PropTypes.string.isRequired,
       valueSelect: ''
     }
   },
@@ -29,7 +27,7 @@ var SelectInput = React.createClass({
         this.successHandler(response.result)
       }.bind(this))
       .catch(function (err) {
-        console.log('AdminSelectRoles, there was an error!', err.statusText);
+        console.log('Load data for selectinput, there was an error!', err.statusText);
       });
   },
 
@@ -48,6 +46,7 @@ var SelectInput = React.createClass({
 
   successHandler: function (data) {
     var arrayData = [];
+    arrayData.push(<Option key='' value=' '> -- Ninguno --</Option>);
     for (var i = 0; i < data.length; i++) {
       var option = data[i];
       arrayData.push(
@@ -70,8 +69,8 @@ var SelectInput = React.createClass({
     return (
       <Select
         {...this.props}
+        placeholder="Selecciona un opción"
         onChange={this.handleChange}
-        ref="valueSelect"
         filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
         showSearch>
         {this.state.options}

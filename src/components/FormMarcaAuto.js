@@ -2,11 +2,19 @@ import React from 'react'
 import SelectInput from './SelectInput.js'
 import {makeRequest as mReq} from '../utils/mrequest';
 
-import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+import {Tooltip, Card , Form , Input ,
+  Col, Row, Button, Icon} from 'antd';
+
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
-var FormMarcaAuto = React.createClass({
+
+function hasErrors(fieldsError) {
+  return Object.keys(fieldsError).some(field => fieldsError[field]);
+}
+
+
+var FormMarcaAuto = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
@@ -17,6 +25,13 @@ var FormMarcaAuto = React.createClass({
     };
   },
 
+
+  componentDidMount() {
+    // To disabled submit button at the beginning.
+    this.props.form.validateFields();
+  },
+
+
   handleUserSelect: function (childSelectValue, childSelectText) {
     this.setState({
       childSelectValue: childSelectValue,
@@ -25,9 +40,9 @@ var FormMarcaAuto = React.createClass({
   },
 
   handleReset: function (e) {
-    this.refs.selectMarca.value = '';
+    this.props.form.resetFields();
     this.setState({
-      inputValue: ''
+      childSelectValue: null,
     });
   },
 
@@ -48,44 +63,44 @@ var FormMarcaAuto = React.createClass({
 
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var dot = e.target.elements;
-    var marcaSelect = dot.selectMarca.value;
-    var marcaEdit = dot.marcaEdit.value;
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        if (marcaSelect === "") {
+          var params = {
+            marca: marcaEdit
+          };
 
-    if (marcaSelect === "") {
-      var params = {
-        marca: marcaEdit
-      };
+          var parreq = {
+            method: 'POST',
+            url: 'apiFuec/newMarca',
+            params: {'params': params}
+          };
 
-      var parreq = {
-        method: 'POST',
-        url: 'apiFuec/newMarca',
-        params: {'params': params}
-      };
+          this.getRemoteData(parreq,
+            this.successFormCreate,
+            this.errorFormCreate
+          );
 
-      this.getRemoteData(parreq,
-        this.successFormCreate,
-        this.errorFormCreate
-      );
+        } else {
 
-    } else {
+          var params = {
+            id: marcaSelect,
+            name: marcaEdit
+          };
 
-      var params = {
-        id: marcaSelect,
-        name: marcaEdit
-      };
+          var parreq = {
+            method: 'PUT',
+            url: 'apiFuec/updateIdMarca',
+            params: {'params': params}
+          };
 
-      var parreq = {
-        method: 'PUT',
-        url: 'apiFuec/updateIdMarca',
-        params: {'params': params}
-      };
-
-      this.getRemoteData(parreq,
-        this.successFormUpdate,
-        this.errorFormUpdate
-      );
-    }
+          this.getRemoteData(parreq,
+            this.successFormUpdate,
+            this.errorFormUpdate
+          );
+        }
+      }
+    });
   },
 
   successFormCreate: function (data){
@@ -130,43 +145,75 @@ var FormMarcaAuto = React.createClass({
 
 
   render: function () {
+
+    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched  } = this.props.form;
+    const marcaEditError = isFieldTouched('marcaedit') && getFieldError('marcaedit');
+
     return (
         <Card id={this.props.id} title="Marca de Carros" bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
-            <Row gutter={15}>
+
               <FormItem>
                 <InputGroup compact>
-                  <SelectInput
-                    style={{ width: '88%' }}
-                    class="input-group-field"
-                    url="apiFuec/allMarca"
-                    name="selectMarca"
-                    ref="selectMarca"
-                    newOption={this.state.newOptionSelectA}
-                    onUserSelect={this.handleUserSelect}
-                  />
-                  <Button onClick={this.handleDelete} type="primary" shape="circle" icon="minus"/>
+
+                    <SelectInput
+                      style={{ width: '88%' }}
+                      url="apiFuec/allMarca"
+                      ref='marca'
+                      value={this.state.childSelectValue}
+                      newOption={this.state.newOptionSelectA}
+                      onUserSelect={this.handleUserSelect}
+                    />
+
+                  <Tooltip title={'Borrar el registro seleccionado'}>
+                    <Button
+                      onClick={this.handleDelete}
+                      type="danger"
+                      shape="circle"
+                      icon="minus"/>
+                  </Tooltip>
                 </InputGroup>
               </FormItem>
-              <FormItem>
-                <Input name="marcaEdit"
+
+              <FormItem
+                validateStatus={marcaEditError ? 'error' : ''}
+                help={marcaEditError || ''}
+              >
+                {getFieldDecorator('marcaedit', {
+                rules: [{required: true,
+                         message: 'Ingrese un nuevo nombre de marca!'}],
+                })(
+                <Input
                   placeholder="Editar o crear..."
-                  className="input-group-field"
-                  type="text"
-                  onChange={this.onChange}
-                  value={this.state.inputValue}/>
-              </FormItem>
-              <FormItem>
-                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                  onChange={this.onChange}/>
+              )}
               </FormItem>
 
-            </Row>
+              <FormItem>
+
+                <Button
+                  disabled={hasErrors(getFieldsError())}
+                  type="primary"
+                  htmlType="submit"
+                  size="large">
+                  Grabar
+                </Button>
+
+                <Button
+                  style={{ marginLeft: 8  }}
+                  htmlType="reset"
+                  size="large"
+                  onClick={this.handleReset}>
+                  Limpiar
+                </Button>
+
+              </FormItem>
+
           </Form>
         </Card>
     )
   }
 
-});
+}));
 
 export default FormMarcaAuto;
