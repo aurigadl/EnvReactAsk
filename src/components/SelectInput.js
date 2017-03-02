@@ -38,7 +38,7 @@ var SelectInput = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     var next = nextProps.newOption;
     var prev = this.props.newOption;
-    if ( next == true  && next != prev){
+    if (next != prev){
       this.loadOptionFromServer();
     }
   },
@@ -46,7 +46,6 @@ var SelectInput = React.createClass({
 
   successHandler: function (data) {
     var arrayData = [];
-    arrayData.push(<Option key='' value=' '> -- Ninguno --</Option>);
     for (var i = 0; i < data.length; i++) {
       var option = data[i];
       arrayData.push(
@@ -56,21 +55,22 @@ var SelectInput = React.createClass({
     this.setState({options: arrayData})
   },
 
-  handleChange: function (value, label) {
+  handleChange: function (value) {
     if (typeof this.props.onUserSelect === "function"){
       this.props.onUserSelect(
-        value, label
+        value.key, value.label
       );
     }
-    this.setState({ valueSelect: value});
+    this.setState({ valueSelect: value.key});
   },
 
   render: function () {
     return (
       <Select
         {...this.props}
+        labelInValue
         placeholder="Selecciona un opción"
-        onChange={this.handleChange}
+        onSelect={this.handleChange}
         filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
         showSearch>
         {this.state.options}

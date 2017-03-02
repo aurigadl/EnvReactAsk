@@ -1,21 +1,6 @@
 import { browserHistory  } from 'react-router'
-/**
-{
-  method: String,
-    url: String,
-  params: Object,
-  headers: Object
-}
-**/
 
-exports.makeRequest = function (opts) {
-
-  var timeTowait = 2000;
-
-  if(localStorage.unauthorized401){
-    timeTowait = 0;
-  }
-
+const makeRequest = function (opts) {
 
   return new Promise(function (resolve, reject) {
 
@@ -76,8 +61,19 @@ exports.makeRequest = function (opts) {
       xhr.send(JSON.stringify(params));
     }
 
-    xhr.timeout = timeTowait;
-
   })
 
 };
+
+const remoteData = function (parreq, cb_success, cb_error) {
+  makeRequest(parreq)
+    .then(function (response) {
+      cb_success(response)
+    }.bind(this))
+  .catch(function (err) {
+    cb_error(err);
+    console.log('There was an error!', err.statusText);
+  });
+};
+
+export {makeRequest, remoteData}

@@ -1,18 +1,12 @@
 import React from 'react'
 import SelectInput from './SelectInput.js'
-import {makeRequest as mReq} from '../utils/mrequest';
+import {remoteData} from '../utils/mrequest';
 
-import {Tooltip, Card , Form , Input ,
+import {Tooltip, Card , Form , Input , message,
   Col, Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
-
-
-function hasErrors(fieldsError) {
-  return Object.keys(fieldsError).some(field => fieldsError[field]);
-}
-
 
 var FormMarcaAuto = Form.create()(React.createClass({
 
@@ -21,54 +15,55 @@ var FormMarcaAuto = Form.create()(React.createClass({
       childSelectValue: undefined,
       childSelectText: '',
       inputValue: '',
-      newOptionSelectA: false
+      newOptionMA: 0
     };
   },
 
-
-  componentDidMount() {
+  //let emtpy fields and diseble button
+  componentDidMount: function(){
     // To disabled submit button at the beginning.
     this.props.form.validateFields();
   },
 
-
+  //callback to get data from component selectinput
   handleUserSelect: function (childSelectValue, childSelectText) {
     this.setState({
       childSelectValue: childSelectValue,
-      inputValue: childSelectText
+      childSelectText: childSelectText
+    });
+    this.props.form.setFieldsValue({
+      marcaedit: childSelectText,
     });
   },
 
+  //Return all field to the initial state
   handleReset: function (e) {
     this.props.form.resetFields();
     this.setState({
       childSelectValue: null,
     });
+    this.props.form.validateFields();
   },
 
+  //Register change when the user enter characters
   onChange(e) {
     this.setState({inputValue: e.target.value});
   },
 
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-        .then(function (response) {
-          cb_success(response)
-        }.bind(this))
-        .catch(function (err) {
-          cb_error(err);
-          console.log('FormMarca, there was an error!', err.statusText);
-        });
-  },
-
+  //Create and edit option
   handleSubmitForm: function (e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    const form = this.props.form;
+    const selecChildV = this.state.childSelectValue;
+    const selecChildT = this.state.childSelectText;
+
+    form.validateFields((err, values) => {
       if (!err) {
-        if (marcaSelect === "") {
-          var params = {
-            marca: marcaEdit
-          };
+        const brand_new = values.marcaedit;
+        //If the user does not select an existing option
+        //create a new register
+        if (selecChildV === undefined || selecChildV === "") {
+          var params = { marca: brand_new };
 
           var parreq = {
             method: 'POST',
@@ -76,16 +71,25 @@ var FormMarcaAuto = Form.create()(React.createClass({
             params: {'params': params}
           };
 
-          this.getRemoteData(parreq,
-            this.successFormCreate,
-            this.errorFormCreate
+          remoteData(parreq,
+            (data) => {
+              message.success('Se creo el registro: ' + brand_new);
+              this.setState({newOptionMA: this.state.newOptionMA + 1});
+              this.handleReset();
+              this.props.onItemNew(true);
+            },
+            (err) => {
+              message.error('NO se creo el registro: '+ brand_new +
+                '\n Error :' + err.message.error)
+            }
           );
 
+        //If the user select an existing option
+        //edit register selected.
         } else {
-
           var params = {
-            id: marcaSelect,
-            name: marcaEdit
+            id: selecChildV,
+            name: brand_new
           };
 
           var parreq = {
@@ -94,59 +98,54 @@ var FormMarcaAuto = Form.create()(React.createClass({
             params: {'params': params}
           };
 
-          this.getRemoteData(parreq,
-            this.successFormUpdate,
-            this.errorFormUpdate
+          remoteData(parreq,
+            (data) => {
+              message.success('Se edito el registro (' + selecChildT + ') con ('+ brand_new+')');
+              this.setState({newOptionMA: this.state.newOptionMA + 1});
+              this.handleReset();
+              this.props.onItemNew(true);
+            },
+            (err) => {
+              message.error('No se edito el registro: '+ selecChildT +
+                '\n Error:' + err.message.error)
+            }
           );
         }
       }
     });
   },
 
-  successFormCreate: function (data){
-    this.props.onItemNew(true);
-  },
-
-  errorFormCreate: function (err){
-  },
-
-  successFormUpdate: function (data){
-  },
-
-  errorFormUpdate: function (err){
-  },
-
-
+  //Delete select option
   handleDelete: function(e){
     e.preventDefault();
     var get_id = this.state.childSelectValue;
-    var params = {
-      id: get_id
-    };
+    if(get_id){
 
-    var parreq = {
-      method: 'DELETE',
-      url: 'apiFuec/deleteIdMarca',
-      params: {'params': params}
-    };
+      const params = { id: get_id };
+      const parreq = {
+        method: 'DELETE',
+        url: 'apiFuec/deleteIdMarca',
+        params: {'params': params}
+      };
 
-    this.getRemoteData(parreq,
-        this.successFormDelete,
-        this.errorFormDelete
-    );
+      remoteData(parreq,
+          (data) => {
+            message.success('Se borro el registro: ' + this.state.childSelectText);
+            this.props.onItemNew(true);
+            this.setState({newOptionMA: this.state.newOptionMA + 1});
+            this.handleReset();
+          },
+          (err) => {
+            message.error('NO se borro el registro: '+ this.state.childSelectText +
+              '\n Error: ' + err.message.error)
+          }
+      );
+    }
   },
-
-  successFormDelete: function (data){
-    this.props.onItemNew(true);
-  },
-
-  errorFormDelete: function (err){
-  },
-
 
   render: function () {
 
-    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched  } = this.props.form;
+    const { getFieldDecorator, getFieldError, isFieldTouched  } = this.props.form;
     const marcaEditError = isFieldTouched('marcaedit') && getFieldError('marcaedit');
 
     return (
@@ -156,14 +155,14 @@ var FormMarcaAuto = Form.create()(React.createClass({
               <FormItem>
                 <InputGroup compact>
 
-                    <SelectInput
-                      style={{ width: '88%' }}
-                      url="apiFuec/allMarca"
-                      ref='marca'
-                      value={this.state.childSelectValue}
-                      newOption={this.state.newOptionSelectA}
-                      onUserSelect={this.handleUserSelect}
-                    />
+                  <SelectInput
+                    style={{ width: '88%' }}
+                    url="apiFuec/allMarca"
+                    ref='marca'
+                    value={{key:this.state.childSelectValue}}
+                    newOption={this.state.newOptionMA}
+                    onUserSelect={this.handleUserSelect}
+                  />
 
                   <Tooltip title={'Borrar el registro seleccionado'}>
                     <Button
@@ -172,6 +171,7 @@ var FormMarcaAuto = Form.create()(React.createClass({
                       shape="circle"
                       icon="minus"/>
                   </Tooltip>
+
                 </InputGroup>
               </FormItem>
 
@@ -181,6 +181,9 @@ var FormMarcaAuto = Form.create()(React.createClass({
               >
                 {getFieldDecorator('marcaedit', {
                 rules: [{required: true,
+                         whitespace: true,
+                         min: '3',
+                         initialValue: '',
                          message: 'Ingrese un nuevo nombre de marca!'}],
                 })(
                 <Input
@@ -192,7 +195,7 @@ var FormMarcaAuto = Form.create()(React.createClass({
               <FormItem>
 
                 <Button
-                  disabled={hasErrors(getFieldsError())}
+                  disabled={getFieldError('marcaedit')}
                   type="primary"
                   htmlType="submit"
                   size="large">
