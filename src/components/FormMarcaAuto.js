@@ -40,7 +40,7 @@ var FormMarcaAuto = Form.create()(React.createClass({
   handleReset: function (e) {
     this.props.form.resetFields();
     this.setState({
-      childSelectValue: null,
+      childSelectValue: '',
     });
     this.props.form.validateFields();
   },
@@ -158,7 +158,6 @@ var FormMarcaAuto = Form.create()(React.createClass({
                   <SelectInput
                     style={{ width: '88%' }}
                     url="apiFuec/allMarca"
-                    ref='marca'
                     value={{key:this.state.childSelectValue}}
                     newOption={this.state.newOptionMA}
                     onUserSelect={this.handleUserSelect}

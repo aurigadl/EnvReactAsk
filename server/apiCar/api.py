@@ -153,7 +153,7 @@ def update_Car_id():
 
 @apiCar.route('/apiFuec/idCar', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
-def user_id():
+def car_id():
     Car_id = request.args.get('id')
     if Car_id and Car_id.isdigit() and len(Car_id) != 0:
         CarNew = Car.query.with_entities(Car.no_car
@@ -173,3 +173,30 @@ def user_id():
         return jsonify(dict(jsonrpc="2.0", result=dict_Car)), 200
     else:
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
+
+
+@apiCar.route('/apiFuec/deleteIdCar', methods=['DELETE'])
+@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
+def delete_car_id():
+    json_data = request.get_json()
+
+    if not json_data.has_key('params') or len(json_data.get('params')) == 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    params = request.json.get('params')
+
+    if params.has_key('id') and len(params['id']) != 0:
+        car_id = params['id']
+    else:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    if not car_id or not car_id.isdigit() or not len(car_id) != 0:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+
+    id_car = Car.query.filter(car.id == car_id).first()
+    if id_car is not None:
+        db.session.delete(id_car)
+        db.session.commit()
+    else:
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'Agreement does not exist'}), 400
+    return jsonify({"jsonrpc": "2.0", "result": True}), 200

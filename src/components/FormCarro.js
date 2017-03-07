@@ -1,100 +1,36 @@
 import React from 'react'
-import MessageAlert from './MessageAlert.js'
-import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
-import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+import {remoteData} from '../utils/mrequest';
+
+import {Tooltip, Card , Form , Input , message,
+  Col, Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
 
-var FormCarro = React.createClass({
+var FormCarro = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
-      childSelectValue: [],
-      newOptionSelectA: false,
-      newOptionSelectMarca: false,
+      childSelectValue: undefined,
+      childSelectText: '',
+      newOption: 0,
 
-      showMessage: false,
-      typeMess: '',
-      contextText: ''
+      input_dos:''
     };
   },
 
   componentWillReceiveProps: function(nextProps) {
     var next = nextProps.newOptionMarca;
     var prev = this.props.newOptionMarca;
-    if ( next == true  && next != prev){
+    if (next != prev){
       this.setState({
         newOptionSelectMarca: true
       });
-      this.props.onItemNewMarca(false);
-    }
-    if ( next == false  && next != prev){
-      this.setState({
-        newOptionSelectMarca: false
-      });
-    }
-  },
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-      .then(function (response) {
-        cb_success(response)
-      }.bind(this))
-      .catch(function (err) {
-        cb_error(err);
-        console.log('AdminFormUser, there was an error!', err.statusText);
-      });
-  },
-
-  handleCarSelect: function (childSelectValue) {
-    if (childSelectValue != 0) {
-      var params = {'id': childSelectValue};
-      var parreq = {
-        method: 'GET',
-        url: 'apiFuec/idCar',
-        params: params
-      };
-      this.getRemoteData(parreq
-        , this.successHandlerSelect
-        , this.errorHandlerSelect);
-    } else {
-      this.refs.no_car.value = '';
-      this.refs.license_plate.value = '';
-      this.refs.model.value = '';
-      this.refs.brand.refs.selectValue.selectedIndex = undefined;
-      this.refs.class_car.refs.selectValue.selectedIndex = undefined;
-      this.refs.operation_card.value = '';
     }
   },
 
-  successHandlerSelect: function (remoteData) {
-    var data = remoteData.result;
-    var d = new Date();
-    var n = d.getFullYear();
-    this.refs.no_car.value = (data.no_car) ? data.no_car : undefined;
-    this.refs.license_plate.value = (data.license_plate) ? data.license_plate : undefined;
-    this.refs.model.value = (data.model) ? data.model : n;
-    this.refs.brand.refs.selectValue.selectedIndex = (data.brand) ? data.brand : undefined;
-    this.refs.class_car.refs.selectValue.selectedIndex = (data.class_car) ? data.class_car : undefined;
-    this.refs.operation_card.value = (data.operation_card) ? data.operation_card : undefined;
-  },
-
-  errorHandlerSelect: function (remoteData) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Conexion rechazada',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
-  },
 
   handleReset: function (e) {
     this.refs.selectCar.value = '';
@@ -111,9 +47,63 @@ var FormCarro = React.createClass({
 
   },
 
+  handleSelect: function (childSelectValue, childSelectText) {
+    this.setState({
+      childSelectValue: childSelectValue,
+      childSelectText: childSelectText
+    });
+
+    if (childSelectValue != undefined) {
+
+      var params = {'id': childSelectValue};
+
+      var parreq = {
+        method: 'GET',
+        url: 'apiFuec/idCar',
+        params: params
+      };
+
+      remoteData(parreq,
+          (data) => {
+
+          },
+          (err) => {
+            message.error('NO se cargaron los datos de la seleccion: ' +
+              '\n Error :' + err.message.error)
+          }
+      );
+
+    } else {
+    }
+  },
+
+  successHandlerSelect: function (remoteData) {
+    var data = remoteData.result;
+    var d = new Date();
+    var n = d.getFullYear();
+    this.refs.no_car.value = (data.no_car) ? data.no_car : undefined;
+    this.refs.license_plate.value = (data.license_plate) ? data.license_plate : undefined;
+    this.refs.model.value = (data.model) ? data.model : n;
+    this.refs.brand.refs.selectValue.selectedIndex = (data.brand) ? data.brand : undefined;
+    this.refs.class_car.refs.selectValue.selectedIndex = (data.class_car) ? data.class_car : undefined;
+    this.refs.operation_card.value = (data.operation_card) ? data.operation_card : undefined;
+  },
+
+  errorHandlerSelect: function (remoteData) {
+  },
+
+
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
+    const form = this.props.form;
+    const selecChildV = this.state.childSelectValue;
+    const selecChildT = this.state.childSelectText;
+
+    form.validateFields((err, values) => {
+      if (!err) {
+        message.success('Se creo el registro: ok');
+      }
+    })
 
     var selectCar = ref.selectCar.value;
     var license_plate = ref.license_plate.value;
@@ -163,80 +153,54 @@ var FormCarro = React.createClass({
   },
 
   successFormCreate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se creo un nuevo carro',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-
-    this.refs.no_car.value = data.no_car;
-    this.props.onItemNewCar(true);
-
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
   },
 
   errorFormCreate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Creo el carro. Alguno de los datos no esta completo',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   successFormUpdate: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Actualizo el carro',
-      typeMess: 'success'
-    });
-    this.props.onItemNewCar(true);
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
   errorFormUpdate: function (err) {
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Actualizo el carro',
-      typeMess: 'alert'
-    });
-    setTimeout(function () {
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
   },
 
-  onClickMessage: function (event) {
-    this.setState({
-      showMessage: false,
-      contextText: ''
-    })
+
+  //Delete select option
+  handleDelete: function(e){
+    e.preventDefault();
+    var get_id = this.state.childSelectValue;
+    if(get_id){
+
+      const params = { id: get_id };
+      const parreq = {
+        method: 'DELETE',
+        url: 'apiFuec/deleteIdCar',
+        params: {'params': params}
+      };
+
+      remoteData(parreq,
+          (data) => {
+            message.success('Se borro el registro: ' + this.state.childSelectText);
+            this.props.onItemNew(true);
+            this.setState({newOption: this.state.newOption + 1});
+            this.handleReset();
+          },
+          (err) => {
+            message.error('NO se borro el registro: '+ this.state.childSelectText +
+              '\n Error: ' + err.message.error)
+          }
+      );
+    }
+  },
+
+  hasErrors: function(fieldsError) {
+    return Object.keys(fieldsError).some(field => fieldsError[field]);
   },
 
   render: function () {
+
+    const { getFieldDecorator, getFieldsError } = this.props.form;
+
     return (
         <Card id={this.props.id} title="Carro" bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
@@ -247,82 +211,112 @@ var FormCarro = React.createClass({
                   <InputGroup compact>
                     <SelectInput
                       style={{ width: '88%' }}
-                      class="input-group-field"
                       url="apiFuec/allCar"
-                      name="selectCar"
-                      ref="selectCar"
-                      newOption={this.state.newOptionSelectA}
-                      onUserSelect={this.handleCarSelect}
+                      value={{key:this.state.childSelectValue}}
+                      newOption={this.state.newOption}
+                      onUserSelect={this.handleSelect}
                     />
-                    <Button type="danger" htmlType="submit" shape="circle"/>
+                    <Button
+                      onClick={this.handleDelete}
+                      type="danger"
+                      shape="circle"
+                      icon="minus"/>
                   </InputGroup>
                 </FormItem>
 
                 <FormItem label="No. de Carro">
                   <Input
                     type="number"
-                    ref="no_car"
-                    name="no_car"
-                    readOnly/>
+                    disabled={true} />
                 </FormItem>
 
                 <FormItem label="Marca">
+                  {getFieldDecorator('input_dos',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione una marca de vehiculo!'
+                      },
+                    ],
+                  })(
                   <SelectInput
                     url="apiFuec/allMarca"
-                    name="brand"
-                    ref="brand"
-                    newOption={this.state.newOptionSelectMarca}
-                    required/>
+                    newOption={this.state.newOptionSelectMarca}/>
+                  )}
                 </FormItem>
 
               </Col>
               <Col span={8}>
 
                 <FormItem label="Placa">
-                  <Input
-                    ref="license_plate"
-                    name="license_plate"
-                    type="text"
-                    placeholder=""
-                    required/>
+                  {getFieldDecorator('input_tres',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese la placa del vehiculo!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
 
                 <FormItem label="Modelo">
+                  {getFieldDecorator('input_cuatro',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione un modelo de vehiculo!'
+                      },
+                    ],
+                  })(
                   <Input
-                    ref="model"
-                    name="model"
-                    type="number"
                     pattern="^\d{4}$"
                     min="2010"
                     max="2020"
-                    placeholder="YYYY"
-                    required/>
+                    placeholder="YYYY"/>
+                  )}
                 </FormItem>
 
               </Col>
               <Col span={8}>
 
                 <FormItem label="Clase">
+                  {getFieldDecorator('input_cinco',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione una clase de vehiculo!'
+                      },
+                    ],
+                  })(
                   <SelectInput
-                    url="apiFuec/allClassCar"
-                    ref="class_car"
-                    name="class_car"
-                    placeholder=""
-                    required/>
+                    url="apiFuec/allClassCar" />
+                  )}
                 </FormItem>
 
-                <FormItem label="Tarjeta de openación">
-                  <Input
-                    ref="operation_card"
-                    name="operation_card"
-                    type="text"
-                    placeholder=""
-                    required/>
+                <FormItem label="Tarjeta de operación">
+                  {getFieldDecorator('input_seis',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese el numero de la tarjeta de operación!'
+                      },
+                    ],
+                  })(
+                  <Input />
+                  )}
                 </FormItem>
 
                 <FormItem>
-                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                  <Button
+                    disabled={this.hasErrors(getFieldsError())}
+                    type="primary"
+                    htmlType="submit"
+                    size="large">Grabar</Button>
+
                   <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+
                 </FormItem>
 
               </Col>
@@ -331,6 +325,6 @@ var FormCarro = React.createClass({
         </Card>
     )
   }
-});
+}));
 
 export default FormCarro;

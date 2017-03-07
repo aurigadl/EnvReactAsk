@@ -60,10 +60,10 @@ const App = React.createClass({
       <Layout style={bg} id="initFormat">
         {this.props.children}
         {this.state.loggedIn ? (
-          <Sider  width={45} style={{ background: '#dcdcdc', padding: '5px'}}>
+          <Sider  width={45} style={{color:'#108ee9', 'fontSize': '35px', background: '#dcdcdc', padding: '5px'}}>
             <Affix offsetTop={5} >
               <Popover placement="leftTop" content={content} trigger="click">
-                <Button  size={'large'} type="primary" ghost  shape="circle" icon="appstore"/>
+                <Icon type="appstore" />
               </Popover>
             </Affix>
           </Sider>

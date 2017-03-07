@@ -1,277 +1,221 @@
 import React from 'react'
-import MessageAlert from './MessageAlert.js'
-import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
+import {remoteData} from '../utils/mrequest';
 
-import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+import {Tooltip, Card , Form , Input , message,
+  Col, Row, Button, Icon} from 'antd';
+
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
-
-var FormRuta = React.createClass({
+var FormRuta = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
       childSelectValue: undefined,
-      newOptionSelectA: false,
+      childSelectText: '',
       inputValue: '',
-
-      showMessage: false,
-      typeMess: '',
-      contextText: ''
+      newOptionMA: 0
     };
   },
 
+  //let emtpy fields and diseble button
+  componentDidMount: function(){
+    // To disabled submit button at the beginning.
+    this.props.form.validateFields();
+  },
+
+  //callback to get data from component selectinput
   handleUserSelect: function (childSelectValue, childSelectText) {
     this.setState({
       childSelectValue: childSelectValue,
-      inputValue: childSelectText
+      childSelectText: childSelectText
+    });
+    this.props.form.setFieldsValue({
+      edit: childSelectText,
     });
   },
 
+  //Return all field to the initial state
+  handleReset: function (e) {
+    this.props.form.resetFields();
+    this.setState({
+      childSelectValue: '',
+    });
+    this.props.form.validateFields();
+  },
+
+  //Register change when the user enter characters
   onChange(e) {
     this.setState({inputValue: e.target.value});
   },
 
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-      .then(function (response) {
-        cb_success(response)
-      }.bind(this))
-      .catch(function (err) {
-        cb_error(err);
-        console.log('AdminFormUser, there was an error!', err.statusText);
-      });
-  },
-
+  //Create and edit option
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
+    const form = this.props.form;
+    const selecChildV = this.state.childSelectValue;
+    const selecChildT = this.state.childSelectText;
 
-    var ruta_edit = ref.rutaEdit.value;
-    var selectRuta = ref.selectRuta.value;
+    form.validateFields((err, values) => {
+      if (!err) {
+        const data_new = values.edit;
+        //If the user does not select an existing option
+        //create a new register
+        if (selecChildV === undefined || selecChildV === "") {
+          var params = { name: data_new };
 
-    var params = {
-      name: ruta_edit
-    };
+          var parreq = {
+            method: 'POST',
+            url: 'apiFuec/newRuta',
+            params: {'params': params}
+          };
 
-    if (selectRuta === "") {
+          remoteData(parreq,
+            (data) => {
+              message.success('Se creo el registro: ' + data_new);
+              this.setState({newOptionMA: this.state.newOptionMA + 1});
+              this.handleReset();
+              this.props.onItemNew(true);
+            },
+            (err) => {
+              message.error('NO se creo el registro: '+ data_new +
+                '\n Error :' + err.message.error)
+            }
+          );
 
-      var parreq = {
-        method: 'POST',
-        url: 'apiFuec/newRuta',
+        //If the user select an existing option
+        //edit register selected.
+        } else {
+          var params = {
+            id: selecChildV,
+            name: data_new
+          };
+
+          var parreq = {
+            method: 'PUT',
+            url: 'apiFuec/updateIdRuta',
+            params: {'params': params}
+          };
+
+          remoteData(parreq,
+            (data) => {
+              message.success('Se edito el registro (' + selecChildT + ') con ('+ data_new+')');
+              this.setState({newOptionMA: this.state.newOptionMA + 1});
+              this.handleReset();
+              this.props.onItemNew(true);
+            },
+            (err) => {
+              message.error('No se edito el registro: '+ selecChildT +
+                '\n Error:' + err.message.error)
+            }
+          );
+        }
+      }
+    });
+  },
+
+  //Delete select option
+  handleDelete: function(e){
+    e.preventDefault();
+    var get_id = this.state.childSelectValue;
+    if(get_id){
+
+      const params = { id: get_id };
+      const parreq = {
+        method: 'DELETE',
+        url: 'apiFuec/deleteIdRuta',
         params: {'params': params}
       };
 
-      this.getRemoteData(parreq,
-        this.successFormCreate,
-        this.errorFormCreate
+      remoteData(parreq,
+          (data) => {
+            message.success('Se borro el registro: ' + this.state.childSelectText);
+            this.props.onItemNew(true);
+            this.setState({newOptionMA: this.state.newOptionMA + 1});
+            this.handleReset();
+          },
+          (err) => {
+            message.error('NO se borro el registro: '+ this.state.childSelectText +
+              '\n Error: ' + err.message.error)
+          }
       );
-
-    } else {
-
-      params['id'] = selectRuta;
-
-      var parreq = {
-        method: 'PUT',
-        url: 'apiFuec/updateIdRuta',
-        params: {
-          'params': params
-        }
-      };
-
-      this.getRemoteData(parreq,
-        this.successFormUpdate,
-        this.errorFormUpdate
-      );
-
     }
   },
 
-  successFormCreate: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Creo la ruta',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-
-    this.props.onItemNew(true);
-
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
-  },
-
-  errorFormCreate: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Creo la ruta.',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
-  },
-
-  successFormUpdate: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se Actualizo la Marca',
-      typeMess: 'success',
-      newOptionSelectA: true
-    });
-
-    this.props.onItemNew(true);
-
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
-  },
-
-  errorFormUpdate: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se Actualizo la Marca',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
-  },
-
-  handleReset: function (e) {
-    this.refs.selectRuta.value = '';
-    this.setState({
-      inputValue: ''
-    });
-  },
-
-  handleDelete: function (e) {
-    e.preventDefault();
-    var get_id = this.state.childSelectValue;
-    var params = {
-      id: get_id
-    };
-
-    var parreq = {
-      method: 'DELETE',
-      url: 'apiFuec/deleteIdRuta',
-      params: {'params': params}
-    };
-
-    this.getRemoteData(parreq,
-      this.successFormDelete,
-      this.errorFormDelete
-    );
-  },
-
-  successFormDelete: function (data){
-    this.setState({
-      showMessage: true,
-      contextText: 'Se borro la Ruta',
-      typeMess: 'success',
-      newOptionSelectA: true,
-      inputValue: ''
-    });
-
-    this.props.onItemNew(true);
-    this.refs.selectRuta.refs.selectValue.selectedIndex = '';
-
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: '',
-        newOptionSelectA: false
-      })
-    }.bind(this), 3000);
-  },
-
-  errorFormDelete: function (err){
-    this.setState({
-      showMessage: true,
-      contextText: 'No se borro la Ruta',
-      typeMess: 'alert'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: '',
-        typeMess: ''
-      })
-    }.bind(this), 3000);
-  },
-
-  onClickMessage: function (event) {
-    this.setState({
-      showMessage: false,
-      contextText: ''
-    })
-  },
-
   render: function () {
+
+    const { getFieldDecorator, getFieldError, isFieldTouched  } = this.props.form;
+    const editError = isFieldTouched('edit') && getFieldError('edit');
+
     return (
-        <Card id={this.props.id} title="Rutas" bordered={false}>
+        <Card id={this.props.id} title="Rutas y Trayectos" bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
 
-            <Row gutter={15}>
               <FormItem>
                 <InputGroup compact>
+
                   <SelectInput
                     style={{ width: '88%' }}
-                    class="input-group-field"
                     url="apiFuec/allRuta"
-                    name="selectRuta"
-                    ref="selectRuta"
-                    newOption={this.state.newOptionSelectA}
+                    value={{key:this.state.childSelectValue}}
+                    newOption={this.state.newOptionMA}
                     onUserSelect={this.handleUserSelect}
                   />
-                  <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
+
+                  <Tooltip title={'Borrar el registro seleccionado'}>
+                    <Button
+                      onClick={this.handleDelete}
+                      type="danger"
+                      shape="circle"
+                      icon="minus"/>
+                  </Tooltip>
+
                 </InputGroup>
               </FormItem>
 
-              <FormItem>
-                <Input type="textarea"
-                  name="rutaEdit"
-                  ref="rutaEdit"
+              <FormItem
+                validateStatus={editError ? 'error' : ''}
+                help={editError || ''}
+              >
+                {getFieldDecorator('edit', {
+                rules: [{required: true,
+                         whitespace: true,
+                         min: '3',
+                         initialValue: '',
+                         message: 'Ingrese una nueva ruta!'}],
+                })(
+                <Input
                   placeholder="Editar o crear..."
-                  className="input-group-field"
-                  onChange={this.onChange}
-                  value={this.state.inputValue}
-                  type="text"/>
+                  onChange={this.onChange}/>
+              )}
               </FormItem>
 
               <FormItem>
-                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+
+                <Button
+                  disabled={getFieldError('edit')}
+                  type="primary"
+                  htmlType="submit"
+                  size="large">
+                  Grabar
+                </Button>
+
+                <Button
+                  style={{ marginLeft: 8  }}
+                  htmlType="reset"
+                  size="large"
+                  onClick={this.handleReset}>
+                  Limpiar
+                </Button>
+
               </FormItem>
 
-
-            </Row>
           </Form>
         </Card>
     )
   }
 
-});
+}));
 
 export default FormRuta;
