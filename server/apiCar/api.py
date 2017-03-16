@@ -2,11 +2,11 @@ from flask import Blueprint, request, abort, jsonify
 
 from server import db, rbac
 from models import ClassCar, Car
+from server.apiMarcas.models import Marca
 from server.apiSystem.models import System
 from server.apiPersonCar.models import PersonCar
 
 apiCar = Blueprint('apiCar', __name__)
-
 
 @apiCar.route('/apiFuec/allClassCar', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
@@ -156,18 +156,25 @@ def update_Car_id():
 def car_id():
     Car_id = request.args.get('id')
     if Car_id and Car_id.isdigit() and len(Car_id) != 0:
-        CarNew = Car.query.with_entities(Car.no_car
+
+        CarNew = Car.query.join(Marca, ClassCar).with_entities(Car.no_car
                                          , Car.license_plate
                                          , Car.model
                                          , Car.brand
+                                         , Marca.name
+                                         , ClassCar.name
                                          , Car.class_car
-                                         , Car.operation_card).filter(Car.id == Car_id).first()
+                                         , Car.operation_card).filter(Car.brand == Marca.id,
+                                                 Car.id == Car_id,
+                                                 Car.class_car == ClassCar.id).first()
         dict_Car = dict(
             zip(('no_car'
                  , 'license_plate'
                  , 'model'
-                 , 'brand'
-                 , 'class_car'
+                 , 'brand_i'
+                 , 'brand_t'
+                 , 'class_car_t'
+                 , 'class_car_i'
                  , 'operation_card'
                  ), CarNew))
         return jsonify(dict(jsonrpc="2.0", result=dict_Car)), 200
@@ -193,7 +200,7 @@ def delete_car_id():
     if not car_id or not car_id.isdigit() or not len(car_id) != 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    id_car = Car.query.filter(car.id == car_id).first()
+    id_car = Car.query.filter(Car.id == car_id).first()
     if id_car is not None:
         db.session.delete(id_car)
         db.session.commit()

@@ -46,7 +46,7 @@ def new_person():
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    if params.has_key('type_person') and len(params['type_person']) != 0:
+    if params.has_key('type_person'):
         type_person = params['type_person']
     else:
         type_person = None
@@ -141,7 +141,7 @@ def update_person_id():
     if params.has_key('email') and len(params['email']) != 0:
         data.update(dict(email=params['email']))
 
-    if params.has_key('phone') and len(params['phone']) != 0:
+    if params.has_key('phone') and params['phone'] > 0:
         data.update(dict(phone=params['phone']))
 
     if params.has_key('id_number') and len(params['id_number']) != 0:
@@ -177,7 +177,7 @@ def update_person_id():
 def user_id():
     person_id = request.args.get('id')
     if person_id and person_id.isdigit() and len(person_id) != 0:
-        person = Person.query.with_entities(Person.type_person
+        person = Person.query.join(IdType).with_entities(Person.type_person
                                             , Person.first_name
                                             , Person.last_name
                                             , Person.email
@@ -186,7 +186,12 @@ def user_id():
                                             , Person.id_type
                                             , Person.license
                                             , Person.effective_date
-                                            , Person.address).filter(Person.id == person_id).first()
+                                            , Person.address
+                                            , IdType.name).filter(Person.id == person_id, IdType.id == Person.id_type).first()
+
+        lst = list(person)
+        lst[0] = int(person[0])
+        person = tuple(lst)
 
         if person[8]:
             lst = list(person)
@@ -200,10 +205,11 @@ def user_id():
                  , 'email'
                  , 'phone'
                  , 'id_number'
-                 , 'id_type'
+                 , 'id_type_i'
                  , 'license'
                  , 'effective_date'
                  , 'address'
+                 , 'id_type_t'
                  ), person))
         return jsonify(dict(jsonrpc="2.0", result=dict_person)), 200
     else:

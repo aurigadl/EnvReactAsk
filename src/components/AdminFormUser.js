@@ -1,124 +1,66 @@
 import React from 'react'
-import {makeRequest as mReq} from '../utils/mrequest';
 import SelectInput from './SelectInput.js'
-import { message} from 'antd';
-import {Checkbox ,Card, Form , Input , Col, Row, Button, Icon} from 'antd';
+import {remoteData} from '../utils/mrequest';
+
+import { message, Checkbox ,Card, Form,
+  Input , Col, Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
-var AdminFormUser = React.createClass({
+var AdminFormUser = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
-      childSelectValue: [],
-      newOptionSelectA: false,
-
-      active: false,
-      email: undefined,
-      first_name: undefined,
-      last_name: undefined,
-      display_name: undefined,
-      new_user: false,
-
-      showHide: false
+      childSelectValue: undefined,
+      childSelectText: '',
+      newOption: 0,
     };
   },
 
-  handleUserSelect: function (childSelectValue) {
-    if (childSelectValue != 0) {
+  handleReset: function (e) {
+    this.props.form.resetFields();
+    this.setState({
+      childSelectValue: undefined,
+    });
+  },
+
+  handleSelect: function (childSelectValue, childSelectText) {
+
+    this.setState({
+      childSelectValue: childSelectValue,
+      childSelectText: childSelectText
+    });
+
+    if (childSelectValue != undefined) {
       var params = {'id': childSelectValue};
       var parreq = {
         method: 'GET',
         url: 'apiUser/idUser',
         params: params
       };
-      this.getRemoteData(parreq, this.successHandlerSelect, this.errorHandlerSelect);
-    } else {
-      this.setState({
-        first_name: undefined,
-        last_name: undefined,
-        new_user: false,
-        active: false,
-        email: undefined,
-        display_name: undefined,
-        showHide: false
-      });
-      this.refs.first_name.value = '';
-      this.refs.last_name.value = '';
-      this.refs.email.value = '';
-      this.refs.display_name = '';
+
+      remoteData(parreq,
+          (data) => {
+            const res = data.result;
+            this.props.form.setFieldsValue({
+               input_uno   :res.email
+              ,input_dos   :res.first_name
+              ,input_tres  :res.last_name
+              ,input_cuatro:res.display_name
+              ,input_cinco :res.active
+              ,input_seis  :res.new_user
+            });
+          },
+          (err) => {
+            message.error('NO se cargaron los datos de la seleccion: ' +
+              '\n Error :' + err.message.error)
+          }
+      );
+
     }
   },
 
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-      .then(function (response) {
-        cb_success(response)
-      }.bind(this))
-      .catch(function (err) {
-        cb_error(err);
-        console.log('AdminFormUser, there was an error!', err.statusText);
-      });
-  },
-
-  successHandlerSelect: function (remoteData) {
-    var data = remoteData.result;
-    var email = (data.email) ? data.email : undefined;
-    var first_name = (data.first_name) ? data.first_name : undefined;
-    var last_name = (data.last_name) ? data.last_name : undefined;
-    this.setState({
-      first_name: first_name,
-      last_name: last_name,
-      new_user: data.new_user,
-      active: data.active,
-      email: email,
-      display_name: data.display_name,
-      showHide: true
-    });
-  },
-
-  errorHandlerSelect: function(remoteData){
-    message.error('Conexion rechazada', 10)
-  },
-
-  clickNewUser: function () {
-    this.setState({
-      new_user: !this.state.new_user
-    });
-  },
-
-  clickActive: function () {
-    this.setState({
-      active: !this.state.active
-    });
-  },
-
-  onChangeInputEmail: function (e) {
-    if (!this.state.showHide) {
-      this.setState({
-        email: e.target.value
-      });
-    }
-  },
-
-  onChangeInputFirstName: function (e) {
-    this.setState({
-      first_name: e.target.value
-    });
-  },
-
-  onChangeInputLastName: function (e) {
-    this.setState({
-      last_name: e.target.value
-    });
-  },
-
-  onChangeInputDisplayName: function (e) {
-    this.setState({
-      display_name: e.target.value
-    });
-  },
 
   handleSubmitForm: function (e) {
     e.preventDefault();
@@ -192,21 +134,13 @@ var AdminFormUser = React.createClass({
     message.error('No se actualizo el usuario',10);
   },
 
-
-  handleReset: function (e) {
-    this.setState({
-      first_name: undefined,
-      last_name: undefined,
-      new_user: false,
-      active: false,
-      email: undefined,
-      display_name: undefined
-    });
+  hasErrors: function(fieldsError) {
+    return Object.keys(fieldsError).some(field => fieldsError[field]);
   },
 
   render: function () {
 
-    var showClass = this.state.showHide ? 'show' : 'invisible';
+    const { getFieldDecorator, getFieldsError } = this.props.form;
 
     return (
         <Card id={this.props.id} title="Usuarios del sistema" bordered={false}>
@@ -215,76 +149,98 @@ var AdminFormUser = React.createClass({
 
               <FormItem label="Usuarios Existentes" >
                 <SelectInput
-                  class="input-group-field"
                   url="apiUser/allUser"
-                  name="user"
-                  newOption={this.state.newOptionSelectA}
-                  onUserSelect={this.handleUserSelect}
+                  value={{key:this.state.childSelectValue}}
+                  newOption={this.state.newOption}
+                  onUserSelect={this.handleSelect}
                 />
               </FormItem>
 
-              <FormItem label="Correo Electronico" >
-                <Input
-                  type="email"
-                  name="email"
-                  ref="email"
-                  value={this.state.email || ""}
-                  aria-describedby="emailHelpText"
-                  placeholder="Correo Electronico"
-                  onChange={this.onChangeInputEmail}
-                  required
-                />
-                <div className={"ant-form-extra" + showClass}>No modificable.</div>
+              <FormItem label="Correo Electronico"
+                extra="No modificable." >
+                  {getFieldDecorator('input_uno',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Digite un correo electronico!'
+                      }
+                    ],
+                  })(
+                  <Input placeholder="Correo Electronico" />
+                  )}
               </FormItem>
 
               <FormItem label="Nombres" >
-                <Input
-                  type="text"
-                  name="first_name"
-                  ref="first_name"
-                  value={this.state.first_name || ""}
-                  onChange={this.onChangeInputFirstName}
-                  placeholder="Nombres para el usuario"
-                  required
-                />
+                  {getFieldDecorator('input_dos',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Nombre de la persona a crear!'
+                      }
+                    ],
+                  })(
+                  <Input placeholder="Nombres" />
+                  )}
               </FormItem>
 
               <FormItem label="Apellidos" >
-                <Input
-                  type="text"
-                  name="last_name"
-                  ref="last_name"
-                  value={this.state.last_name || ""}
-                  onChange={this.onChangeInputLastName}
-                  placeholder="Apellidos para el usuario"
-                />
+                  {getFieldDecorator('input_tres',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Nombre de la persona a crear!'
+                      }
+                    ],
+                  })(
+                  <Input placeholder="Apellidos" />
+                  )}
               </FormItem>
 
               <FormItem label="Nombre a mostrar" >
-                <Input
-                  type="text"
-                  name="display_name"
-                  ref="display_name"
-                  value={this.state.display_name || ""}
-                  onChange={this.onChangeInputDisplayName}
-                  placeholder="Un alias o el mismo nombre"
-                  required
-                />
+                  {getFieldDecorator('input_cuatro',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Nombre - Alias!'
+                      }
+                    ],
+                  })(
+                  <Input
+                    placeholder="Un alias o el mismo nombre"
+                  />
+                  )}
               </FormItem>
 
-              <FormItem>
-                <Checkbox
-                  onChange={this.clickActive}>
-                  Estado
-                </Checkbox>
-                <Checkbox
-                  onChange={this.clickNewUser}>
-                  Usuario Nuevo
-                </Checkbox>
-              </FormItem>
+              <Row gutter={8}>
+                <Col span={12}>
+                  <FormItem>
+                    {getFieldDecorator('input_cinco',{
+                    valuePropName: 'checked',
+                    initialValue: false,
+                    })(
+                    <Checkbox>Estado</Checkbox>
+                    )}
+                  </FormItem>
+                </Col>
+                <Col span={12}>
+                  <FormItem>
+                    {getFieldDecorator('input_seis',{
+                    valuePropName: 'checked',
+                    initialValue: false,
+                    })(
+                    <Checkbox> Usuario Nuevo </Checkbox>
+                    )}
+                  </FormItem>
+                </Col>
+              </Row>
 
               <FormItem>
-                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                <Button
+                  disabled={this.hasErrors(getFieldsError())}
+                  type="primary"
+                  htmlType="submit"
+                  size="large">Grabar</Button>
+
                 <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
               </FormItem>
 
@@ -293,6 +249,6 @@ var AdminFormUser = React.createClass({
         </Card>
     )
   }
-});
+}));
 
 export default AdminFormUser;

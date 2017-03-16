@@ -59,7 +59,7 @@ def update_marca_id():
     else:
         owner = None
 
-    if params.has_key('phone') and len(params['phone']) != 0:
+    if params.has_key('phone') and params['phone'] > 0:
         phone = params['phone']
         data.update(dict(phone=phone))
     else:
@@ -71,37 +71,37 @@ def update_marca_id():
     else:
         email = None
 
-    if params.has_key('nit_1') and len(params['nit_1']) != 0:
+    if params.has_key('nit_1') and params['nit_1'] > 0:
         nit_1 = params['nit_1']
         data.update(dict(nit_1=nit_1))
     else:
         nit_1 = None
 
-    if params.has_key('nit_2') and len(params['nit_2']) != 0:
+    if params.has_key('nit_2') and params['nit_2'] > 0:
         nit_2 = params['nit_2']
         data.update(dict(nit_2=nit_2))
     else:
         nit_2 = None
 
-    if params.has_key('secuence_contract') and len(params['secuence_contract']) != 0:
+    if params.has_key('secuence_contract') and params['secuence_contract'] > 0:
         secuence_contract = params['secuence_contract']
         data.update(dict(secuence_contract=secuence_contract))
     else:
         secuence_contract = None
 
-    if params.has_key('id_company_legal') and len(params['id_company_legal']) != 0:
+    if params.has_key('id_company_legal') and params['id_company_legal'] > 0:
         id_company_legal = params['id_company_legal']
         data.update(dict(id_company_legal=id_company_legal))
     else:
         id_company_legal = None
 
-    if params.has_key('secuence_payroll') and len(params['secuence_payroll']) != 0:
+    if params.has_key('secuence_payroll') and params['secuence_payroll'] > 0:
         secuence_payroll = params['secuence_payroll']
         data.update(dict(secuence_payroll=secuence_payroll))
     else:
         secuence_payroll = None
 
-    if params.has_key('secuence_vehicle') and len(params['secuence_vehicle']) != 0:
+    if params.has_key('secuence_vehicle') and params['secuence_vehicle'] > 0:
         secuence_vehicle = params['secuence_vehicle']
         data.update(dict(secuence_vehicle=secuence_vehicle))
     else:

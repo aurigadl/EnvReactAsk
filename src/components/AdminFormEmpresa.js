@@ -1,124 +1,98 @@
 import React from 'react'
-import {makeRequest as mReq} from '../utils/mrequest';
+import {remoteData} from '../utils/mrequest';
 import {Upload, Card , Form , Input , Col
-  , Row, Button, Icon, message} from 'antd';
+  , Row, Button, Icon, message, InputNumber} from 'antd';
+
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
-var AdminFormEmpresa = React.createClass({
+var AdminFormEmpresa = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
-      fileSign:'',
-      fileLogo:''
-    };
+      fileSign: '',
+      fileLogo: '',
+      initData: {
+           name              : ''
+          ,address           : ''
+          ,phone             : ''
+          ,id_company_legal  : ''
+          ,secuence_contract : ''
+          ,secuence_payroll  : ''
+          ,owner             : ''
+          ,email             : ''
+          ,secuence_vehicle  : ''
+      }
+    }
   },
 
+  componentDidMount: function () {
 
-  loadOptionFromServer: function () {
     var parreq = {
       method: 'GET',
       url: 'apiSystem/allSystem'
     };
 
-    mReq(parreq)
-      .then(function (response) {
-        this.successHandler(response.result)
-      }.bind(this))
-      .catch(function (err) {
-        console.log('AdminFormEmpresa, there was an error!', err.statusText);
-      });
+    remoteData(parreq,
+      (data) => {
+        this.setState({
+          initData: data.result,
+          fileSign: data.result.sign,
+          fileLogo: data.result.logo
+        });
+      },
+      (err) => {
+          message.error('Se genero un error al cargar los datos: '+ this.state.childSelectText +
+            '\n Error: ' + err.message.error)
+      }
+    );
   },
 
-  successHandler: function (data) {
-    this.refs.name.value = data.name;
-    this.refs.address.value = data.address;
-    this.refs.owner.value = data.owner;
-    this.refs.phone.value = data.phone;
-    this.refs.email.value = data.email;
-    this.refs.nit_1.value = data.nit_1;
-    this.refs.nit_2.value = data.nit_2;
-    this.refs.secuence_contract.value = data.secuence_contract;
-    this.refs.id_company_legal.value = data.id_company_legal;
-
-    this.setState({
-      fileSign: data.sign,
-      fileLogo: data.logo
-    });
-
-  },
-
-  componentDidMount: function () {
-    this.loadOptionFromServer();
-  },
-
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-      .then(function (response) {
-        cb_success(response)
-      }.bind(this))
-      .catch(function (err) {
-        cb_error(err);
-        console.log('AdminFormUser, there was an error!', err.statusText);
-      });
-  },
 
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
+    const form = this.props.form;
+    const fileLogo = this.state.fileLogo;
+    const fileSign = this.state.fileSign;
 
-    var name = ref.name.value;
-    var address = ref.address.value;
-    var owner = ref.owner.value;
-    var phone = ref.phone.value;
-    var email = ref.email.value;
-    var nit_1 = ref.nit_1.value;
-    var nit_2 = ref.nit_2.value;
-    var secuence_contract = ref.secuence_contract.value;
-    var id_company_legal = ref.id_company_legal.value;
-    var secuence_payroll = ref.secuence_payroll.value;
-    var secuence_vehicle = ref.secuence_vehicle.value;
-    var logo = this.state.fileLogo;
-    var sign = this.state.fileSign;
+    this.props.form.validateFields((err, val) => {
+      if (!err) {
+        var params = {
+           name              :val.input_uno
+          ,address           :val.input_dos
+          ,phone             :val.input_tres
+          ,email             :val.input_diez
+          ,nit_1             :val.input_cuatro
+          ,nit_2             :val.input_doce
+          ,secuence_contract :val.input_siete
+          ,id_company_legal  :val.input_seis
+          ,secuence_payroll  :val.input_ocho
+          ,secuence_vehicle  :val.input_once
+          ,owner             :val.input_nueve
+          ,logo              :fileLogo
+          ,sign              :fileSign
+        }
 
-    var params = {
-      name: name
-      , address: address
-      , phone: phone
-      , email: email
-      , nit_1: nit_1
-      , nit_2: nit_2
-      , secuence_contract: secuence_contract
-      , id_company_legal: id_company_legal
-      , secuence_payroll: secuence_payroll
-      , secuence_vehicle: secuence_vehicle
-      , sign: sign
-      , logo: logo
-      , owner: owner
-    };
+        var parreq = {
+          method: 'PUT',
+          url: 'apiSystem/updateSystem',
+          params: {
+            'params': params
+              ,'file': true
+          }
+        };
 
-    var parreq = {
-      method: 'PUT',
-      url: 'apiSystem/updateSystem',
-      params: {
-        'params': params
-        ,'file': true
+        remoteData(parreq,
+          (data) => {
+            message.success('Se actualizaron los registros');
+          },
+          (err) => {
+            message.error('NO se actualizo el registro' +
+              '\n Error :' + err.message.error)
+          }
+        );
       }
-    };
-
-    this.getRemoteData(parreq,
-      this.successFormUpdate,
-      this.errorFormUpdate
-    );
-
-  },
-
-  successFormUpdate: function (data) {
-    message.success('Se actualizaron los datos de la empresa', 10);
-  },
-
-  errorFormUpdate: function (err) {
-    message.error('No se actualizaron los datos de la empresa', 10)
+    });
   },
 
   handleImageLogo: function(e){
@@ -155,22 +129,28 @@ var AdminFormEmpresa = React.createClass({
     }
   },
 
+  hasErrors: function(fieldsError) {
+    return Object.keys(fieldsError).some(field => fieldsError[field]);
+  },
+
+  setImage: function(img){
+    if (img) {
+      return (
+          <div className="ant-upload-list-picture-card">
+            <div className="ant-upload-list-item">
+                  <img className="ant-upload-list-item-thumbnail"
+                    src={img} target="_blank" />
+            </div>
+          </div>);
+    }
+  },
 
   render: function () {
+    const { initData, fileLogo, fileSign } = this.state;
+    const { getFieldDecorator, getFieldsError } = this.props.form;
 
-    var imgLogo = this.state.fileLogo;
-    console.log(imgLogo);
-    var imagePreviewLogo;
-    var imgSign = this.state.fileSign;
-    var imagePreviewSign;
-
-    if (imgLogo) {
-      imagePreviewLogo = (<div className="showprev"><img width='100%' src={imgLogo}/></div>);
-    }
-
-    if (imgSign) {
-      imagePreviewSign = (<div className="showprev"><img width='100%' src={imgSign}/></div>);
-    }
+    const imgPreLogo = this.setImage(fileLogo);
+    const imgPreSign = this.setImage(fileSign);
 
     return (
         <Card id={this.props.id} title="Empresa" bordered={false}>
@@ -178,131 +158,203 @@ var AdminFormEmpresa = React.createClass({
             <Row gutter={15}>
               <Col span={8}>
                 <FormItem label="Razón social">
-                  <Input name="name"
-                    type="text"
-                    ref="name"
-                    placeholder=""
-                    required/>
+                  {getFieldDecorator('input_uno',
+                  {
+                    initialValue: initData.name,
+                    rules: [
+                      { required: true,
+                        message: 'Escriba una razon social!'
+                      }
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
 
                 <FormItem label="Dirección">
-                  <Input name="address"
-                        type="text"
-                        ref="address"
-                        placeholder=""
-                        required/>
+                  {getFieldDecorator('input_dos',
+                  {
+                    initialValue: initData.address,
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione un tipo de persona!'
+                      }
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
 
                 <FormItem label="Telefono">
-                  <Input name="phone"
-                    type="text"
-                    ref="phone"
-                    placeholder=""
-                    required/>
+                  {getFieldDecorator('input_tres',
+                  {
+                    initialValue: initData.phone,
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione un tipo de persona!'
+                      }
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
 
                 <FormItem label="Firma 'Grafico en PNG'">
-                  <Upload
-                    name="sign"
-                    listType="picture"
-                    onChange={this.handleImageSign}>
-                    <Button>
-                      <Icon type="upload" /> Cargar Firma
-                    </Button>
-                  </Upload>
+                  <input
+                    type="file"
+                    accept="image/png"
+                    onChange={this.handleImageSign}/>
                 </FormItem>
 
-                {imagePreviewSign}
+
+                {imgPreSign}
 
               </Col>
 
               <Col span={8}>
-                <FormItem label="Nit - Consecutivo de identificación">
-                  <InputGroup compact>
-                    <Input
-                      style={{ width: '70%'  }}
-                      name="nit_1"
-                      type="number"
-                      placeholder=""
-                      ref="nit_1"
-                      required/>
 
-                    <Input
-                      style={{ width: '30%' }}
-                      name="nit_2"
-                      type="number"
-                      placeholder=""
-                      ref="nit_2"
-                      required/>
-                  </InputGroup>
-                </FormItem>
+                <Row gutter={8}>
+                  <Col span={12}>
+                    <FormItem label="Nit">
+                      {getFieldDecorator( 'input_cuatro', {
+                      initialValue: initData.nit_1,
+                      })(
+                      <InputNumber min={1} />
+                      )}
+                    </FormItem>
+                  </Col>
+                  <Col span={12}>
+                    <FormItem label=" - Verificación">
+                      {getFieldDecorator('input_doce',
+                      {
 
-                <FormItem label="Identificación de la empresa">
-                  <Input name="id_company_legal"
-                    type="number"
-                    placeholder=""
-                    ref="id_company_legal"
-                    required/>
-                </FormItem>
+                      initialValue: initData.nit_2,
+                      }
+                      )(
+                      <InputNumber min={1} />
+                      )}
+                    </FormItem>
+                  </Col>
+                </Row>
 
-                <FormItem label="Consecutivo contratos">
-                  <Input name="secuence_contract"
-                    type="number"
-                    placeholder=""
-                    ref="secuence_contract"
-                    required/>
-                </FormItem>
+                <FormItem label="Correo electronico">
+                  {getFieldDecorator('input_diez',
+                  {
 
-                <FormItem label="Logo 'Grafico en PNG'">
-                  <Upload
-                    name="logo"
-                    listType="picture"
-                    onChange={this.handleImageLogo}>
-                    <Button>
-                      <Icon type="upload" /> Cargar Logo
-                    </Button>
-                  </Upload>
-                </FormItem>
-
-                <FormItem>
-                  {imagePreviewLogo}
-                </FormItem>
-
-              </Col>
-
-              <Col span={8}>
-                <FormItem label="Consecutivo Planilla">
-                  <Input name="secuence_vehicle"
-                    type="number"
-                    placeholder=""
-                    ref="secuence_vehicle"
-                    required/>
+                    initialValue: initData.email,
+                    rules: [
+                      { required: true,
+                        message: 'Correo electronico!'
+                      }
+                    ],
+                  })(
+                  <Input />
+                  )}
                 </FormItem>
 
                 <FormItem label="Representante Legal o Gerente">
-                  <Input name="owner"
-                    type="text"
-                    ref="owner"
-                    placeholder=""
-                    required/>
+                  {getFieldDecorator('input_nueve',
+                  {
+
+                    initialValue: initData.owner,
+                    rules: [
+                      { required: true,
+                        message: 'Digite el representante legal!'
+                      }
+                    ],
+                  })(
+                  <Input />
+                  )}
                 </FormItem>
 
-                <FormItem label="Correo electronico">
-                  <Input name="email"
-                    type="email"
-                    ref="email"
-                    placeholder=""
-                    required/>
+                <FormItem label="Logo 'Grafico en PNG'">
+                  <input
+                    type="file"
+                    accept="image/png"
+                    onChange={this.handleImageLogo}/>
                 </FormItem>
 
-                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                {imgPreLogo}
+
+              </Col>
+
+              <Col span={8}>
+                <FormItem label="Identificación de la empresa - Fuec">
+                  {getFieldDecorator('input_seis',
+                  {
+
+                    initialValue: initData.id_company_legal,
+                    rules: [
+                      { required: true,
+                        message: 'Identificación de la empresa!'
+                      }
+                    ],
+                  })(
+                  <Input />
+                  )}
+                </FormItem>
+
+                <FormItem label="Consecutivo contratos">
+                  {getFieldDecorator('input_siete',
+                  {
+
+                    initialValue: initData.secuence_contract,
+                    rules: [
+                      { required: true,
+                        message: 'Consecutivo de contratos!'
+                      }
+                    ],
+                  })(
+                  <Input />
+                  )}
+                </FormItem>
+
+                <FormItem label="Consecutivo Planilla">
+                  {getFieldDecorator('input_ocho',
+                  {
+
+                    initialValue: initData.secuence_payroll,
+                    rules: [
+                      { required: true,
+                        message: 'Consecutivo de planilla!'
+                      }
+                    ],
+                  })(
+                  <Input />
+                  )}
+                </FormItem>
+
+                <FormItem label="Consecutivo Vehiculo">
+                  {getFieldDecorator('input_once',
+                  {
+
+                    initialValue: initData.secuence_vehicle,
+                    rules: [
+                      { required: true,
+                        message: 'Consecutivo de planilla!'
+                      }
+                    ],
+                  })(
+                  <Input />
+                  )}
+                </FormItem>
+
+                <FormItem>
+                  <Button
+                    disabled={this.hasErrors(getFieldsError())}
+                    type="primary"
+                    htmlType="submit"
+                    size="large">Grabar</Button>
+                </FormItem>
+
               </Col>
             </Row>
         </Form>
       </Card>
     )
   }
-
-});
+})
+);
 
 export default AdminFormEmpresa;

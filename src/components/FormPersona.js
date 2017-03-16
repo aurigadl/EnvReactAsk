@@ -1,59 +1,38 @@
-import React from 'react'
-import SelectInput from './SelectInput.js'
-import {makeRequest as mReq} from '../utils/mrequest';
-import {DatePicker, Card , Form , Input, Radio, Col, Row, Button, Icon} from 'antd';
+import React from 'react';
+import moment from 'moment';
+import SelectInput from './SelectInput.js';
+import {remoteData} from '../utils/mrequest';
+import {Tooltip, Card , Form , Input , message, DatePicker,
+  Col, Row, Button, Icon, InputNumber, Radio} from 'antd';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 const InputGroup = Input.Group;
 
-var FormPersona = React.createClass({
+var FormPersona = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
-      newOptionSelectA: false,
       childSelectValue: undefined,
-      selectedOption: undefined,
-      valueCheckbox: 0
+      childSelectText: '',
+      newOption: 0,
     };
   },
 
   handleReset: function (e) {
-    this.refs.selectPerson.value = '';
-    this.refs.first_name.value = '';
-    this.refs.last_name.value = '';
-    this.refs.email.value = '';
-    this.refs.phone.value = '';
-    this.refs.id_number.value = '';
-    this.refs.id_type.value = '';
-    this.refs.license.value = '';
-    this.refs.effective_date.value = '';
-    this.refs.address.value = '';
+    this.props.form.resetFields();
     this.setState({
-      selectedOption: undefined
+      childSelectValue: undefined,
     });
   },
 
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-      .then(function (response) {
-        cb_success(response)
-      }.bind(this))
-      .catch(function (err) {
-        cb_error(err);
-        console.log('AdminFormUser, there was an error!', err.statusText);
-      });
-  },
-
-  handleOptionChange: function (e) {
+  handleSelect: function (childSelectValue, childSelectText) {
     this.setState({
-      valueCheckbox: e.target.value
+      childSelectValue: childSelectValue,
+      childSelectText: childSelectText
     });
-  },
 
-
-  handlePersonSelect: function (childSelectValue, handlePersonSelect) {
-    if (childSelectValue != 0) {
+    if (childSelectValue != undefined) {
       var params = {'id': childSelectValue};
       var parreq = {
         method: 'GET',
@@ -61,234 +40,317 @@ var FormPersona = React.createClass({
         params: params
       };
 
-      this.setState({
-        childSelectValue: childSelectValue
-      });
+      remoteData(parreq,
+          (data) => {
+            const res = data.result;
+            this.props.form.setFieldsValue({
+               input_uno   :res.type_person
+              ,input_dos   :res.address
+              ,input_tres  :res.license
+              ,input_cuatro:res.first_name
+              ,input_cinco :res.last_name
+              ,input_seis  :res.email
+              ,input_siete :moment(res.effective_date, 'YYYY-MM-DD')
+              ,input_ocho  :res.phone
+              ,input_nueve :{key:res.id_type_i,label:res.id_type_t}
+              ,input_diez  :res.id_number
+            });
+          },
+          (err) => {
+            message.error('NO se cargaron los datos de la seleccion: ' +
+              '\n Error :' + err.message.error)
+          }
+      );
 
-      this.getRemoteData(parreq
-        , this.successHandlerSelect
-        , this.errorHandlerSelect);
-    } else {
-      this.refs.selectPerson.value = '';
-      this.refs.first_name.value = '';
-      this.refs.last_name.value = '';
-      this.refs.email.value = '';
-      this.refs.phone.value = '';
-      this.refs.id_number.value = '';
-      this.refs.id_type.value = '';
-      this.refs.license.value = '';
-      this.refs.effective_date.value = '';
-      this.refs.address.value = '';
-      this.setState({
-        selectedOption: undefined
-      });
     }
-  },
-
-  successHandlerSelect: function (remoteData) {
-    var data = remoteData.result;
-    this.refs.first_name.value = (data.first_name) ? data.first_name : undefined;
-    this.refs.last_name.value = (data.last_name) ? data.last_name : undefined;
-    this.refs.email.value = (data.email) ? data.email : undefined;
-    this.refs.phone.value = (data.phone) ? data.phone : undefined;
-    this.refs.id_number.value = (data.id_number) ? data.id_number : undefined;
-    this.refs.license.value = (data.license) ? data.license : undefined;
-    this.refs.effective_date.value = (data.effective_date) ? data.effective_date : undefined;
-    this.refs.address.value = (data.address) ? data.address : '';
-    this.refs.id_type.refs.selectValue.selectedIndex = (data.id_type) ? data.id_type : undefined;
-    this.setState({
-      selectedOption: ~~((data.type_person) ? data.type_person : undefined) + ''
-    });
-  },
-
-  errorHandlerSelect: function (remoteData) {
   },
 
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
+    const form = this.props.form;
+    const selecChildV = this.state.childSelectValue;
+    const selecChildT = this.state.childSelectText;
 
-    var selectPerson = ref.selectPerson.value;
-    var type_person = this.state.selectedOption;
-    var first_name = ref.first_name.value;
-    var last_name = ref.last_name.value;
-    var email = ref.email.value;
-    var phone = ref.phone.value;
-    var id_number = ref.id_number.value;
-    var id_type = ref.id_type.value;
-    var license = ref.license.value;
-    var effective_date = ref.effective_date.value;
-    var address = ref.address.value;
+    form.validateFields((err, val) => {
+      if (!err) {
+        var params = {
+           type_person    : val.input_uno.toString()
+          ,address        : val.input_dos
+          ,license        : val.input_tres
+          ,first_name     : val.input_cuatro
+          ,last_name      : val.input_cinco
+          ,email          : val.input_seis
+          ,effective_date : val.input_siete.format('YYYY-MM-DD')
+          ,phone          : val.input_ocho
+          ,id_type        : val.input_nueve.key.toString()
+          ,id_number      : val.input_diez
+        };
 
-    var params = {
-      type_person: type_person
-      , first_name: first_name
-      , last_name: last_name
-      , email: email
-      , phone: phone
-      , id_number: id_number
-      , id_type: id_type
-      , license: license
-      , effective_date: effective_date
-      , address: address
-    };
+        if (selecChildV === undefined || selecChildV === "") {
+          var parreq = {
+            method: 'POST',
+            url: 'apiFuec/newPerson',
+            params: {'params': params}
+          };
 
-    if (selectPerson === "") {
+          remoteData(parreq,
+              (data) => {
+                message.success('Se creo un nuevo registro persona');
+                this.setState({
+                  childSelectValue: undefined,
+                  newOption: this.state.newOption + 1
+                });
+                this.handleReset();
+              },
+              (err) => {
+                message.error('NO se creo el registro' +
+                  '\n Error :' + err.message.error)
+          });
 
-      var parreq = {
-        method: 'POST',
-        url: 'apiFuec/newPerson',
-        params: {'params': params}
-      };
+        } else {
 
-      this.getRemoteData(parreq,
-        this.successFormCreate,
-        this.errorFormCreate
-      );
+          params['id'] = selecChildV;
 
-    } else {
+          var parreq = {
+            method: 'PUT',
+            url: 'apiFuec/updateIdPerson',
+            params: {
+              'params': params
+            }
+          };
 
-      params['id'] = selectPerson;
+          remoteData(parreq,
+              (data) => {
+                message.success('Se actulizo el registro persona: ' + selecChildT);
+                this.setState({
+                  newOption: this.state.newOption + 1
+                });
+                this.handleReset();
+              },
+              (err) => {
+                message.error('NO se actualizo el registro' +
+                  '\n Error :' + err.message.error)
+              }
+              );
 
-      var parreq = {
-        method: 'PUT',
-        url: 'apiFuec/updateIdPerson',
-        params: {
-          'params': params
         }
-      };
-
-      this.getRemoteData(parreq,
-        this.successFormUpdate,
-        this.errorFormUpdate
-      );
-    }
-  },
-
-  successFormCreate: function (data) {
-    this.props.onItemNew(true);
-  },
-
-  errorFormCreate: function (err) {
-  },
-
-  successFormUpdate: function (data) {
-  },
-
-  errorFormUpdate: function (err) {
-  },
-
-  onClickMessage: function (event) {
-    this.setState({
-      showMessage: false,
-      contextText: ''
+      }
     })
   },
-
 
   handleDelete: function (e) {
     e.preventDefault();
     var get_id = this.state.childSelectValue;
-    var params = {
-      id: get_id
-    };
+    if(get_id){
 
-    var parreq = {
-      method: 'DELETE',
-      url: 'apiFuec/deleteIdPerson',
-      params: {'params': params}
-    };
+      const params = { id: get_id };
+      const parreq = {
+        method: 'DELETE',
+        url: 'apiFuec/deleteIdPerson',
+        params: {'params': params}
+      };
 
-    this.getRemoteData(parreq,
-      this.successFormDelete,
-      this.errorFormDelete
-    );
+      remoteData(parreq,
+          (data) => {
+            message.success('Se borro el registro: ' + this.state.childSelectText);
+            this.setState({
+              newOption: this.state.newOption + 1
+            });
+            this.handleReset();
+          },
+          (err) => {
+            message.error('Se genero un error en el registro: '+ this.state.childSelectText +
+              '\n Error: ' + err.message.error)
+          }
+      );
+    }
   },
 
-  successFormDelete: function (data) {
-    this.refs.person.getDOMNode().reset();
-  },
-
-  errorFormDelete: function (err) {
-  },
-
-  onChangeDate: function(date, dateString) {
-      console.log(date, dateString);
+  hasErrors: function(fieldsError) {
+    return Object.keys(fieldsError).some(field => fieldsError[field]);
   },
 
   render: function () {
+    const { getFieldDecorator, getFieldsError } = this.props.form;
 
     return (
         <Card id={this.props.id} title="Personas" bordered={false}>
           <Form onSubmit={this.handleSubmitForm} ref="person">
             <Row gutter={15}>
               <Col span={8}>
-
                 <FormItem label="Personas Existentes" >
-                  <InputGroup size="large" compact>
-                    <SelectInput
-                      style={{ width: '88%' }}
-                      class="input-group-field"
-                      url="apiFuec/allPerson"
-                      name="selectPerson"
-                      ref="selectPerson"
-                      newOption={this.state.newOptionSelectA}
-                      onUserSelect={this.handlePersonSelect}
-                    />
-                    <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
-                  </InputGroup>
+                    <Col span={2}>
+                      <Tooltip title={'Borrar el registro seleccionado'}>
+                        <Button
+                          onClick={this.handleDelete}
+                          size="small"
+                          type="danger"
+                          icon="minus"/>
+                      </Tooltip>
+                    </Col>
+                    <Col span={22}>
+                      <SelectInput
+                        url="apiFuec/allPerson"
+                        value={{key:this.state.childSelectValue}}
+                        newOption={this.state.newOption}
+                        onUserSelect={this.handleSelect}
+                      />
+                    </Col>
                 </FormItem>
 
                 <FormItem label="Tipo de persona" >
-                  <RadioGroup onChange={this.handleOptionChange} value={this.state.valueCheckbox}>
+                  {getFieldDecorator('input_uno',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione un tipo de persona!'
+                      }
+                    ],
+                  })(
+                  <RadioGroup>
                     <Radio value={0}>Natural</Radio>
                     <Radio value={1}>Juridica</Radio>
                   </RadioGroup>
+                  )}
                 </FormItem>
+
                 <FormItem label="Dirección">
-                  <Input ref="address" name="address" type="text" placeholder=""/>
+                  {getFieldDecorator('input_dos',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese la Dirección!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
                 <FormItem label="Licencia">
-                  <Input ref="license" name="license" type="text" placeholder=""/>
+                  {getFieldDecorator('input_tres',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese el numero de Licencia!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
               </Col>
 
               <Col span={8}>
                 <FormItem label="Nombres" >
-                  <Input ref="first_name" name="first_name" type="text" placeholder="" required/>
+                  {getFieldDecorator('input_cuatro',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese los nombres!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
                 <FormItem label="Apellidos" >
-                  <Input ref="last_name" name="last_name" type="text" placeholder=""/>
+                  {getFieldDecorator('input_cinco',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese los Apellidos!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
                 <FormItem label="Correo Electronico" >
-                  <Input ref="email" name="email" type="text" placeholder="" required/>
+                  {getFieldDecorator('input_seis',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese el correo electronico!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
                 <FormItem label="Vigencia">
-                  <DatePicker onChange={this.onChangeDate}/>
+                  {getFieldDecorator('input_siete',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese la fecha de vigencia!'
+                      },
+                    ],
+                  })(
+                  <DatePicker/>
+                  )}
                 </FormItem>
+
               </Col>
 
               <Col span={8}>
                 <FormItem label="Telefono" >
-                  <Input ref="phone" name="phone" type="text" placeholder=""/>
+                  {getFieldDecorator('input_ocho',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Ingrese el numero telefonico!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
                 <FormItem label="Tipo de Identificación">
+                  {getFieldDecorator('input_nueve',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione el tipo de identificación!'
+                      },
+                    ],
+                  })(
                   <SelectInput
-                    url="apiFuec/allIdType"
-                    name="id_type"
-                    id='id_type'
-                    ref="id_type"
-                    onUserSelect={this.handleIdTypeSelect}
-                    required
-                  />
+                    url="apiFuec/allIdType"/>
+                  )}
                 </FormItem>
+
                 <FormItem label="Identificación">
-                  <Input ref="id_number" name="id_number" type="text" placeholder="" required/>
+                  {getFieldDecorator('input_diez',
+                  {
+                    rules: [
+                      { required: true,
+                        message: 'Seleccione el tipo de identificación!'
+                      },
+                    ],
+                  })(
+                  <Input/>
+                  )}
                 </FormItem>
+
                 <FormItem>
-                  <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                  <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
+                  <Button
+                    disabled={this.hasErrors(getFieldsError())}
+                    type="primary"
+                    htmlType="submit"
+                    size="large">Grabar</Button>
+
+                  <Button style={{ marginLeft: 8  }}
+                    htmlType="reset"
+                    size="large"
+                    onClick={this.handleReset}>Limpiar</Button>
                 </FormItem>
+
               </Col>
 
             </Row>
@@ -297,6 +359,6 @@ var FormPersona = React.createClass({
     )
   }
 
-});
+}));
 
 export default FormPersona;
