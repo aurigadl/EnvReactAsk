@@ -175,7 +175,7 @@ var FormPersona = Form.create()(React.createClass({
 
     return (
         <Card id={this.props.id} title="Personas" bordered={false}>
-          <Form onSubmit={this.handleSubmitForm} ref="person">
+          <Form onSubmit={this.handleSubmitForm}>
             <Row gutter={15}>
               <Col span={8}>
                 <FormItem label="Personas Existentes" >
@@ -214,29 +214,25 @@ var FormPersona = Form.create()(React.createClass({
                   )}
                 </FormItem>
 
-                <FormItem label="Dirección">
-                  {getFieldDecorator('input_dos',
+                <FormItem label="Licencia">
+                  {getFieldDecorator('input_tres',
                   {
                     rules: [
-                      { required: true,
-                        message: 'Ingrese la Dirección!'
-                      },
+                      { message: 'Ingrese el numero de Licencia!' },
                     ],
                   })(
                   <Input/>
                   )}
                 </FormItem>
 
-                <FormItem label="Licencia">
-                  {getFieldDecorator('input_tres',
+                <FormItem label="Vigencia - Liencia">
+                  {getFieldDecorator('input_siete',
                   {
                     rules: [
-                      { required: true,
-                        message: 'Ingrese el numero de Licencia!'
-                      },
+                      { message: 'Ingrese la fecha de vigencia!' },
                     ],
                   })(
-                  <Input/>
+                  <DatePicker/>
                   )}
                 </FormItem>
 
@@ -282,16 +278,16 @@ var FormPersona = Form.create()(React.createClass({
                   )}
                 </FormItem>
 
-                <FormItem label="Vigencia">
-                  {getFieldDecorator('input_siete',
+                <FormItem label="Dirección">
+                  {getFieldDecorator('input_dos',
                   {
                     rules: [
                       { required: true,
-                        message: 'Ingrese la fecha de vigencia!'
+                        message: 'Ingrese la Dirección!'
                       },
                     ],
                   })(
-                  <DatePicker/>
+                  <Input/>
                   )}
                 </FormItem>
 

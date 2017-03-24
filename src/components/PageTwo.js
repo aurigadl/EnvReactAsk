@@ -490,8 +490,6 @@ const PageTwo = React.createClass({
                 id="persona"
                 onItemNew={this.handleNewElementPerson} />
 
-              <TableAgreement/>
-
             <BackTop/>
           </Content>
     );

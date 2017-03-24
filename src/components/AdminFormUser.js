@@ -64,75 +64,73 @@ var AdminFormUser = Form.create()(React.createClass({
 
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
-    var user = ref.user.value;
-    var email = ref.email.value;
-    var first_name = ref.first_name.value;
-    var last_name = ref.last_name.value;
-    var active = ref.active.checked;
-    var display_name = ref.display_name.value;
-    var new_user = ref.new_user.checked;
+    const form = this.props.form;
+    const selecChildV = this.state.childSelectValue;
+    const selecChildT = this.state.childSelectText;
 
-    if (user === "") {
-      var params = {
-        email: email,
-        first_name: first_name,
-        last_name: last_name,
-        display_name: display_name
-      };
+    form.validateFields((err, val) => {
+      if (!err) {
+        var params = {
+            email        : val.input_uno
+          , first_name   : val.input_dos
+          , last_name    : val.input_tres
+          , active       : val.input_cinco
+          , display_name : val.input_cuatro
+          , new_user     : val.input_seis
+        };
 
-      var parreq = {
-        method: 'POST',
-        url: 'apiUser/newuser',
-        params: {'params': params}
-      };
+        //If the user does not select an existing option
+        //create a new register
+        if (selecChildV === undefined || selecChildV === "") {
 
-      this.getRemoteData(parreq,
-        this.successFormCreate,
-        this.errorFormCreate
-      );
+          var parreq = {
+            method: 'POST',
+            url: 'apiUser/newuser',
+            params: {'params': params}
+          };
 
-    } else {
+          remoteData(parreq,
+            (data) => {
+              message.success('Se creo un nuevo registro usuario');
+              this.setState({
+                newOption: this.state.newOption + 1
+              });
+              this.handleReset();
+            },
+            (err) => {
+              message.error('NO se creo el registro' +
+                '\n Error :' + err.message.error)
+            }
+          );
 
-      var params = {
-        id: user,
-        email: email,
-        first_name: first_name,
-        last_name: last_name,
-        active: active,
-        display_name: display_name,
-        new_user: new_user
-      };
+        } else {
 
-      var parreq = {
-        method: 'PUT',
-        url: 'apiUser/updateIdUser',
-        params: {'params': params}
-      };
+          params['id'] = selecChildV;
 
-      this.getRemoteData(parreq,
-        this.successFormUpdate,
-        this.errorFormUpdate
-      );
-    }
+          var parreq = {
+            method: 'PUT',
+            url: 'apiUser/updateIdUser',
+            params: {'params': params}
+          };
+
+          remoteData(parreq,
+            (data) => {
+              message.success('Se actulizo el registro usuario: ' + selecChildT);
+              this.setState({
+                newOption: this.state.newOption + 1
+              });
+              this.handleReset();
+            },
+            (err) => {
+              message.error('NO se actualizo el registro' +
+                '\n Error :' + err.message.error)
+            }
+          );
+        }
+      }
+    })
   },
 
-  successFormCreate: function (data){
-    message.success('Se creo el usuario', 10);
-    this.props.onItemNew(true);
-  },
-
-  errorFormCreate: function (err){
-    message.error('No se creo el usuario',10);
-  },
-
-  successFormUpdate: function (data){
-    message.success('Se actulizo el usuario', 10);
-  },
-
-  errorFormUpdate: function (err){
-    message.error('No se actualizo el usuario',10);
-  },
 
   hasErrors: function(fieldsError) {
     return Object.keys(fieldsError).some(field => fieldsError[field]);
@@ -218,7 +216,7 @@ var AdminFormUser = Form.create()(React.createClass({
                     valuePropName: 'checked',
                     initialValue: false,
                     })(
-                    <Checkbox>Estado</Checkbox>
+                    <Checkbox>Activo</Checkbox>
                     )}
                   </FormItem>
                 </Col>

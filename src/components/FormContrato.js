@@ -250,7 +250,7 @@ var FormConductor = React.createClass({
     const { startValue, endValue, endOpen  } = this.state
 
     return (
-        <Card id={this.props.id} title="Contrato" bordered={false}>
+        <Card id={this.props.id} title="Contrato" extra={ <a href="./tables#contratos"><Icon type="layout"/></a>} bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
 
             <Row gutter={15}>

@@ -1,158 +1,199 @@
 import React from 'react'
-import SelectInput from './SelectInput.js'
-import CheckBoxInputs from './CheckBoxInputs.js'
-import {makeRequest as mReq} from '../utils/mrequest';
+import SelectInput from './SelectInput.js';
+import {remoteData} from '../utils/mrequest';
 
-import {Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+import {Card , Input, Form , Row, Button, Checkbox} from 'antd';
 
 const FormItem = Form.Item;
-const InputGroup = Input.Group;
+const CheckboxGroup = Checkbox.Group;
 
 
-var AdminFormUserRoles = React.createClass({
+var AdminFormUserRoles = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
       childSelectValue: undefined,
-      newOptionSelectA: false,
-      checkBoxSelectToSend: [],
-
-      showMessage: false,
-      typeMess: 'success',
-      contextText: 'Transaccion exitosa'
+      childSelectText: '',
+      indeterminate: false,
+      plainOptions :[],
+      checkedList:[],
+      checkAll: false
     };
   },
 
-  componentWillReceiveProps: function(nextProps) {
-    var next = nextProps.newOption;
-    var prev = this.props.newOption;
-    if ( next == true  && next != prev){
-      this.setState({
-        newOptionSelectA: true
-      });
-      this.props.onItemNew(false);
-    }
-    if ( next == false  && next != prev){
-      this.setState({
-        newOptionSelectA: false
-      });
-    }
+
+  componentDidMount: function () {
+    var parreq = {
+      method: 'GET',
+      url: "apiAdmin/allRoles"
+    };
+
+    remoteData(parreq,
+      (data) => {
+        this.setState({plainOptions:
+          data.result.map(function (d) {
+            return {
+              value: d.id,
+              label: d.nomb
+            };
+          })
+        })
+      },
+      (err) => {
+        message.error('NO se cargaron los registros: '+ brand_new +
+          '\n Error :' + err.message.error)
+      }
+    );
   },
 
-  handleUserSelect: function (childSelectValue) {
-    if (childSelectValue != 0) {
-      var params = {'id': childSelectValue};
-      var parreq = {
+
+  handleSelect: function (childSelectValue, childSelectText) {
+    const { form  } = this.props;
+
+    this.setState({
+      childSelectValue: childSelectValue,
+      childSelectText: childSelectText
+    });
+
+    if (childSelectValue != undefined) {
+      const parreq = {
         method: 'GET',
         url: 'apiAdmin/idUserRole',
-        params: params
+        params: {'id': childSelectValue}
       };
-      this.getRemoteData(parreq, this.successHandler);
-    }else{
-      this.setState({childSelectValue: []})
+
+      remoteData(parreq,
+        (data) => {
+          const chlist = data.result.map(function (d) {
+            return d.role_id;
+          })
+          this.onChange(chlist);
+        },
+        (err) => {
+          message.error('NO se cargaron los registros: '+ brand_new +
+            '\n Error :' + err.message.error)
+        }
+      );
     }
-  },
-
-  getRemoteData: function (parreq, cb) {
-    mReq(parreq)
-      .then(function (response) {
-        cb(response.result)
-      }.bind(this))
-      .catch(function (err) {
-        console.log('AdminSelectRoles, there was an error!', err.statusText);
-      });
-  },
-
-  successHandler: function (data) {
-    var arrayData = [];
-    for (var i = 0; i < data.length; i++) {
-      arrayData.push(data[i].role_id);
-    }
-    this.setState({childSelectValue: arrayData})
-  },
-
-  successForm: function (data) {
-    this.setState({
-      showMessage: true,
-      contextText: 'Se grabaron los roles del usuario'
-    });
-    setTimeout(function(){
-      this.setState({
-        showMessage: false,
-        contextText: ''
-      })
-    }.bind(this), 3000);
   },
 
 
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
-    var user = ref.usuario.value;
-    var roles = [];
-    ref.roles.forEach(
-      function (a) {
-        if (a.checked) {
-          roles.push(a.value);
+    const form = this.props.form;
+    const selecChildV = this.state.childSelectValue;
+
+    form.validateFields((err, val) => {
+
+      var params = {
+        'role_id': this.state.checkedList.map((p)=> p.toString()),
+        'user_id': selecChildV
+      };
+
+      var parreq = {
+        method: 'PUT',
+        url: 'apiAdmin/setUserRole',
+        params: {'params': params}
+      };
+
+      remoteData(parreq,
+        (data) => {
+          message.success('Se actualizaron el registros');
+        },
+        (err) => {
+          message.error('NO se actualizo el registro' +
+            '\n Error :' + err.message.error)
         }
-      }
-    );
+      );
 
-    var params = {
-      'role_id': roles,
-      'user_id': user
-    };
-
-    var parreq = {
-      method: 'PUT',
-      url: 'apiAdmin/setUserRole',
-      params: {'params': params}
-    };
-
-    if (user.length) {
-      this.getRemoteData(parreq, this.successForm);
-    }
-  },
-
-  onClickMessage: function(event) {
-    this.setState({
-      showMessage: false,
-      contextText: ''
     })
   },
 
+
+  onChange : function(checkedList) {
+    this.setState({
+      checkedList,
+      indeterminate: !!checkedList.length && (checkedList.length < this.state.plainOptions.length),
+      checkAll: checkedList.length === this.state.plainOptions.length,
+    });
+  },
+
+
+  onCheckAllChange : function(e) {
+    const check = e.target.checked;
+    const values = this.state.plainOptions.map(function (d) {
+      return d.value;
+    })
+
+    this.setState({
+      checkedList: check  ? values : [],
+      indeterminate: false,
+      checkAll: check
+    });
+  },
+
+  hasErrors: function(fieldsError) {
+    return Object.keys(fieldsError).some(field => fieldsError[field]);
+  },
+
   render: function () {
+    const { getFieldDecorator, getFieldsError } = this.props.form;
     return (
         <Card id={this.props.id} title="Usuarios y Roles" bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
             <Row gutter={15}>
 
               <FormItem label="Usuarios Existentes" >
+              {getFieldDecorator('input_uno',
+                {
+                  rules: [
+                    { required: true,
+                      message: 'Seleccione un usuario!'
+                    }
+                  ],
+                })(
                 <SelectInput
-                  class="input-group-field"
                   url="apiUser/allUser"
                   name="usuario"
-                  newOption={this.state.newOptionSelectA}
-                  onUserSelect={this.handleUserSelect}
+                  onUserSelect={this.handleSelect}
                 />
+              )}
               </FormItem>
 
               <FormItem label="Perfiles de acceso" >
-                <CheckBoxInputs
-                  url="apiAdmin/allRoles"
-                  ck_name="roles"
-                  idsCheckSelected={this.state.childSelectValue}
-                />
+                <div style={{ borderBottom: '1px solid #E9E9E9' }}>
+                  <Checkbox
+                    indeterminate={this.state.indeterminate}
+                    onChange={this.onCheckAllChange}
+                    checked={this.state.checkAll}>
+                    Todos
+                  </Checkbox>
+                </div>
+                {getFieldDecorator('input_dos',
+                {
+                  initialValue: this.state.checkedList,
+                  type: 'array',
+                  value: 'checked'
+                })(
+                <CheckboxGroup
+                   onChange={this.onChange}
+                   options={this.state.plainOptions} />
+                )}
               </FormItem>
 
               <FormItem>
-                <Button type="primary" htmlType="submit" size="large">Grabar</Button>
+                <Button
+                  disabled={this.hasErrors(getFieldsError())}
+                  type="primary"
+                  htmlType="submit"
+                  size="large">Grabar</Button>
               </FormItem>
+
             </Row>
           </Form>
         </Card>
      )
   }
-  });
+  }));
 
 export default AdminFormUserRoles;
