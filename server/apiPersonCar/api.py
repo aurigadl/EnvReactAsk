@@ -4,7 +4,8 @@ from flask import Blueprint, request, jsonify
 
 from server import db, rbac
 from models import PersonCar
-
+from server.apiPerson.models import Person
+from server.apiModality.models import Modality
 apiPersonCar = Blueprint('apiPersonCar', __name__)
 
 
@@ -12,14 +13,23 @@ apiPersonCar = Blueprint('apiPersonCar', __name__)
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def user_id():
     id_car = request.args.get('id')
+    dict_all = []
 
     if id_car and id_car.isdigit() and len(id_car) != 0:
         person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()
         if person_car is not None:
             person_car = person_car[0]
+            for x in json.JSONDecoder().decode(person_car):
+                person_id = Person.query.with_entities(Person.id, Person.first_name + ' ' + Person.last_name)\
+                    .filter(Person.id == x['person'])\
+                    .first()
+                modal_id = Modality.query.with_entities(Modality.id, Modality.name)\
+                    .filter(Modality.id == x['mod'])\
+                    .first()
+                dict_all.append(dict(person=dict(zip(('id', 'name'),person_id)), mod=dict(zip(('id', 'name'),modal_id))))
         else:
-            person_car = json.JSONEncoder().encode([dict(mod='', person='')])
-        return jsonify(dict(jsonrpc="2.0", result=person_car)), 200
+            dict_all = json.JSONEncoder().encode([dict(mod=dict(id='', name=''), person=dict(id='', name=''))])
+        return jsonify(dict(jsonrpc="2.0", result=dict_all)), 200
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 

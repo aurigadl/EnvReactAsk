@@ -1,59 +1,31 @@
-import React from 'react'
-import {makeRequest as mReq} from '../utils/mrequest';
-import SelectInput from './SelectInput.js'
+import React from 'react';
+import {remoteData} from '../utils/mrequest';
+import SelectInput from './SelectInput.js';
 
-import {message, DatePicker, Card , Form , Input ,
+import {message, Card , Form , Input ,
 Upload,  Col, Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
-var FormConductor = React.createClass({
+var FormConductor = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
-      newOptionSelectA: false,
       childSelectValue: undefined,
-      newOptionSelectTiCon: false,
-
+      childSelectText: '',
       file_pdf:'',
-
-      startValue: null,
-      endValue: null,
-      endOpen: false
     };
   },
 
-  componentWillReceiveProps: function (nextProps) {
-    var nextTiCon = nextProps.newOptionPerson;
-    var prevTiCon = this.props.newOptionPerson;
 
-    if (nextTiCon == true && nextTiCon != prevTiCon) {
-      this.setState({
-        newOptionSelectTiCon: true
-      });
-      this.props.onItemNewPerson(false);
-    }
-    if (nextTiCon == false && nextTiCon != prevTiCon) {
-      this.setState({
-        newOptionSelectTiCon: false
-      });
-    }
-  },
+  handleSelect: function (childSelectValue, childSelectText) {
+    this.setState({
+      childSelectValue: childSelectValue,
+      childSelectText: childSelectText
+    });
 
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-      .then(function (response) {
-        cb_success(response)
-      }.bind(this))
-      .catch(function (err) {
-        cb_error(err);
-        console.log('FormContrato, there was an error!', err.statusText);
-      });
-  },
-
-  handleContratoSelect: function (childSelectValue) {
-    if (childSelectValue != 0) {
+    if (childSelectValue != undefined) {
       var params = {'id': childSelectValue};
       var parreq = {
         method: 'GET',
@@ -88,78 +60,69 @@ var FormConductor = React.createClass({
     this.refs.last_date.value = (data.last_date) ? data.last_date : undefined;
   },
 
-  errorHandlerSelect: function (remoteData) {
-  },
-
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
+    const form = this.props.form;
+    const selecChildV = this.state.childSelectValue;
+    const selecChildT = this.state.childSelectText;
 
-    var selectAgreement = ref.selectAgreement.value;
-    var no_trip = ref.no_trip.value;
-    var id_person = ref.id_person.value;
-    var id_type_agreement = ref.id_type_agreement.value;
-    var init_date = ref.init_date.value;
-    var last_date = ref.last_date.value;
-    var file_pdf = this.state.file_pdf;
+    form.validateFields((err, val) => {
+      if (!err) {
+        var params = {
+           no_agreement : val.input_uno.toString()
+          ,id_person    : val.input_dos.key
+          ,id_type_agreement : val.input_tres.key
+          ,id_object_agreement : val.input_cuatro.key
+          ,file_pdf : this.state.file_pdf
+        };
 
-    var params = {
-      no_trip: no_trip
-      , id_person: id_person
-      , id_type_agreement: id_type_agreement
-      , init_date: init_date
-      , last_date: last_date
-      , file_pdf: file_pdf
-    };
+        if (selecChildV === undefined || selecChildV === "") {
 
-    if (selectAgreement === "") {
+          var parreq = {
+            method: 'POST',
+            url: 'apiFuec/newAgreement',
+            params: {'params': params}
+          };
 
-      var parreq = {
-        method: 'POST',
-        url: 'apiFuec/newAgreement',
-        params: {'params': params}
-      };
+          remoteData(parreq,
+              (data) => {
+                message.success('Se creo un nuevo registro contrato');
+                this.handleReset();
+              },
+              (err) => {
+                message.error('NO se creo el registro' +
+                  '\n Error :' + err.message.error)
+          });
 
-      this.getRemoteData(parreq,
-        this.successFormCreate,
-        this.errorFormCreate
-      );
+        } else {
+          params['id'] = selecChildV;
+          var parreq = {
+            method: 'PUT',
+            url: 'apiFuec/updateIdAgreement',
+            params: {
+              'params': params
+            }
+          };
 
-    } else {
+          remoteData(parreq,
+              (data) => {
+                message.success('Se actulizo el registro contrato');
+                this.handleReset();
+              },
+              (err) => {
+                message.error('NO se creo el registro' +
+                  '\n Error :' + err.message.error)
+          });
 
-      params['id'] = selectAgreement;
-
-      var parreq = {
-        method: 'PUT',
-        url: 'apiFuec/updateIdAgreement',
-        params: {
-          'params': params
         }
-      };
-
-      this.getRemoteData(parreq,
-        this.successFormUpdate,
-        this.errorFormUpdate
-      );
-    }
-  },
-
-  successFormCreate: function (data) {
-  },
-
-  errorFormCreate: function (err) {
-  },
-
-  successFormUpdate: function (data) {
-  },
-
-  errorFormUpdate: function (err) {
+      }
+    })
   },
 
   handleReset: function (e) {
-    this.refs.selectAgreement.value = '';
+    this.props.form.resetFields();
     this.setState({
-      inputValue: ''
+      childSelectValue: undefined,
     });
   },
 
@@ -182,8 +145,6 @@ var FormConductor = React.createClass({
     );
   },
 
-  successFormDelete: function (data) {
-  },
 
   handleImagePdf: function(e){
     e.preventDefault();
@@ -202,8 +163,6 @@ var FormConductor = React.createClass({
     }
   },
 
-  errorFormDelete: function (err) {
-  },
 
   disabledStartDate : function (startValue){
     const endValue = this.state.endValue;
@@ -213,41 +172,9 @@ var FormConductor = React.createClass({
     return startValue.valueOf() > endValue.valueOf();
   },
 
-  disabledEndDate: function (endValue){
-    const startValue = this.state.startValue;
-    if (!endValue || !startValue) {
-      return false;
-    }
-    return endValue.valueOf() <= startValue.valueOf();
-  },
-
-  onChange: function (field, value) {
-    this.setState({
-      [field]: value,
-    });
-  },
-
-  onStartChange: function (value){
-    this.onChange('startValue', value);
-  },
-
-  onEndChange: function (value){
-        this.onChange('endValue', value);
-  },
-
-  handleStartOpenChange: function(open){
-    if (!open) {
-      this.setState({ endOpen: true  });
-    }
-  },
-
-  handleEndOpenChange: function(open){
-    this.setState({ endOpen: open  });
-  },
 
   render: function () {
-
-    const { startValue, endValue, endOpen  } = this.state
+    const { getFieldDecorator, getFieldsError } = this.props.form;
 
     return (
         <Card id={this.props.id} title="Contrato" extra={ <a href="./tables#contratos"><Icon type="layout"/></a>} bordered={false}>
@@ -256,59 +183,78 @@ var FormConductor = React.createClass({
             <Row gutter={15}>
               <Col span={8}>
                 <FormItem  label="Contratos Existentes">
-                  <InputGroup compact>
-                    <SelectInput
-                      style={{ width: '88%' }}
-                      class="input-group-field"
-                      url="apiFuec/allAgreement"
-                      name="selectAgreement"
-                      ref="selectAgreement"
-                      newOption={this.state.newOptionSelectA}
-                      onUserSelect={this.handleContratoSelect}
-                    />
-                    <Button onClick={this.handleDelete}  type="danger"  shape="circle" icon="minus"/>
-                  </InputGroup>
-                </FormItem>
-
-                <FormItem label="No. de Contrato">
-                  <Input
-                    type="number"
-                    ref="no_agreement"
-                    name="no_agreement"
-                    readOnly/>
-                </FormItem>
-
-                <FormItem label="No. de Viaje">
-                  <Input
-                    type="number"
-                    ref="no_trip"
-                    name="no_trip"
+                  <SelectInput
+                    style={{ width: '88%' }}
+                    class="input-group-field"
+                    url="apiFuec/allAgreement"
+                    onUserSelect={this.handleSelect}
                   />
+                </FormItem>
+                <FormItem  label="No. Contrato" >
+                 {getFieldDecorator('input_uno',
+                 {
+                   rules: [
+                     { required: true,
+                       message: 'Ingrese el numero del contrato!'
+                     },
+                   ],
+                 })(
+                  <Input/>
+                 )}
                 </FormItem>
               </Col>
 
               <Col span={8}>
                 <FormItem label="Contratante - Persona Juridica o Natural">
+                  {getFieldDecorator('input_dos',
+                  {
+                    rules: [
+                      { required: true,
+                        type: 'object',
+                        message: 'Seleccione un contratante!'
+                      },
+                    ],
+                  })(
                   <SelectInput
                     url="apiFuec/allPerson"
-                    ref="id_person"
-                    name="id_person"
-                    newOption={this.state.newOptionSelectTiCon}
                   />
+                  )}
                 </FormItem>
 
                 <FormItem label="Tipo de contrato">
+                  {getFieldDecorator('input_tres',
+                  {
+                    rules: [
+                      { required: true,
+                        type: 'object',
+                        message: 'Seleccione un tipo de contrato!'
+                      },
+                    ],
+                  })(
                   <SelectInput
                     url="apiFuec/allKindAgreement"
-                    name="id_type_agreement"
-                    ref="id_type_agreement"
                   />
+                  )}
                 </FormItem>
-
 
               </Col>
 
               <Col span={8}>
+                <FormItem label="Objeto del Contrato">
+                  {getFieldDecorator('input_cuatro',
+                  {
+                    rules: [
+                      { required: true,
+                        type: 'object',
+                        message: 'Seleccione un tipo de contrato!'
+                      },
+                    ],
+                  })(
+                  <SelectInput
+                    url="apiFuec/allObjectAgreement" />
+                  )}
+                </FormItem>
+
                 <FormItem label="Docuento en formato PDF" >
                   <Upload name="logo" listType="picture" onChange={this.handleImagePdf}>
                     <Button>
@@ -317,39 +263,18 @@ var FormConductor = React.createClass({
                   </Upload>
                 </FormItem>
 
-                <FormItem label="Fecha Inicial y Final" >
-                  <DatePicker
-                    disabledDate={this.disabledStartDate}
-                    format="DD-MM-YYYY"
-                    value={startValue}
-                    placeholder="Inicio"
-                    onChange={this.onStartChange}
-                    onOpenChange={this.handleStartOpenChange}
-                  />
-                  <DatePicker
-                    disabledDate={this.disabledEndDate}
-                    format="DD-MM-YYYY"
-                    value={endValue}
-                    placeholder="Fin"
-                    onChange={this.onEndChange}
-                    open={endOpen}
-                    onOpenChange={this.handleEndOpenChange}
-                  />
-                </FormItem>
-
                 <FormItem>
                   <Button type="primary" htmlType="submit" size="large">Grabar</Button>
                   <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
                 </FormItem>
 
               </Col>
-
             </Row>
           </Form>
         </Card>
     )
   }
 
-});
+}));
 
 export default FormConductor;

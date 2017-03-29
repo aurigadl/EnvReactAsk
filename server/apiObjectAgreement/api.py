@@ -5,15 +5,18 @@ from models import ObjectAgreement
 
 apiObjectAgreement = Blueprint('apiObjectAgreement', __name__)
 
-
 # Method for App FUEC
 @apiObjectAgreement.route('/apiFuec/allObjectAgreement', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def api_fuec_apiObjectAgreement():
     apiObjectAgreement = ObjectAgreement.query.with_entities(ObjectAgreement.id, ObjectAgreement.name).all()
     if not len(apiObjectAgreement):
-        db.session.add(ObjectAgreement('Transporte de personas'))
+        db.session.add(ObjectAgreement('Transporte de personas particulares'))
         db.session.add(ObjectAgreement('Envio de encomiendas'))
+        db.session.add(ObjectAgreement('Transporte escolar'))
+        db.session.add(ObjectAgreement('Transporte Empresarial'))
+        db.session.add(ObjectAgreement('Transporte Acompanamiento'))
+        db.session.add(ObjectAgreement('Transporte Turistico'))
         db.session.commit()
         apiObjectAgreement = ObjectAgreement.query.with_entities(ObjectAgreement.id, ObjectAgreement.name).all()
     dict_modality = [dict(zip(('id', 'nomb'), r)) for r in apiObjectAgreement]

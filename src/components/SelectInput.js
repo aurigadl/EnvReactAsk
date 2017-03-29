@@ -69,7 +69,7 @@ var SelectInput = React.createClass({
       <Select
         {...this.props}
         labelInValue
-        placeholder="Selecciona un opción"
+        placeholder="Selecciona una opción"
         onSelect={this.handleChange}
         filterOption={(inputValue, option) => option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1}
         showSearch>

@@ -83,46 +83,6 @@ const PageTwo = React.createClass({
   },
 
 
-  handleNewElementCar: function (newValue) {
-    if (newValue !== this.state.newOptionCar) {
-      this.setState({
-        newOptionCar: newValue
-      });
-    }
-  },
-
-  handleNewElementPerson: function (newValue) {
-    if (newValue !== this.state.newOptionPerson) {
-      this.setState({
-        newOptionPerson: newValue
-      });
-    }
-  },
-
-  handleNewElementMarca: function (newValue) {
-    if (newValue !== this.state.newOptionMarca) {
-      this.setState({
-        newOptionMarca: newValue
-      });
-    }
-  },
-
-  handleNewElementRuta: function (newValue) {
-    if (newValue !== this.state.newOptionRuta) {
-      this.setState({
-        newOptionRuta: newValue
-      });
-    }
-  },
-
-  handleNewAgreement: function (newValue) {
-    if (newValue !== this.state.newOptionAgreement) {
-      this.setState({
-        newOptionAgreement: newValue
-      });
-    }
-  },
-
   addNewRuta: function () {
     var newOption = this.state.option;
     newOption.unshift({});
@@ -273,7 +233,7 @@ const PageTwo = React.createClass({
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#fuec">Fu</a></Button>
               </Tooltip>
 
-              <Tooltip placement="left" title={'Persona - Carro'}>
+              <Tooltip placement="left" title={'Carro - Personas'}>
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#personaCarro">Pc</a></Button>
               </Tooltip>
 
@@ -318,23 +278,6 @@ const PageTwo = React.createClass({
                         value={this.state.no_fuec}
                         readOnly/>
                     </FormItem>
-                    <FormItem  label="No. Contrato" >
-                      <Input
-                        value={this.state.no_agreefuec}
-                        name="no_agreefuec"
-                        ref="no_agreefuec"
-                        type="text"
-                        onChange={this.handleChangeNoAgreement}
-                        required/>
-                    </FormItem>
-
-                    <FormItem label="Tipo de contrato" >
-                      <SelectInput
-                        name="kind_agreement"
-                        ref="kind_agreement"
-                        url="apiFuec/allKindAgreement"
-                        required/>
-                    </FormItem>
 
                     <FormItem label="Ruta: Origen - Destino" >
                       <InputGroup size="large" compact>
@@ -378,24 +321,6 @@ const PageTwo = React.createClass({
                         value={this.state.social_object}
                         type="text"
                         readOnly/>
-                    </FormItem>
-                    <FormItem label="Contratante" >
-                      <SelectInput
-                        name="contractor"
-                        ref="contractor"
-                        url="apiFuec/allPerson"
-                        newOption={this.state.newOptionPerson}
-                        onItemNew={this.handleNewElementPerson}
-                        required/>
-                    </FormItem>
-                    <FormItem label="Con" >
-                      <SelectInput
-                        name="kind_agreement_link"
-                        ref="kind_agreement_link"
-                        url="apiFuec/allPerson"
-                        newOption={this.state.newOptionPerson}
-                        onItemNew={this.handleNewElementPerson}
-                        required/>
                     </FormItem>
                     <FormItem label="Vehiculo:" >
                       <SelectInput

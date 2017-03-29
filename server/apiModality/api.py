@@ -14,6 +14,8 @@ def api_fuec_modality_all():
     if not len(modality_all):
         db.session.add(Modality('Conductor'))
         db.session.add(Modality('Contratante'))
+        db.session.add(Modality('Supervisor'))
+        db.session.add(Modality('Responsable Contrato'))
         db.session.commit()
         modality_all = Modality.query.with_entities(Modality.id, Modality.name).all()
     dict_modality = [dict(zip(('id', 'nomb'), r)) for r in modality_all]
