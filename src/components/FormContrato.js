@@ -2,7 +2,7 @@ import React from 'react';
 import {remoteData} from '../utils/mrequest';
 import SelectInput from './SelectInput.js';
 
-import {message, Card , Form , Input ,
+import {message, Card , Form , Input , Modal ,
 Upload,  Col, Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
@@ -10,11 +10,15 @@ const InputGroup = Input.Group;
 
 var FormConductor = Form.create()(React.createClass({
 
+
   getInitialState: function () {
     return {
       childSelectValue: undefined,
       childSelectText: '',
       file_pdf:'',
+      fileList:[],
+      previewVisible: false,
+      thumb_pdf: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QMeFh8SwOKY7wAAAD9JREFUOMtjZGBg+M+AA7QIqTL4c4sxEAOYGKgERg0a0QYxMjAwJOCSdOAUSuNnYrGkhkULoCmfIB6NNToaBACpDQ5MHW6XdgAAAABJRU5ErkJggg==',
     };
   },
 
@@ -33,32 +37,42 @@ var FormConductor = Form.create()(React.createClass({
         params: params
       };
 
-      this.setState({
-        childSelectValue: childSelectValue
-      });
+      remoteData(parreq,
+        (data) => {
+          const res = data.result;
+          let iconPdf = this.state.thumb_pdf;
+          this.props.form.setFieldsValue({
+             input_uno   :res.no_agreement
+            ,input_dos   :{key:res.id_person,label:res.name_person}
+            ,input_tres  :{key:res.id_type_agreement,label:res.name_type_agreement}
+            ,input_cuatro:{key:res.id_object_agreement,label:res.name_objectAgreement}
+          })
 
-      this.getRemoteData(parreq
-        , this.successHandlerSelect
-        , this.errorHandlerSelect);
-    } else {
-      this.refs.no_agreement.value = '';
-      this.refs.no_trip.value = '';
-      this.refs.id_person.refs.selectValue.selectedIndex = undefined;
-      this.refs.id_type_agreement.refs.selectValue.selectedIndex = undefined;
-      this.refs.init_date.value = '';
-      this.refs.last_date.value = '';
+          if(res.file_pdf){
+            this.setState({
+              fileList:[{
+                  uid: -1,
+                  name: res.no_agreement + '_contrato.pdf',
+                  status: 'done',
+                  url: iconPdf
+              }],
+              file_pdf: 'data:application/pdf;base64,' + res.file_pdf
+            });
+          }else{
+            this.setState({
+              fileList:[],
+              file_pdf: ''
+            });
+          }
+
+        },
+        (err) => {
+          message.error('NO se cargo el registro' +
+            '\n Error :' + err.message.error)
+      });
     }
   },
 
-  successHandlerSelect: function (remoteData) {
-    var data = remoteData.result;
-    this.refs.no_agreement.value = (data.no_agreement) ? data.no_agreement : undefined;
-    this.refs.no_trip.value = (data.no_trip) ? data.no_trip : undefined;
-    this.refs.id_person.refs.selectValue.selectedIndex = (data.id_person) ? data.id_person : undefined;
-    this.refs.id_type_agreement.refs.selectValue.selectedIndex = (data.id_type_agreement) ? data.id_type_agreement : undefined;
-    this.refs.init_date.value = (data.init_date) ? data.init_date : undefined;
-    this.refs.last_date.value = (data.last_date) ? data.last_date : undefined;
-  },
 
   handleSubmitForm: function (e) {
     e.preventDefault();
@@ -70,10 +84,10 @@ var FormConductor = Form.create()(React.createClass({
       if (!err) {
         var params = {
            no_agreement : val.input_uno.toString()
-          ,id_person    : val.input_dos.key
-          ,id_type_agreement : val.input_tres.key
-          ,id_object_agreement : val.input_cuatro.key
-          ,file_pdf : this.state.file_pdf
+          ,id_person    : val.input_dos.key.toString()
+          ,id_type_agreement : val.input_tres.key.toString()
+          ,id_object_agreement : val.input_cuatro.key.toString()
+          ,pdf_file : this.state.file_pdf
         };
 
         if (selecChildV === undefined || selecChildV === "") {
@@ -119,62 +133,58 @@ var FormConductor = Form.create()(React.createClass({
     })
   },
 
+
   handleReset: function (e) {
     this.props.form.resetFields();
     this.setState({
       childSelectValue: undefined,
+      childSelectText: '',
+      fileList:[]
     });
   },
 
-  handleDelete: function (e) {
-    e.preventDefault();
-    var get_id = this.state.childSelectValue;
-    var params = {
-      id: get_id
-    };
 
-    var parreq = {
-      method: 'DELETE',
-      url: 'apiFuec/deleteIdAgreement',
-      params: {'params': params}
-    };
-
-    this.getRemoteData(parreq,
-      this.successFormDelete,
-      this.errorFormDelete
-    );
+  getBase64: function (img, callback) {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
   },
 
 
-  handleImagePdf: function(e){
-    e.preventDefault();
+  handleImagePdf: function(info){
+    let fileList = info.fileList;
+    let iconPdf = this.state.thumb_pdf;
+    fileList = fileList.slice(-1);
 
-    let reader = new FileReader();
-    let file = e.target.files[0];
+    fileList = fileList.map((file) => {
+      if (file.response && file.type === "application/pdf") {
+        this.getBase64(file.originFileObj, file_pdf => this.setState({ file_pdf  }));
+        file.url = iconPdf
+      }
+      return file;
+    });
 
-    reader.onloadend = function(event) {
+    this.setState({ fileList });
+  },
+
+
+  handlePreview: function(){
+    if(this.state.file_pdf){
       this.setState({
-        file_pdf: event.target.result
+        previewVisible: true,
       });
-    }.bind(this);
-
-    if (file.type == "application/pdf"){
-      reader.readAsDataURL(file)
     }
   },
 
 
-  disabledStartDate : function (startValue){
-    const endValue = this.state.endValue;
-    if (!startValue || !endValue) {
-      return false;
-    }
-    return startValue.valueOf() > endValue.valueOf();
+  handleCancel: function(){
+    this.setState({ previewVisible: false  })
   },
 
 
   render: function () {
     const { getFieldDecorator, getFieldsError } = this.props.form;
+    const { previewVisible, file_pdf, fileList } = this.state;
 
     return (
         <Card id={this.props.id} title="Contrato" extra={ <a href="./tables#contratos"><Icon type="layout"/></a>} bordered={false}>
@@ -183,12 +193,17 @@ var FormConductor = Form.create()(React.createClass({
             <Row gutter={15}>
               <Col span={8}>
                 <FormItem  label="Contratos Existentes">
+                  {getFieldDecorator('input_cinco', {
+                    rules: [{
+                      type:'object',
+                      message: 'Seleccione un Contrato!'
+                    }],
+                  })(
                   <SelectInput
-                    style={{ width: '88%' }}
-                    class="input-group-field"
                     url="apiFuec/allAgreement"
                     onUserSelect={this.handleSelect}
                   />
+                  )}
                 </FormItem>
                 <FormItem  label="No. Contrato" >
                  {getFieldDecorator('input_uno',
@@ -256,12 +271,26 @@ var FormConductor = Form.create()(React.createClass({
                 </FormItem>
 
                 <FormItem label="Docuento en formato PDF" >
-                  <Upload name="logo" listType="picture" onChange={this.handleImagePdf}>
+                  <Upload
+                    listType="picture"
+                    onPreview={this.handlePreview}
+                    fileList={this.state.fileList}
+                    onChange={this.handleImagePdf}>
                     <Button>
                       <Icon type="upload" /> Cargar PDF
                     </Button>
                   </Upload>
                 </FormItem>
+
+                <Modal width='80%' style={{ top: 20  }} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                  <iframe
+                    src={file_pdf}
+                    width="100%"
+                    height="500px"
+                    alt="pdf"
+                    type="application/pdf"
+                  />
+                </Modal>
 
                 <FormItem>
                   <Button type="primary" htmlType="submit" size="large">Grabar</Button>

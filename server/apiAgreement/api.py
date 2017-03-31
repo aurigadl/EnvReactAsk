@@ -6,7 +6,7 @@ from server.apiKindAgreement.models import KindAgreement
 from server import db, rbac, g_data, User
 from models import Agreement
 from server.apiPerson.models import Person
-from server.apiSystem.models import System
+from server.apiObjectAgreement.models import ObjectAgreement
 
 apiAgreement = Blueprint('apiAgreement', __name__)
 
@@ -46,11 +46,8 @@ def full_Agreement_all():
                        Agreement.created_at,
                        User.first_name + ' ' + User.last_name,
                        Agreement.no_agreement,
-                       Agreement.no_trip,
                        Person.first_name + ' ' + Person.last_name,
-                       KindAgreement.name,
-                       Agreement.init_date,
-                       Agreement.last_date
+                       KindAgreement.name
                        ).filter(
         KindAgreement.id == Agreement.id_type_agreement,
         User.id == Agreement.created_by,
@@ -80,47 +77,25 @@ def new_agreement():
 
     params = request.json.get('params')
 
-    system_all = System.query.first()
-    last_agreement = Agreement.query.with_entities(Agreement.no_agreement).order_by(
-        Agreement.no_agreement.desc()).first()
-
-    if system_all:
-        no_agreement = system_all.secuence_contract + 1
-        no_new_agreement = no_agreement
+    if params.has_key('no_agreement') and len(params['no_agreement']) != 0:
+        no_agreement = params['no_agreement']
     else:
-        no_new_agreement = 1
-
-    if last_agreement and no_new_agreement <= last_agreement[0]:
-        no_new_agreement = last_agreement[0] + 1
-
-    data.update(dict(secuence_contract=no_new_agreement))
-    System.query.first().query.update(data)
-    db.session.commit()
-
-    if params.has_key('no_trip') and len(params['no_trip']) != 0:
-        no_trip = params['no_trip']
-    else:
-        no_trip = None
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - no agreement'}), 400
 
     if params.has_key('id_person') and len(params['id_person']) != 0:
         id_person = params['id_person']
     else:
-        id_person = None
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - no person'}), 400
 
     if params.has_key('id_type_agreement') and len(params['id_type_agreement']) != 0:
         id_type_agreement = params['id_type_agreement']
     else:
-        id_type_agreement = None
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - type agreement'}), 400
 
-    if params.has_key('init_date') and (len(params['init_date']) != 0):
-        init_date = params['init_date']
+    if params.has_key('id_object_agreement') and len(params['id_object_agreement']) != 0:
+        id_object_agreement = params['id_object_agreement']
     else:
-        init_date = None
-
-    if params.has_key('last_date') and (len(params['last_date']) != 0):
-        last_date = params['last_date']
-    else:
-        last_date = None
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - type agreement'}), 400
 
     if params.has_key('file_pdf') and params['file_pdf'] != None and len(params['file_pdf']) != 0:
         pdf_data = params['file_pdf'].split(',')
@@ -135,13 +110,11 @@ def new_agreement():
 
     created_by = g_data._user_obj.id
 
-    new_agreement_db = Agreement(no_new_agreement
+    new_agreement_db = Agreement(no_agreement
                                  , created_by
-                                 , no_trip
                                  , id_person
                                  , id_type_agreement
-                                 , init_date
-                                 , last_date
+                                 , id_object_agreement
                                  , pdf_file)
 
     db.session.add(new_agreement_db)
@@ -171,43 +144,27 @@ def update_agreement_id():
     if params.has_key('no_agreement') and len(params['no_agreement']) != 0:
         data.update(dict(no_agreement=params['no_agreement']))
 
-    if params.has_key('no_trip') and len(params['no_trip']) != 0:
-        data.update(dict(no_trip=params['no_trip']))
-
-    if params.has_key('id_number') and len(params['id_person']) != 0:
-        data.update(dict(id_type=params['id_person']))
+    if params.has_key('id_person') and len(params['id_person']) != 0:
+        data.update(dict(id_person=params['id_person']))
 
     if params.has_key('id_type_agreement') and len(params['id_type_agreement']) != 0:
         data.update(dict(id_type_agreement=params['id_type_agreement']))
 
-    if params.has_key('init_date') and len(params['init_date']) != 0:
-        try:
-            init_date_effective = datetime.strptime(params['init_date'], "%Y-%m-%d")
-            data.update(dict(init_date=init_date_effective))
-        except ValueError:
-            return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters date'}), 400
-            raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+    if params.has_key('id_object_agreement') and len(params['id_object_agreement']) != 0:
+        data.update(dict(id_object_agreement=params['id_object_agreement']))
 
     if params.has_key('pdf_file') and params['pdf_file'] != None and len(params['pdf_file']) != 0:
         pdf_data = params['pdf_file'].split(',')
         image_dec = pdf_data[1].decode('base64')
         type_data = pdf_data[0].split(':')[1].split(';')[0]
         if type_data == 'application/pdf':
-            data.update(dict(pdf_file=image_dec))
-
-    if params.has_key('last_date') and len(params['last_date']) != 0:
-        try:
-            last_date_effective = datetime.strptime(params['last_date'], "%Y-%m-%d")
-            data.update(dict(last_date=last_date_effective))
-        except ValueError:
-            return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters date'}), 400
-            raise ValueError("Incorrect data format, should be YYYY-MM-DD")
+            data.update(dict(file_pdf=image_dec))
 
     if Agreement.query.filter(Agreement.id == agreement_id).first() is not None:
         Agreement.query.filter(Agreement.id == agreement_id).update(data)
         db.session.commit()
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'User does not exist'}), 400
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'Agreement does not exist'}), 400
     return jsonify({"jsonrpc": "2.0", "result": True}), 200
 
 
@@ -216,31 +173,43 @@ def update_agreement_id():
 def user_id():
     agreement_id = request.args.get('id')
     if agreement_id and agreement_id.isdigit() and len(agreement_id) != 0:
-        agreement = Agreement.query.with_entities(Agreement.no_agreement
-                                                  , Agreement.no_trip
-                                                  , Agreement.id_person
-                                                  , Agreement.id_type_agreement
-                                                  , Agreement.init_date
-                                                  , Agreement.last_date).filter(
-            Agreement.id == agreement_id).first()
+        agreement = Agreement.query.join(KindAgreement, ObjectAgreement, User, Person) \
+            .with_entities(Agreement.no_agreement
+                           , Agreement.created_at
+                           , Agreement.created_by
+                           , User.first_name + ' ' + User.last_name
+                           , Agreement.id_person
+                           , Person.first_name + ' ' + Person.last_name
+                           , Agreement.id_type_agreement
+                           , KindAgreement.name
+                           , Agreement.id_object_agreement
+                           , ObjectAgreement.name
+                           , Agreement.file_pdf) \
+            .filter(
+            Agreement.id == agreement_id,
+            KindAgreement.id == Agreement.id_type_agreement,
+            ObjectAgreement.id == Agreement.id_object_agreement,
+            User.id == Agreement.created_by,
+            Person.id == Agreement.id_person
+        ).first()
 
-        if agreement[4]:
+        if agreement[10]:
             lst = list(agreement)
-            lst[4] = agreement[4].strftime('%Y-%m-%d')
-            agreement = tuple(lst)
-
-        if agreement[5]:
-            lst = list(agreement)
-            lst[5] = agreement[5].strftime('%Y-%m-%d')
+            lst[10] = agreement[10].encode("base64")
             agreement = tuple(lst)
 
         dict_agreement = dict(
             zip(('no_agreement'
-                 , 'no_trip'
+                 , 'created_at'
+                 , 'id_created_by'
+                 , 'name_created_by'
                  , 'id_person'
+                 , 'name_person'
                  , 'id_type_agreement'
-                 , 'init_date'
-                 , 'last_date'), agreement))
+                 , 'name_type_agreement'
+                 , 'id_object_agreement'
+                 , 'name_objectAgreement'
+                 , 'file_pdf'), agreement))
 
         return jsonify(dict(jsonrpc="2.0", result=dict_agreement)), 200
     else:
