@@ -160,7 +160,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Razón social">
                   {getFieldDecorator('input_uno',
                   {
-                    initialValue: initData.name,
+                    initialValue: (initData.name || ''),
                     rules: [
                       { required: true,
                         message: 'Escriba una razon social!'
@@ -174,7 +174,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Dirección">
                   {getFieldDecorator('input_dos',
                   {
-                    initialValue: initData.address,
+                    initialValue: (initData.address || ''),
                     rules: [
                       { required: true,
                         message: 'Seleccione un tipo de persona!'
@@ -188,7 +188,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Telefono">
                   {getFieldDecorator('input_tres',
                   {
-                    initialValue: initData.phone,
+                    initialValue: (initData.phone || ''),
                     rules: [
                       { required: true,
                         message: 'Seleccione un tipo de persona!'
@@ -218,7 +218,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                   <Col span={12}>
                     <FormItem label="Nit">
                       {getFieldDecorator( 'input_cuatro', {
-                      initialValue: initData.nit_1,
+                      initialValue: (initData.nit_1 || ''),
                       })(
                       <InputNumber min={1} />
                       )}
@@ -229,7 +229,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                       {getFieldDecorator('input_doce',
                       {
 
-                      initialValue: initData.nit_2,
+                      initialValue: (initData.nit_2 || ''),
                       }
                       )(
                       <InputNumber min={1} />
@@ -241,8 +241,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Correo electronico">
                   {getFieldDecorator('input_diez',
                   {
-
-                    initialValue: initData.email,
+                    initialValue: (initData.email || ''),
                     rules: [
                       { required: true,
                         message: 'Correo electronico!'
@@ -256,8 +255,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Representante Legal o Gerente">
                   {getFieldDecorator('input_nueve',
                   {
-
-                    initialValue: initData.owner,
+                    initialValue: (initData.owner || ''),
                     rules: [
                       { required: true,
                         message: 'Digite el representante legal!'
@@ -283,8 +281,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Identificación de la empresa - Fuec">
                   {getFieldDecorator('input_seis',
                   {
-
-                    initialValue: initData.id_company_legal,
+                    initialValue: (initData.id_company_legal || ''),
                     rules: [
                       { required: true,
                         message: 'Identificación de la empresa!'
@@ -298,8 +295,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Consecutivo contratos">
                   {getFieldDecorator('input_siete',
                   {
-
-                    initialValue: initData.secuence_contract,
+                    initialValue: (initData.secuence_contract || 0),
                     rules: [
                       { required: true,
                         message: 'Consecutivo de contratos!'
@@ -313,8 +309,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Consecutivo Planilla">
                   {getFieldDecorator('input_ocho',
                   {
-
-                    initialValue: initData.secuence_payroll,
+                    initialValue: (initData.secuence_payroll || 0),
                     rules: [
                       { required: true,
                         message: 'Consecutivo de planilla!'
@@ -328,8 +323,7 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                 <FormItem label="Consecutivo Vehiculo">
                   {getFieldDecorator('input_once',
                   {
-
-                    initialValue: initData.secuence_vehicle,
+                    initialValue: (initData.secuence_vehicle || 0),
                     rules: [
                       { required: true,
                         message: 'Consecutivo de planilla!'

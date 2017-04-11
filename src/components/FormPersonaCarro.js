@@ -155,7 +155,7 @@ var FormPersonaCarro = Form.create()(React.createClass({
 
   render: function () {
 
-    const { getFieldDecorator, getFieldsError } = this.props.form;
+    const { getFieldDecorator} = this.props.form;
 
     const children = [];
     const st = this.state.option;

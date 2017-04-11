@@ -15,7 +15,9 @@ from server.apiRuta.models import Ruta
 from server.apiObjectAgreement.models import ObjectAgreement
 from server.libs.calendarTranslate import calendarTranslate as trasCal
 from server.pdfTemplate.fuec import TmpPdfFuec
+from server.apiAgreement.models import Agreement
 from server.apiSystem.models import System
+from server.apiModality.models import Modality
 
 apiFuec = Blueprint('apiFuec', __name__)
 
@@ -26,88 +28,93 @@ apiFuec = Blueprint('apiFuec', __name__)
 def api_fuec_new():
     json_data = request.get_json()
     data_drivers = []
+    person_car_mod = []
+
     if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
     params = request.json.get('params')
 
-    if params.has_key('no_fuec') and len(params['no_fuec']) != 0:
-        no_fuec = params['no_fuec']
+    if params.has_key('route') and len(params['route']) != 0:
+        route = params['route']
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - route'}), 400
 
-    if params.has_key('nit') and len(params['nit']) != 0:
-        nit = params['nit']
+    if params.has_key('date') and params['date'] > 0:
+        date = params['date']
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - date'}), 400
 
-    if params.has_key('no_agreefuec') and len(params['no_agreefuec']) != 0:
-        no_agreefuec = params['no_agreefuec']
+    if params.has_key('car') and (len(params['car']) != 0):
+        car_id = params['car']
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - car'}), 400
 
-    if params.has_key('contractor') and len(params['contractor']) != 0:
-        contractor = params['contractor']
+    if params.has_key('agreement') and (len(params['agreement']) != 0):
+        agreement = params['agreement']
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - agreement'}), 400
 
-    if params.has_key('agreement_object') and len(params['agreement_object']) != 0:
-        agreement_object = params['agreement_object']
+    person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == car_id).first()
+
+    if person_car is None:
+        return jsonify(
+            {"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre personas y el vehiculo'}), 400
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+        person_car = person_car[0]
+        for x in json.JSONDecoder().decode(person_car):
+            person_id = Person.query.with_entities(Person.id, Person.first_name + ' ' + Person.last_name) \
+                .filter(Person.id == x['person']) \
+                .first()
+            modal_id = Modality.query.with_entities(Modality.id, Modality.name) \
+                .filter(Modality.id == x['mod']) \
+                .first()
+            person_car_mod.append(
+                dict(person=dict(zip(('id', 'name'), person_id)), mod=dict(zip(('id', 'name'), modal_id))))
 
-    if params.has_key('selectRuta') and params['selectRuta'] > 0:
-        selectRuta = params['selectRuta']
-    else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+    agreement = Agreement.query.join(KindAgreement, ObjectAgreement, User, Person) \
+        .with_entities(Agreement.no_agreement
+                       , Agreement.created_at
+                       , Agreement.created_by
+                       , User.first_name + ' ' + User.last_name
+                       , Agreement.id_person
+                       , Person.first_name + ' ' + Person.last_name
+                       , Agreement.id_type_agreement
+                       , KindAgreement.name
+                       , Agreement.id_object_agreement
+                       , ObjectAgreement.name
+                       , Agreement.file_pdf) \
+        .filter(
+        Agreement.id == agreement,
+        KindAgreement.id == Agreement.id_type_agreement,
+        ObjectAgreement.id == Agreement.id_object_agreement,
+        User.id == Agreement.created_by,
+        Person.id == Agreement.id_person
+    ).first()
 
-    if params.has_key('kind_agreement') and len(params['kind_agreement']) != 0:
-        kind_agreement = params['kind_agreement']
-    else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
+    if agreement[10]:
+        lst = list(agreement)
+        lst[10] = agreement[10].encode("base64")
+        agreement = tuple(lst)
 
-    if params.has_key('kind_agreement_link') and len(params['kind_agreement_link']) != 0:
-        kind_agreement_link = params['kind_agreement_link']
-    else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
-
-    if params.has_key('init_date') and (len(params['init_date']) != 0):
-        init_date = params['init_date']
-    else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
-
-    if params.has_key('last_date') and (len(params['last_date']) != 0):
-        last_date = params['last_date']
-    else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
-
-    if params.has_key('no_car') and (len(params['no_car']) != 0):
-        id_car = params['no_car']
-    else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
-
-    d_contractor = Person.query.with_entities(Person.first_name + ' ' +
-                                              Person.last_name
-                                              , Person.id_number).filter(Person.id == contractor).first()
-
-    contractor, id_contractor = d_contractor
-
-    object_agreement = ObjectAgreement.query.with_entities(ObjectAgreement.name).filter(
-        ObjectAgreement.id == agreement_object).first()[0]
+    dict_agreement = dict(
+        zip(('no_agreement'
+             , 'created_at'
+             , 'id_created_by'
+             , 'name_created_by'
+             , 'id_person'
+             , 'name_person'
+             , 'id_type_agreement'
+             , 'name_type_agreement'
+             , 'id_object_agreement'
+             , 'name_objectAgreement'
+             , 'file_pdf'), agreement))
 
     ruta = Ruta.query.with_entities(Ruta.name).filter(
-        Ruta.id.in_(selectRuta)).all()
+        Ruta.id.in_(route)).all()
 
-    kindAgreement = KindAgreement.query.with_entities(KindAgreement.id, KindAgreement.name).filter(
-        KindAgreement.id == kind_agreement).first()
-
-    kind_agreement_link = Person.query.with_entities(Person.first_name + ' ' + Person.last_name).filter(
-        Person.id == kind_agreement_link).first()
-
-    kind_agreement_link = kind_agreement_link[0]
-
-    text_init_date = trasCal(init_date).translate()
-    text_last_date = trasCal(last_date).translate()
+    text_init_date = trasCal(date[0]).translate()
+    text_last_date = trasCal(date[1]).translate()
 
     car = Car.query.join(Marca, ClassCar).with_entities(Marca.name
                                                         , ClassCar.name
@@ -115,7 +122,7 @@ def api_fuec_new():
                                                         , Car.license_plate
                                                         , Car.model
                                                         , Car.operation_card
-                                                        ).filter(Car.brand == Marca.id, Car.id == id_car,
+                                                        ).filter(Car.brand == Marca.id, Car.id == car_id,
                                                                  Car.class_car == ClassCar.id).first()
 
     car_brand = car[0]
@@ -125,38 +132,28 @@ def api_fuec_new():
     car_model = str(car[4])
     car_operation = str(car[5])
 
-    person_car = PersonCar.query.with_entities(PersonCar.person_car).filter(PersonCar.id_car == id_car).first()
+    for rel in json.loads(person_car):
+        d_person = Person.query.with_entities(Person.type_person
+                                      , Person.first_name
+                                      , Person.last_name
+                                      , Person.email
+                                      , Person.phone
+                                      , Person.id_number
+                                      , Person.id_type
+                                      , Person.license
+                                      , Person.effective_date
+                                      , Person.address).filter(Person.id == rel['person']).first()
 
-    if person_car is None:
-        return jsonify(
-            {"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre personas y el vehiculo'}), 400
+    if d_person[8]:
+        lst = list(d_person)
+    lst[8] = d_person[8].strftime("%Y-%m-%d %H:%M:%S")
+    d_person = tuple(lst)
 
-    for r in person_car:
-        for rel in json.loads(r):
-            d_person = Person.query.with_entities(Person.type_person
-                                                  , Person.first_name
-                                                  , Person.last_name
-                                                  , Person.email
-                                                  , Person.phone
-                                                  , Person.id_number
-                                                  , Person.id_type
-                                                  , Person.license
-                                                  , Person.effective_date
-                                                  , Person.address).filter(Person.id == rel['person']).first()
+    if int(rel['mod']) == 1:
+        data_drivers.append(d_person)
 
-            if d_person[8]:
-                lst = list(d_person)
-                lst[8] = d_person[8].strftime("%Y-%m-%d %H:%M:%S")
-                d_person = tuple(lst)
-
-            if int(rel['mod']) == 1:
-                data_drivers.append(d_person)
-            else:
-                contractor_owner = d_person
-
-    if contractor_owner is None:
-        return jsonify({"jsonrpc": "2.0", "result": False,
-                        "error": 'No existen relacion entre vehiculo y una persona contratante'}), 400
+    if int(rel['mod']) != 1:
+        contractor_owner = d_person
 
     if data_drivers is None:
         return jsonify(
@@ -164,13 +161,25 @@ def api_fuec_new():
 
     system_all = System.query.first()
     nameCompany = system_all.get_json()['name']
-
     companyLogo = system_all.get_json()['logo']
+    nit1 = system_all.get_json()['nit_1']
+    nit2 = system_all.get_json()['nit_2']
+    contractor = dict_agreement['name_person']
+    id_contractor = dict_agreement['id_person']
+    kindAgreement =  dict_agreement[name_type_agreement]
+    object_agreement = dict_agreement['name_objectAgreement']
+    id_fuec = system_all.get_json()['id_company_legal']
+    id_payroll = system_all.get_json()['secuence_payroll']
     data_logo = companyLogo.split(',')[1].decode('base64')
     tmp_companyLogo = 'server/tmp/' + str(int(random.random() * 1000000)) + '.png'
     fcl = open(tmp_companyLogo, 'wb')
     fcl.write(data_logo)
     fcl.close()
+
+
+    no_agreefuec = agreement[0]
+    no_fuec = id_fuec + no_agreefuec + id_payroll
+    nit = str(nit1) + '-' + str(nit2)
 
     img_sign = system_all.get_json()['sign']
     data_sign = img_sign.split(',')[1].decode('base64')
@@ -241,7 +250,7 @@ def api_fuec_new():
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def full_fuec_all():
     full_fuec_all = Fuec.query.join(User).with_entities(
-          Fuec.id
+        Fuec.id
         , Fuec.created_at
         , User.first_name + ' ' + User.last_name
         , Fuec.no_fuec
@@ -270,7 +279,7 @@ def full_fuec_all():
     ).filter(User.id == Fuec.created_by).all()
 
     dict_agreement_all = [dict(zip((
-          'id'
+        'id'
         , 'created_at'
         , 'created_by'
         , 'no_fuec'

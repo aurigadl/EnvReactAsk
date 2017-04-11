@@ -8,46 +8,33 @@ import FormContrato from './FormContrato.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
 import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
-import {makeRequest as mReq} from '../utils/mrequest';
+import {remoteData} from '../utils/mrequest';
 import {Tooltip, message, DatePicker, Layout, BackTop
   , Card , Form , Input , Col, Row, Button, Icon} from 'antd';
 
 const { Header, Content} = Layout;
+const { RangePicker } = DatePicker;
 const FormItem = Form.Item;
 const InputGroup = Input.Group;
 
-const PageTwo = React.createClass({
+const PageTwo = Form.create()(React.createClass({
 
   getInitialState: function () {
     return {
-      newOptionPerson: false,
-      newOptionCar: false,
-      newOptionMarca: false,
-      newOptionRuta: false,
-
-      no_agreefuec: '',
+      childSelV: undefined,
+      childSelT: undefined,
       no_sec: '',
       no_fuec: '',
-      no_nit: '',
-      social_object: '',
       id_company_legal: '',
       option: [],
-
-      startValue: null,
-      endValue: null,
-      endOpen: false
     }
   },
 
-  getRemoteData: function (parreq, cb_success, cb_error) {
-    mReq(parreq)
-      .then(function (response) {
-        cb_success(response)
-      }.bind(this))
-      .catch(function (err) {
-        cb_error(err);
-        console.log('PageTwo, there was an error!', err.statusText);
-      });
+  setNewFuec: function(agree){
+    const st = this.state;
+    const sec = st.sec.toString();
+    const company = st.id_company_legal.toString();
+    return company + ' ' + agree + ' ' + sec;
   },
 
   componentDidMount: function () {
@@ -55,33 +42,27 @@ const PageTwo = React.createClass({
       method: 'GET',
       url: 'apiSystem/allSystem'
     };
-    this.getRemoteData(parreq
-      , this.successHandlerSelect
-      , this.errorHandlerSelect);
+
+    remoteData(parreq,
+      (data) => {
+        const res = data.result;
+
+        this.setState({
+          sec:res.secuence_payroll,
+          id_company_legal: res.id_company_legal
+        });
+
+        this.props.form.setFieldsValue({
+          input_uno : res.id_company_legal  + ' 0000 ' + res.secuence_payroll
+        })
+
+      },
+      (err) => {
+        message.error('No se cargaron los datos de configuración: ' +
+          '\n Error :' + err.message.error)
+      }
+    )
   },
-
-
-  successHandlerSelect: function (remoteData) {
-    var data = remoteData.result;
-    var id_company_legal = data.id_company_legal.toString();
-    var no_sec = data.secuence_contract.toString();
-    var nit1 = data.nit_1;
-    var nit2 = data.nit_2;
-    var social_object = data.name;
-
-    this.setState({
-      id_company_legal: id_company_legal,
-      no_sec: no_sec,
-      no_fuec: id_company_legal + no_sec,
-      no_nit: nit1 + '-' + nit2,
-      social_object: social_object
-    });
-  },
-
-  errorHandlerSelect: function (remoteData) {
-    message.error('Conexion rechazada');
-  },
-
 
   addNewRuta: function () {
     var newOption = this.state.option;
@@ -90,6 +71,7 @@ const PageTwo = React.createClass({
       option: newOption
     });
   },
+
 
   delRelRuta: function (e) {
     let idKey = e.currentTarget.dataset.key;
@@ -101,128 +83,108 @@ const PageTwo = React.createClass({
   },
 
 
-  handleChangeNoAgreement: function (e) {
-    var id_company_legal = this.state.id_company_legal;
-    var no_sec = this.state.no_sec;
-    var no_agreefuec = e.target.value;
-    this.setState({
-      no_agreefuec: no_agreefuec,
-      no_fuec: id_company_legal + no_agreefuec + no_sec
-    });
-  },
-
-
   handleSubmitForm: function (e) {
     e.preventDefault();
-    var ref = e.target.elements;
-    var data = [];
-    var x = 0;
-    var no_fuec = ref.no_fuec.value;
-    var social_object = ref.social_object.value;
-    var nit = ref.nit.value;
-    var no_agreefuec = ref.no_agreefuec.value;
-    var contractor = ref.contractor.value;
-    var agreement_object = ref.agreement_object.value;
-    var kind_agreement_link = ref.kind_agreement_link.value;
-    var kind_agreement = ref.kind_agreement.value;
-    var init_date = ref.init_date.value;
-    var last_date = ref.last_date.value;
-    var selectRuta = ref.selectRuta.value;
-    var no_car = ref.no_car.value;
+    const form = this.props.form;
 
-    data.push(selectRuta);
+    form.validateFields((err, val) => {
+      if (!err) {
+        const data=[]
+        let i=0;
+        while(eval(`val.input_ruta_${i}`) !== undefined){
+          let ruta  = eval(`val.input_ruta_${i}`).key;
+          data.push(ruta);
+          i++;
+        }
+        data.push(val.input_ruta_100.key)
 
-    while (eval('ref.selectRuta_' + x) !== undefined) {
-      data.push(eval('ref.selectRuta_' + x).value);
-      x++;
-    }
+        var params = {
+          route:  data.toString(),
+          date: [val.input_cinco[0].format('YYYY-MM-DD'), val.input_cinco[1].format('YYYY-MM-DD')] ,
+          car: val.input_tres.key,
+          agreement: val.input_cuatro.key
+        };
 
-    var params = {
-      no_fuec: no_fuec
-      , social_object: social_object
-      , nit: nit
-      , no_agreefuec: no_agreefuec
-      , selectRuta: data
-      , contractor: contractor
-      , agreement_object: agreement_object
-      , kind_agreement_link: kind_agreement_link
-      , kind_agreement: kind_agreement
-      , init_date: init_date
-      , last_date: last_date
-      , no_car: no_car
-    };
+        var parreq = {
+          method: 'PUT',
+          url: 'apiFuec/newFuec',
+          params: {
+            'params': params
+          }
+        };
 
-    var parreq = {
-      method: 'PUT',
-      url: 'apiFuec/newFuec',
-      params: {
-        'params': params
+        remoteData(parreq,
+          (data) => {
+            const res = data.result;
+
+            this.setState({
+              sec:res.secuence_payroll,
+              id_company_legal: res.id_company_legal
+            });
+
+            this.props.form.setFieldsValue({
+              input_uno : res.id_company_legal  + ' 0000 ' + res.secuence_payroll
+            })
+
+          },
+          (err) => {
+            message.error('No se cargaron los datos de configuración: ' +
+              '\n Error :' + err.message.error)
+          }
+        )
+
       }
-    };
+    });
 
-    this.getRemoteData(parreq,
-      this.successFormCreate,
-      this.errorFormCreate
-    );
   },
 
-  successFormCreate: function (data) {
-    message.success('Se creo un nuevo FUEC');
-  },
-
-  errorFormCreate: function (err) {
-    message.error(err.message.error);
-  },
 
   handleReset: function (e) {
     this.setState({
-      no_agreefuec: ''
+      no_agree: ''
     });
   },
 
-  disabledStartDate : function (startValue){
-    const endValue = this.state.endValue;
-    if (!startValue || !endValue) {
-      return false;
-    }
-    return startValue.valueOf() > endValue.valueOf();
-  },
-
-  disabledEndDate: function (endValue){
-    const startValue = this.state.startValue;
-    if (!endValue || !startValue) {
-      return false;
-    }
-    return endValue.valueOf() <= startValue.valueOf();
-  },
-
-  onChange: function (field, value) {
+  //callback to get data from component selectinput
+  handleSelect: function (childSelV, childSelT) {
     this.setState({
-      [field]: value,
+      childSelV: childSelV,
+      childSelT: childSelT
     });
-  },
 
-  onStartChange: function (value){
-    this.onChange('startValue', value);
-  },
-
-  onEndChange: function (value){
-        this.onChange('endValue', value);
-  },
-
-  handleStartOpenChange: function(open){
-    if (!open) {
-      this.setState({ endOpen: true  });
-    }
-  },
-
-  handleEndOpenChange: function(open){
-    this.setState({ endOpen: open  });
+    this.props.form.setFieldsValue({
+      input_uno : this.setNewFuec(childSelT)
+    });
   },
 
   render: function () {
 
-    const { startValue, endValue, endOpen  } = this.state
+    const { getFieldDecorator } = this.props.form;
+    const st = this.state.option;
+
+    var children = st.map(function (data, i) {
+      return (
+        <div key={i} ref={i}>
+          <InputGroup compact>
+            <Button onClick={()=>this.delRelRuta(i)}  data-key={i}  type="danger" shape="circle" icon="minus"/>
+            {getFieldDecorator(`input_ruta_${i}`,
+            {
+              rules: [
+                { required: true,
+                  message: 'Seleccione una ruta!'
+                }
+              ],
+            })(
+            <SelectInput
+              style={{ width: '88%' }}
+              url="apiFuec/allRuta"
+            />
+            )}
+          </InputGroup>
+        </div>
+      );
+    });
+
 
     return (
           <Content>
@@ -270,155 +232,122 @@ const PageTwo = React.createClass({
               <Form onSubmit={this.handleSubmitForm}>
                 <Row gutter={15}>
                   <Col span={8}>
-                    <FormItem  label="No. FUEC" >
-                      <Input
-                        name="no_fuec"
-                        ref="no_fuec"
-                        type="text"
-                        value={this.state.no_fuec}
-                        readOnly/>
+                    <FormItem  label="No. FUEC" extra="No modificable.">
+                      {getFieldDecorator('input_uno')(
+                      <Input disabled={true} />
+                      )}
                     </FormItem>
 
                     <FormItem label="Ruta: Origen - Destino" >
                       <InputGroup size="large" compact>
-                        <Button onClick={this.addNewRuta}  type="primary"  shape="circle" icon="plus"/>
-                        <SelectInput
-                          style={{ width: '88%' }}
-                          url="apiFuec/allRuta"
-                          name={"selectRuta"}
-                          ref={"selectRuta"}
-                          newOption={this.state.newOptionRuta}
-                          onItemNew={this.handleNewElementRuta}
-                          required/>
+                      <Button onClick={this.addNewRuta}  type="primary"  shape="circle" icon="plus"/>
+                      {getFieldDecorator('input_ruta_100',
+                      {
+                        rules: [
+                          { required: true,
+                            message: 'Seleccione un ruta!'
+                          }
+                        ],
+                      })(
+                      <SelectInput
+                        style={{ width: '88%' }}
+                        url="apiFuec/allRuta" />
+                      )}
                       </InputGroup>
-
-                      {this.state.option.map(function (data, i) {
-                      return (
-                      <div key={i} ref={i}>
-                        <InputGroup compact>
-                          <Button data-key={i} onClick={this.delRelRuta} type="danger" shape="circle" icon="minus"/>
-                          <SelectInput
-                            style={{ width: '88%' }}
-                            url="apiFuec/allRuta"
-                            name={"selectRuta_" + i}
-                            newOption={this.state.newOptionRuta}
-                            onItemNew={this.handleNewElementRuta}
-                          />
-                        </InputGroup>
-                      </div>
-                      )
-                      }, this)}
-
                     </FormItem>
+
+                    {children}
+
 
                   </Col>
 
                   <Col span={8}>
-                    <FormItem label="Razón social" >
-                      <Input
-                        name="social_object"
-                        ref="social_object"
-                        value={this.state.social_object}
-                        type="text"
-                        readOnly/>
+                    <FormItem label="Fecha del fuec" >
+                      {getFieldDecorator('input_cinco',
+                      {
+                        rules: [
+                          { required: true,
+                            type: 'array',
+                            message: 'Seleccione una fecha!'
+                          }
+                        ],
+                      })(
+                      <RangePicker placeholder={['Fecha - Inicio', 'Fecha - Fin']}/>
+                      )}
                     </FormItem>
+
                     <FormItem label="Vehiculo:" >
+                      {getFieldDecorator('input_tres',
+                      {
+                        rules: [
+                          { required: true,
+                            message: 'Seleccione un vehiculo!'
+                          }
+                        ],
+                      })(
                       <SelectInput
                         url="apiFuec/allCarWithPerson"
-                        name="no_car"
-                        ref="no_car"
-                        newOption={this.state.newOptionCar}
-                        onItemNew={this.handleNewElementCar}
-                        required/>
+                      />
+                      )}
                     </FormItem>
+
                   </Col>
 
                   <Col span={8}>
-                    <FormItem label="Nit" >
-                      <Input
-                        name="nit"
-                        ref="nit"
-                        value={this.state.no_nit}
-                        type="text"
-                        readOnly/>
-                    </FormItem>
-                    <FormItem label="Objeto del contrato" >
+                    <FormItem label="Numero del contrato" >
+                      {getFieldDecorator('input_cuatro',
+                      {
+                        rules: [
+                          { required: true,
+                            message: 'Seleccione un  contrato!'
+                          }
+                        ],
+                      })(
                       <SelectInput
-                        name="agreement_object"
-                        ref="agreement_object"
-                        url="apiFuec/allObjectAgreement"
-                        required/>
+                        url="apiFuec/allAgreement"
+                        onUserSelect={this.handleSelect}
+                      />
+                      )}
                     </FormItem>
 
-                    <FormItem label="Fecha del contrato Inicial - Final" >
-                      <DatePicker
-                        disabledDate={this.disabledStartDate}
-                        format="DD-MM-YYYY"
-                        value={startValue}
-                        placeholder="Inicio"
-                        onChange={this.onStartChange}
-                        onOpenChange={this.handleStartOpenChange}
-                      />
-                      <DatePicker
-                        disabledDate={this.disabledEndDate}
-                        format="DD-MM-YYYY"
-                        value={endValue}
-                        placeholder="Fin"
-                        onChange={this.onEndChange}
-                        open={endOpen}
-                        onOpenChange={this.handleEndOpenChange}
-                      />
-                    </FormItem>
                     <FormItem>
                       <Button type="primary" htmlType="submit" size="large">Grabar</Button>
                       <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
                     </FormItem>
                   </Col>
+
                 </Row>
                 </Form>
 
               </Card>
 
               <FormPersonaCarro
-                id='personaCarro'
-                newOptionPerson={this.state.newOptionPerson}
-                onItemNewPerson={this.handleNewElementPerson}
-                newOptionCar={this.state.newOptionCar}
-                onItemNewCar={this.handleNewElementCar} />
+                id='personaCarro'/>
 
               <Row>
                 <Col span="12">
                   <FormRuta
-                    id="ruta"
-                    onItemNew={this.handleNewElementRuta} />
+                    id="ruta"/>
                 </Col>
                 <Col span="12">
                   <FormMarcaAuto
-                    id="marca"
-                    onItemNew={this.handleNewElementMarca} />
+                    id="marca"/>
                 </Col>
               </Row>
 
               <FormCarro
-                id='carro'
-                newOptionMarca={this.state.newOptionMarca}
-                onItemNewMarca={this.handleNewElementMarca}
-                onItemNewCar={this.handleNewElementCar} />
+                id='carro'/>
 
               <FormContrato
-                id='contrato'
-                newOptionPerson={this.state.newOptionPerson}
-                onItemNewPerson={this.handleNewElementPerson}
-                onItemNewAgreement={this.handleNewAgreement} />
+                id='contrato'/>
 
               <FormPersona
-                id="persona"
-                onItemNew={this.handleNewElementPerson} />
+                id="persona"/>
 
             <BackTop/>
           </Content>
     );
   }
-});
+}));
 
 export default PageTwo

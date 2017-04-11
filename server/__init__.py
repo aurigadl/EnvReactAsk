@@ -13,8 +13,9 @@ from rbac import RBAC as r
 import config
 import libs.sessionPickle as newSession
 
-if os.environ.has_key('APPFLASK_A'):
-    appEnv = os.environ['APPFLASK_A']
+#Params to config init  PRO - DEV
+if os.environ.has_key('FLASK'):
+    appEnv = os.environ['FLASK']
 else:
     appEnv = 'PRO'
 

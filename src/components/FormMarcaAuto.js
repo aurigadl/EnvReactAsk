@@ -76,7 +76,6 @@ var FormMarcaAuto = Form.create()(React.createClass({
               message.success('Se creo el registro: ' + brand_new);
               this.setState({newOptionMA: this.state.newOptionMA + 1});
               this.handleReset();
-              this.props.onItemNew(true);
             },
             (err) => {
               message.error('NO se creo el registro: '+ brand_new +
@@ -103,7 +102,6 @@ var FormMarcaAuto = Form.create()(React.createClass({
               message.success('Se edito el registro (' + selecChildT + ') con ('+ brand_new+')');
               this.setState({newOptionMA: this.state.newOptionMA + 1});
               this.handleReset();
-              this.props.onItemNew(true);
             },
             (err) => {
               message.error('No se edito el registro: '+ selecChildT +
@@ -131,7 +129,6 @@ var FormMarcaAuto = Form.create()(React.createClass({
       remoteData(parreq,
           (data) => {
             message.success('Se borro el registro: ' + this.state.childSelectText);
-            this.props.onItemNew(true);
             this.setState({newOptionMA: this.state.newOptionMA + 1});
             this.handleReset();
           },

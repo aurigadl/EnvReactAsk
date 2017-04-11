@@ -229,7 +229,10 @@ var FormPersona = Form.create()(React.createClass({
                   {getFieldDecorator('input_siete',
                   {
                     rules: [
-                      { message: 'Ingrese la fecha de vigencia!' },
+                      {
+                        type: 'object',
+                        message: 'Ingrese la fecha de vigencia!'
+                      },
                     ],
                   })(
                   <DatePicker/>

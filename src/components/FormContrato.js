@@ -17,8 +17,7 @@ var FormConductor = Form.create()(React.createClass({
       childSelectText: '',
       file_pdf:'',
       fileList:[],
-      previewVisible: false,
-      thumb_pdf: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAQCAYAAAAbBi9cAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QMeFh8SwOKY7wAAAD9JREFUOMtjZGBg+M+AA7QIqTL4c4sxEAOYGKgERg0a0QYxMjAwJOCSdOAUSuNnYrGkhkULoCmfIB6NNToaBACpDQ5MHW6XdgAAAABJRU5ErkJggg==',
+      previewVisible: false
     };
   },
 
@@ -40,7 +39,6 @@ var FormConductor = Form.create()(React.createClass({
       remoteData(parreq,
         (data) => {
           const res = data.result;
-          let iconPdf = this.state.thumb_pdf;
           this.props.form.setFieldsValue({
              input_uno   :res.no_agreement
             ,input_dos   :{key:res.id_person,label:res.name_person}
@@ -53,8 +51,7 @@ var FormConductor = Form.create()(React.createClass({
               fileList:[{
                   uid: -1,
                   name: res.no_agreement + '_contrato.pdf',
-                  status: 'done',
-                  url: iconPdf
+                  status: 'done'
               }],
               file_pdf: 'data:application/pdf;base64,' + res.file_pdf
             });
@@ -153,13 +150,11 @@ var FormConductor = Form.create()(React.createClass({
 
   handleImagePdf: function(info){
     let fileList = info.fileList;
-    let iconPdf = this.state.thumb_pdf;
     fileList = fileList.slice(-1);
 
     fileList = fileList.map((file) => {
       if (file.response && file.type === "application/pdf") {
         this.getBase64(file.originFileObj, file_pdf => this.setState({ file_pdf  }));
-        file.url = iconPdf
       }
       return file;
     });
@@ -183,7 +178,7 @@ var FormConductor = Form.create()(React.createClass({
 
 
   render: function () {
-    const { getFieldDecorator, getFieldsError } = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     const { previewVisible, file_pdf, fileList } = this.state;
 
     return (
@@ -236,25 +231,6 @@ var FormConductor = Form.create()(React.createClass({
                   )}
                 </FormItem>
 
-                <FormItem label="Tipo de contrato">
-                  {getFieldDecorator('input_tres',
-                  {
-                    rules: [
-                      { required: true,
-                        type: 'object',
-                        message: 'Seleccione un tipo de contrato!'
-                      },
-                    ],
-                  })(
-                  <SelectInput
-                    url="apiFuec/allKindAgreement"
-                  />
-                  )}
-                </FormItem>
-
-              </Col>
-
-              <Col span={8}>
                 <FormItem label="Objeto del Contrato">
                   {getFieldDecorator('input_cuatro',
                   {
@@ -272,7 +248,7 @@ var FormConductor = Form.create()(React.createClass({
 
                 <FormItem label="Docuento en formato PDF" >
                   <Upload
-                    listType="picture"
+                    listType="text"
                     onPreview={this.handlePreview}
                     fileList={this.state.fileList}
                     onChange={this.handleImagePdf}>
@@ -281,6 +257,40 @@ var FormConductor = Form.create()(React.createClass({
                     </Button>
                   </Upload>
                 </FormItem>
+              </Col>
+
+              <Col span={8}>
+
+                <FormItem label="Union - Tipo de contrato">
+                  {getFieldDecorator('input_tres',
+                  {
+                    rules: [
+                      { type: 'object',
+                        message: 'Seleccione un tipo de contrato!'
+                      },
+                    ],
+                  })(
+                  <SelectInput
+                    url="apiFuec/allKindAgreement"
+                  />
+                  )}
+                </FormItem>
+
+                <FormItem label="Union - Con">
+                  {getFieldDecorator('input_nueve',
+                  {
+                    rules: [
+                      { type: 'object',
+                        message: 'Seleccione una persona o empresa !'
+                      },
+                    ],
+                  })(
+                  <SelectInput
+                    url="apiFuec/allPerson"
+                  />
+                  )}
+                </FormItem>
+
 
                 <Modal width='80%' style={{ top: 20  }} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                   <iframe
