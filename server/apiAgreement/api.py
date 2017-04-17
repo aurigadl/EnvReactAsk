@@ -147,23 +147,20 @@ def update_agreement_id():
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
-    if not agreement_id or not agreement_id.isdigit() or not len(agreement_id) != 0:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
-
     if params.has_key('no_agreement') and len(params['no_agreement']) != 0:
         data.update(dict(no_agreement=params['no_agreement']))
 
     if params.has_key('id_person') and len(params['id_person']) != 0:
         data.update(dict(id_person=params['id_person']))
 
+    if params.has_key('id_object_agreement') and len(params['id_object_agreement']) != 0:
+        data.update(dict(id_object_agreement=params['id_object_agreement']))
+
     if params.has_key('id_type_agreement') and len(params['id_type_agreement']) != 0:
         data.update(dict(id_type_agreement=params['id_type_agreement']))
 
     if params.has_key('id_person_agreement') and len(params['id_person_agreement']) != 0:
         data.update(dict(id_person_agreement=params['id_person_agreement']))
-
-    if params.has_key('id_object_agreement') and len(params['id_object_agreement']) != 0:
-        data.update(dict(id_object_agreement=params['id_object_agreement']))
 
     if params.has_key('pdf_file') and params['pdf_file'] != None and len(params['pdf_file']) != 0:
         pdf_data = params['pdf_file'].split(',')
@@ -183,69 +180,64 @@ def update_agreement_id():
 @apiAgreement.route('/apiFuec/idAgreement', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def user_id():
-
-    adalias1 = aliased(Person)
-    adalias2 = aliased(Person)
-
+    agreem = {}
     agreement_id = request.args.get('id')
     if agreement_id and agreement_id.isdigit() and len(agreement_id) != 0:
-        agreement = Agreement.query.join(KindAgreement, ObjectAgreement, User, adalias1, adalias2) \
+        agreement = Agreement.query.join(ObjectAgreement, User) \
             .with_entities(Agreement.no_agreement
-
                            , Agreement.created_at
                            , Agreement.created_by
-
                            , User.first_name + ' ' + User.last_name
                            , Agreement.id_person
-
-                           , adalias1.first_name + ' ' + adalias1.last_name
-                           , Agreement.id_type_agreement
-
-                           , KindAgreement.name
                            , Agreement.id_object_agreement
-
-                           , adalias2.first_name + ' ' + adalias1.last_name
-                           , Agreement.id_person_agreement
-
                            , ObjectAgreement.name
-                           , Agreement.id_object_agreement
+                           , Agreement.id_type_agreement
+                           , Agreement.id_person_agreement
                            , Agreement.file_pdf) \
             .filter(
             Agreement.id == agreement_id,
-            KindAgreement.id == Agreement.id_type_agreement,
-            ObjectAgreement.id == Agreement.id_object_agreement,
             User.id == Agreement.created_by,
-            adalias1.id == Agreement.id_person,
-            adalias2.id == Agreement.id_person_agreement
+            ObjectAgreement.id == Agreement.id_object_agreement
         ).first()
 
-        if agreement[11]:
-            lst = list(agreement)
-            lst[11] = agreement[11].encode("base64")
-            agreement = tuple(lst)
+        agreem['no_agreement'] = agreement[0]
+        agreem['created_at'] = agreement[1]
+        agreem['id_created_by'] = agreement[2]
+        agreem['name_created_by'] = agreement[3]
+        agreem['id_person'] = agreement[4]
 
-        dict_agreement = dict(
-            zip(('no_agreement'
-                 , 'created_at'
+        person_sql = Person.query.with_entities(Person.first_name, Person.last_name) \
+            .filter(Person.id == agreement[4]).first()
+        agreem['name_person'] = person_sql[0] + ' ' + person_sql[1]
 
-                 , 'id_created_by'
-                 , 'name_created_by'
+        agreem['id_object_agreement'] = agreement[5]
+        agreem['name_object_agreement'] = agreement[6]
 
-                 , 'id_person'
-                 , 'name_person'
+        if agreement[7]:
+            kindAgreement_sql = KindAgreement.query.with_entities(KindAgreement.name) \
+                .filter(KindAgreement.id == agreement[7]).first()
+            agreem['name_type_agreement'] = kindAgreement_sql[0]
+            agreem['id_type_agreement'] = agreement[7]
+        else:
+            agreem['name_type_agreement'] = None
+            agreem['id_type_agreement'] = None
 
-                 , 'id_type_agreement'
-                 , 'name_type_agreement'
+        if agreement[8]:
+            person_a_sql = Person.query.with_entities(Person.first_name, Person.last_name) \
+                .filter(Person.id == agreement[8]).first()
+            agreem['name_person_agreement'] = person_a_sql[0] + ' ' + person_a_sql[1]
+            agreem['id_person_agreement'] = agreement[8]
+        else:
+            agreem['id_person_agreement'] = None
+            agreem['name_person_agreement'] = None
 
-                 , 'id_object_agreement'
-                 , 'name_objectAgreement'
+        if agreement[9]:
+            agreem['file_pdf'] = agreement[9].encode("base64")
+        else:
+            agreem['file_pdf'] = None
 
-                 , 'id_person_agreement'
-                 , 'name_person_Agreement'
+        return jsonify(dict(jsonrpc="2.0", result=agreem)), 200
 
-                 , 'file_pdf'), agreement))
-
-        return jsonify(dict(jsonrpc="2.0", result=dict_agreement)), 200
     else:
         return abort(400, jsonify({"jsonrpc": "2.0", "result": False}))
 

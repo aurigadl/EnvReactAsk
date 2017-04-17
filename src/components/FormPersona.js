@@ -23,6 +23,7 @@ var FormPersona = Form.create()(React.createClass({
     this.props.form.resetFields();
     this.setState({
       childSelectValue: undefined,
+      childSelectText: ''
     });
   },
 
@@ -50,11 +51,17 @@ var FormPersona = Form.create()(React.createClass({
               ,input_cuatro:res.first_name
               ,input_cinco :res.last_name
               ,input_seis  :res.email
-              ,input_siete :moment(res.effective_date, 'YYYY-MM-DD')
               ,input_ocho  :res.phone
               ,input_nueve :{key:res.id_type_i,label:res.id_type_t}
               ,input_diez  :res.id_number
             });
+
+            if(res.effective_date){
+              this.props.form.setFieldsValue({
+                input_siete :moment(res.effective_date, 'YYYY-MM-DD')
+              });
+            }
+
           },
           (err) => {
             message.error('NO se cargaron los datos de la seleccion: ' +
@@ -76,15 +83,21 @@ var FormPersona = Form.create()(React.createClass({
         var params = {
            type_person    : val.input_uno.toString()
           ,address        : val.input_dos
-          ,license        : val.input_tres
           ,first_name     : val.input_cuatro
           ,last_name      : val.input_cinco
           ,email          : val.input_seis
-          ,effective_date : val.input_siete.format('YYYY-MM-DD')
           ,phone          : val.input_ocho
           ,id_type        : val.input_nueve.key.toString()
           ,id_number      : val.input_diez
         };
+
+        if(val.input_siete){
+          params.effective_date = val.input_siete.format('YYYY-MM-DD')
+        }
+
+        if(val.input_tres){
+          params.license = val.input_tres
+        }
 
         if (selecChildV === undefined || selecChildV === "") {
           var parreq = {
@@ -191,7 +204,7 @@ var FormPersona = Form.create()(React.createClass({
                     <Col span={22}>
                       <SelectInput
                         url="apiFuec/allPerson"
-                        value={{key:this.state.childSelectValue}}
+                        value={{key:this.state.childSelectValue, label:this.state.childSelectText}}
                         newOption={this.state.newOption}
                         onUserSelect={this.handleSelect}
                       />
@@ -255,12 +268,11 @@ var FormPersona = Form.create()(React.createClass({
                   )}
                 </FormItem>
 
-                <FormItem label="Apellidos" >
+                <FormItem label="Apellidos - Sigla de la Empresa" >
                   {getFieldDecorator('input_cinco',
                   {
                     rules: [
-                      { required: true,
-                        message: 'Ingrese los Apellidos!'
+                      { message: 'Ingrese los Apellidos!'
                       },
                     ],
                   })(

@@ -370,7 +370,7 @@ class TmpPdfFuec:
             name = str(data[1] + ' ' + data[2])
             id = str(data[4])
             license = str(data[7])
-            date = data[8][:10]
+            date = data[8] or 'Sin registro'
 
             # self.data_drivers
             pdf.set_xy(15, 177)
@@ -395,7 +395,7 @@ class TmpPdfFuec:
             name = str(data[1] + ' ' + data[2])
             id = str(data[4])
             license = str(data[7])
-            date = data[8][:10]
+            date = data[8] or 'Sin registro'
             # Content
             pdf.set_xy(15, 182)
             pdf.set_font("Arial", size=9)
@@ -419,7 +419,7 @@ class TmpPdfFuec:
             name = str(data[1] + ' ' + data[2])
             id = str(data[4])
             license = str(data[7])
-            date = data[8][:10]
+            date = data[8] or 'Sin registro'
             # Content
             pdf.set_xy(15, 187)
             pdf.set_font("Arial", size=9)

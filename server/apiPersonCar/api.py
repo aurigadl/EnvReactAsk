@@ -45,12 +45,9 @@ def update_person_id():
 
     params = request.json.get('params')
 
-    if params.has_key('id') and len(params['id']) != 0:
+    if params.has_key('id') and len(params['id']) != 0 and params['id'].isdigit():
         id_car = params['id']
     else:
-        return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
-
-    if not id_car or not id_car.isdigit() or not len(id_car) != 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
 
     if params.has_key('person_car') and len(params['person_car']) != 0:
@@ -64,7 +61,6 @@ def update_person_id():
     else:
         new_person_car_db = PersonCar(id_car
                                       , person_car)
-
         db.session.add(new_person_car_db)
 
     db.session.commit()

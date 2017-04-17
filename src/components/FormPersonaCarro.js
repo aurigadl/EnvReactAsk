@@ -5,15 +5,20 @@ import {Card , Form , Input , Col, message,
   Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
-const InputGroup = Input.Group;
 
 var FormPersonaCarro = Form.create()(React.createClass({
+
 
   getInitialState: function () {
     return {
       childSelV: undefined,
       childSelT: '',
-      option: [{mod:[], person:[]}]
+      option:[
+              {mod:{key:1, label:'Conductor'},
+               person:[]},
+              {mod:{key:3, label:'Supervisor'},
+               person:[]}
+            ]
     };
   },
 
@@ -70,23 +75,36 @@ var FormPersonaCarro = Form.create()(React.createClass({
 
     } else {
       this.setState({
-        option: [{mod:[], person:[]}]
-      });
+      option: [
+              {mod:{key:1, label:'Conductor'},
+               person:[]},
+              {mod:{key:3, label:'Supervisor'},
+               person:[]}
+            ]
+      })
     }
 
   },
 
   handleReset: function (e) {
-    this.props.form.setFieldsValue({
-      input_uno:[],
-      input_person_0:[],
-      input_modal_0:[]
-    });
+
     this.setState({
       childSelV: undefined,
       childSelT: '',
-      option: [{mod:[], person:[]}]
+      option: [
+              {mod:{key:1, label:'Conductor'},
+               person:[]},
+              {mod:{key:3, label:'Supervisor'},
+               person:[]}
+            ]
     });
+
+    this.props.form.setFieldsValue({
+      input_uno:[],
+      input_modal_0:{key:1, label:'Conductor'},
+      input_person_0:[],
+    });
+
   },
 
   handleSubmitForm: function (e) {

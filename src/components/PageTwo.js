@@ -9,8 +9,8 @@ import FormMarcaAuto from './FormMarcaAuto.js'
 import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
 import {remoteData} from '../utils/mrequest';
-import {Tooltip, message, DatePicker, Layout, BackTop
-  , Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+import {Tooltip, message, DatePicker, Layout, BackTop, Modal,
+   Card , Form , Input , Col, Row, Button, Icon} from 'antd';
 
 const { Header, Content} = Layout;
 const { RangePicker } = DatePicker;
@@ -27,6 +27,9 @@ const PageTwo = Form.create()(React.createClass({
       no_fuec: '',
       id_company_legal: '',
       option: [],
+      file_pdf: undefined,
+      no_fuec:undefined,
+      previewVisible: false
     }
   },
 
@@ -72,16 +75,14 @@ const PageTwo = Form.create()(React.createClass({
     });
   },
 
-
-  delRelRuta: function (e) {
-    let idKey = e.currentTarget.dataset.key;
-    var newOption = this.state.option;
-    delete newOption[idKey];
+  delRelRuta: function (i) {
+    var newn = this.state.option;
+    delete newn[i];
+    var build = newn.filter((a)=>typeof a !== 'undefined')
     this.setState({
-      option: newOption
+      option: build
     });
   },
-
 
   handleSubmitForm: function (e) {
     e.preventDefault();
@@ -118,13 +119,11 @@ const PageTwo = Form.create()(React.createClass({
             const res = data.result;
 
             this.setState({
-              sec:res.secuence_payroll,
-              id_company_legal: res.id_company_legal
+              file_pdf: 'data:application/pdf;base64,' + res.file_pdf,
+              no_fuec: res.no_fuec
             });
 
-            this.props.form.setFieldsValue({
-              input_uno : res.id_company_legal  + ' 0000 ' + res.secuence_payroll
-            })
+            message.success('Se creo un nuevo FUEC: ' + res.no_fuec);
 
           },
           (err) => {
@@ -157,16 +156,35 @@ const PageTwo = Form.create()(React.createClass({
     });
   },
 
+  handlePreview: function(){
+    if(this.state.file_pdf){
+      this.setState({
+        previewVisible: true,
+      });
+    }
+  },
+
+  handleCancel: function(){
+    this.setState({ previewVisible: false  })
+  },
+
   render: function () {
 
     const { getFieldDecorator } = this.props.form;
+    const { previewVisible, file_pdf, no_fuec } = this.state;
     const st = this.state.option;
+    const children = [];
+    var link_pdf='';
 
-    var children = st.map(function (data, i) {
-      return (
+    if(file_pdf){
+      link_pdf = (<a onClick={this.handlePreview}>{this.state.no_fuec}.pdf </a>)
+    }
+
+    for (let i = 0; i < st.length; i++){
+      children.push(
         <div key={i} ref={i}>
           <InputGroup compact>
-            <Button onClick={()=>this.delRelRuta(i)}  data-key={i}  type="danger" shape="circle" icon="minus"/>
+            <Button onClick={()=>this.delRelRuta(i)} type="danger" shape="circle" icon="minus"/>
             {getFieldDecorator(`input_ruta_${i}`,
             {
               rules: [
@@ -181,9 +199,10 @@ const PageTwo = Form.create()(React.createClass({
             />
             )}
           </InputGroup>
+          <br/>
         </div>
       );
-    });
+    }
 
 
     return (
@@ -232,7 +251,7 @@ const PageTwo = Form.create()(React.createClass({
               <Form onSubmit={this.handleSubmitForm}>
                 <Row gutter={15}>
                   <Col span={8}>
-                    <FormItem  label="No. FUEC" extra="No modificable.">
+                    <FormItem  label="No. FUEC temporal" extra="No modificable.">
                       {getFieldDecorator('input_uno')(
                       <Input disabled={true} />
                       )}
@@ -310,10 +329,26 @@ const PageTwo = Form.create()(React.createClass({
                       )}
                     </FormItem>
 
+
+                    <Modal width='80%' style={{ top: 20  }} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                      <iframe
+                        src={file_pdf}
+                        width="100%"
+                        height="500px"
+                        alt="pdf"
+                        type="application/pdf"
+                      />
+                    </Modal>
+
+
                     <FormItem>
                       <Button type="primary" htmlType="submit" size="large">Grabar</Button>
                       <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
                     </FormItem>
+
+                    <br/>
+                    {link_pdf}
+
                   </Col>
 
                 </Row>

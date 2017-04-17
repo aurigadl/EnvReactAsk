@@ -23,6 +23,8 @@ var FormConductor = Form.create()(React.createClass({
 
 
   handleSelect: function (childSelectValue, childSelectText) {
+    this.handleReset();
+
     this.setState({
       childSelectValue: childSelectValue,
       childSelectText: childSelectText
@@ -42,9 +44,20 @@ var FormConductor = Form.create()(React.createClass({
           this.props.form.setFieldsValue({
              input_uno   :res.no_agreement
             ,input_dos   :{key:res.id_person,label:res.name_person}
-            ,input_tres  :{key:res.id_type_agreement,label:res.name_type_agreement}
-            ,input_cuatro:{key:res.id_object_agreement,label:res.name_objectAgreement}
+            ,input_cuatro:{key:res.id_object_agreement,label:res.name_object_agreement}
           })
+
+          if(res.id_type_agreement){
+            this.props.form.setFieldsValue({
+              input_tres  :{key:res.id_type_agreement,label:res.name_type_agreement}
+            })
+          }
+
+          if(res.id_person_agreement){
+            this.props.form.setFieldsValue({
+              input_nueve: {key:res.id_person_agreement,label:res.name_person_agreement}
+            })
+          }
 
           if(res.file_pdf){
             this.setState({
@@ -82,10 +95,17 @@ var FormConductor = Form.create()(React.createClass({
         var params = {
            no_agreement : val.input_uno.toString()
           ,id_person    : val.input_dos.key.toString()
-          ,id_type_agreement : val.input_tres.key.toString()
           ,id_object_agreement : val.input_cuatro.key.toString()
           ,pdf_file : this.state.file_pdf
         };
+
+        if(val.input_tres){
+          params['id_type_agreement'] = val.input_tres.key.toString()
+        }
+
+        if(val.input_nueve){
+          params['id_person_agreement'] = val.input_nueve.key.toString()
+        }
 
         if (selecChildV === undefined || selecChildV === "") {
 
@@ -124,7 +144,6 @@ var FormConductor = Form.create()(React.createClass({
                 message.error('NO se creo el registro' +
                   '\n Error :' + err.message.error)
           });
-
         }
       }
     })
@@ -153,7 +172,7 @@ var FormConductor = Form.create()(React.createClass({
     fileList = fileList.slice(-1);
 
     fileList = fileList.map((file) => {
-      if (file.response && file.type === "application/pdf") {
+      if (file.type === "application/pdf") {
         this.getBase64(file.originFileObj, file_pdf => this.setState({ file_pdf  }));
       }
       return file;

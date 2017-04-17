@@ -29,6 +29,7 @@ def api_fuec_new():
     json_data = request.get_json()
     data_drivers = []
     person_car_mod = []
+    agreem = {}
 
     if not json_data.has_key('params') or len(json_data.get('params')) == 0:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters'}), 400
@@ -40,7 +41,7 @@ def api_fuec_new():
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - route'}), 400
 
-    if params.has_key('date') and params['date'] > 0:
+    if params.has_key('date'):
         date = params['date']
     else:
         return jsonify({"jsonrpc": "2.0", "result": False, "error": 'incorrect parameters - date'}), 400
@@ -59,56 +60,84 @@ def api_fuec_new():
 
     if person_car is None:
         return jsonify(
-            {"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre personas y el vehiculo'}), 400
+            {"jsonrpc": "2.0", "result": False, "error": 'Does not exist car and person'}), 400
     else:
         person_car = person_car[0]
         for x in json.JSONDecoder().decode(person_car):
-            person_id = Person.query.with_entities(Person.id, Person.first_name + ' ' + Person.last_name) \
-                .filter(Person.id == x['person']) \
-                .first()
+            person_id = Person.query.with_entities(Person.type_person
+                                                   , Person.first_name
+                                                   , Person.last_name
+                                                   , Person.email
+                                                   , Person.phone
+                                                   , Person.id_number
+                                                   , Person.id_type
+                                                   , Person.license
+                                                   , Person.effective_date
+                                                   , Person.address).filter(Person.id == x['person']).first()
+
+            if person_id[8]:
+                lst = list(person_id)
+                lst[8] = person_id[8].strftime("%Y-%m-%d %H:%M:%S")
+                person_id = tuple(lst)
+
+            if int(x['mod']) == 1:
+                data_drivers.append(person_id)
+            else:
+                contractor_owner = person_id
+
             modal_id = Modality.query.with_entities(Modality.id, Modality.name) \
                 .filter(Modality.id == x['mod']) \
                 .first()
+
             person_car_mod.append(
                 dict(person=dict(zip(('id', 'name'), person_id)), mod=dict(zip(('id', 'name'), modal_id))))
 
-    agreement = Agreement.query.join(KindAgreement, ObjectAgreement, User, Person) \
+    agreement = Agreement.query.join(ObjectAgreement, User) \
         .with_entities(Agreement.no_agreement
                        , Agreement.created_at
                        , Agreement.created_by
                        , User.first_name + ' ' + User.last_name
                        , Agreement.id_person
-                       , Person.first_name + ' ' + Person.last_name
-                       , Agreement.id_type_agreement
-                       , KindAgreement.name
                        , Agreement.id_object_agreement
                        , ObjectAgreement.name
-                       , Agreement.file_pdf) \
+                       , Agreement.id_type_agreement
+                       , Agreement.id_person_agreement) \
         .filter(
         Agreement.id == agreement,
-        KindAgreement.id == Agreement.id_type_agreement,
-        ObjectAgreement.id == Agreement.id_object_agreement,
         User.id == Agreement.created_by,
-        Person.id == Agreement.id_person
+        ObjectAgreement.id == Agreement.id_object_agreement
     ).first()
 
-    if agreement[10]:
-        lst = list(agreement)
-        lst[10] = agreement[10].encode("base64")
-        agreement = tuple(lst)
+    agreem['no_agreement'] = agreement[0]
+    agreem['created_at'] = agreement[1]
+    agreem['id_created_by'] = agreement[2]
+    agreem['name_created_by'] = agreement[3]
+    agreem['id_person'] = agreement[4]
 
-    dict_agreement = dict(
-        zip(('no_agreement'
-             , 'created_at'
-             , 'id_created_by'
-             , 'name_created_by'
-             , 'id_person'
-             , 'name_person'
-             , 'id_type_agreement'
-             , 'name_type_agreement'
-             , 'id_object_agreement'
-             , 'name_objectAgreement'
-             , 'file_pdf'), agreement))
+    person_sql = Person.query.with_entities(Person.first_name, Person.last_name) \
+        .filter(Person.id == agreement[4]).first()
+    contractor = person_sql[0] + ' ' + person_sql[1]
+
+    agreem['id_object_agreement'] = agreement[5]
+    object_agreement = agreement[6]
+
+    if agreement[7]:
+        kindAgreement_sql = KindAgreement.query.with_entities(KindAgreement.name) \
+            .filter(KindAgreement.id == agreement[7]).first()
+        kindAgreement = kindAgreement_sql[0]
+        agreem['id_type_agreement'] = agreement[7]
+    else:
+        kindAgreement = None
+        agreem['id_type_agreement'] = None
+
+    if agreement[8]:
+        person_a_sql = Person.query.with_entities(Person.first_name, Person.last_name) \
+            .filter(Person.id == agreement[8]).first()
+        name_person_agreement = person_a_sql[0] + ' ' + person_a_sql[1]
+        kind_agreement_link = agreement[8]
+    else:
+        name_person_agreement = None
+        kind_agreement_link = None
 
     ruta = Ruta.query.with_entities(Ruta.name).filter(
         Ruta.id.in_(route)).all()
@@ -132,53 +161,29 @@ def api_fuec_new():
     car_model = str(car[4])
     car_operation = str(car[5])
 
-    for rel in json.loads(person_car):
-        d_person = Person.query.with_entities(Person.type_person
-                                      , Person.first_name
-                                      , Person.last_name
-                                      , Person.email
-                                      , Person.phone
-                                      , Person.id_number
-                                      , Person.id_type
-                                      , Person.license
-                                      , Person.effective_date
-                                      , Person.address).filter(Person.id == rel['person']).first()
-
-    if d_person[8]:
-        lst = list(d_person)
-    lst[8] = d_person[8].strftime("%Y-%m-%d %H:%M:%S")
-    d_person = tuple(lst)
-
-    if int(rel['mod']) == 1:
-        data_drivers.append(d_person)
-
-    if int(rel['mod']) != 1:
-        contractor_owner = d_person
-
-    if data_drivers is None:
-        return jsonify(
-            {"jsonrpc": "2.0", "result": False, "error": 'No existen relacion entre vehiculo y un conductor'}), 400
-
     system_all = System.query.first()
     nameCompany = system_all.get_json()['name']
     companyLogo = system_all.get_json()['logo']
-    nit1 = system_all.get_json()['nit_1']
-    nit2 = system_all.get_json()['nit_2']
-    contractor = dict_agreement['name_person']
-    id_contractor = dict_agreement['id_person']
-    kindAgreement =  dict_agreement[name_type_agreement]
-    object_agreement = dict_agreement['name_objectAgreement']
-    id_fuec = system_all.get_json()['id_company_legal']
-    id_payroll = system_all.get_json()['secuence_payroll']
+    id_payroll = str(system_all.get_json()['secuence_payroll'])
+    id_contractor = str(agreem['id_person'])
+
+    # tmp_company_log
     data_logo = companyLogo.split(',')[1].decode('base64')
     tmp_companyLogo = 'server/tmp/' + str(int(random.random() * 1000000)) + '.png'
     fcl = open(tmp_companyLogo, 'wb')
     fcl.write(data_logo)
     fcl.close()
 
+    # no_agreefuec
+    no_agreefuec = str(agreement[0])
 
-    no_agreefuec = agreement[0]
+    # no_fuec
+    id_fuec = str(system_all.get_json()['id_company_legal'])
     no_fuec = id_fuec + no_agreefuec + id_payroll
+
+    # nit
+    nit1 = system_all.get_json()['nit_1']
+    nit2 = system_all.get_json()['nit_2']
     nit = str(nit1) + '-' + str(nit2)
 
     img_sign = system_all.get_json()['sign']
@@ -198,7 +203,7 @@ def api_fuec_new():
                          object_agreement,
                          ruta,
                          kindAgreement,
-                         kind_agreement_link,
+                         name_person_agreement,
                          text_init_date,
                          text_last_date,
                          car_no,
@@ -243,7 +248,10 @@ def api_fuec_new():
 
     db.session.add(new_fuec_db)
     db.session.commit()
-    return jsonify({"jsonrpc": "2.0", "result": True, "id": new_fuec_db.id}), 201
+    return jsonify({"jsonrpc": "2.0", "result": {"id": new_fuec_db.id,
+                                                 "file_pdf": file_pdf.encode("base64"),
+                                                 "no_fuec":no_fuec
+                                                }}), 201
 
 
 @apiFuec.route('/apiFuec/fullAllFuec', methods=['GET'])

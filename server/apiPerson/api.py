@@ -25,9 +25,16 @@ def api_fuec_IdType_all():
 @apiPerson.route('/apiFuec/allPerson', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def person_all():
-    person_all = Person.query.with_entities(Person.id, Person.first_name + ' ' + Person.last_name).all()
-    dict_person_all = [dict(zip(('id', 'nomb', 'last_name'), r)) for r in person_all]
-    return jsonify(dict(jsonrpc="2.0", result=dict_person_all)), 200
+    rows = []
+    person_all = Person.query.with_entities(Person.id, Person.first_name, Person.last_name).all()
+    for r in person_all:
+        dict_person = {}
+        dict_person['id'] = r[0]
+        dict_person['first_name'] = r[1]
+        dict_person['last_name'] = r[2]
+        dict_person['nomb'] = r[1] + ' ' + r[2]
+        rows.append(dict_person)
+    return jsonify(dict(jsonrpc="2.0", result=rows)), 200
 
 
 @apiPerson.route('/apiFuec/newPerson', methods=['POST'])
@@ -50,7 +57,7 @@ def new_person():
     else:
         type_person = None
 
-    if params.has_key('type_person') and len(params['last_name']) != 0:
+    if params.has_key('last_name') and len(params['last_name']) != 0:
         last_name = params['last_name']
     else:
         last_name = None
