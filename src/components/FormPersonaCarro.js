@@ -18,7 +18,8 @@ var FormPersonaCarro = Form.create()(React.createClass({
                person:[]},
               {mod:{key:3, label:'Supervisor'},
                person:[]}
-            ]
+            ],
+      newOption: 0,
     };
   },
 
@@ -68,8 +69,7 @@ var FormPersonaCarro = Form.create()(React.createClass({
             }
           },
           (err) => {
-            message.error('NO se cargaron los datos de la seleccion: ' +
-              '\n Error :' + err.message.error)
+            message.warning('NO se encontraron datos para cargar')
           }
       );
 
@@ -140,6 +140,8 @@ var FormPersonaCarro = Form.create()(React.createClass({
           remoteData(parreq,
             (data) => {
               message.success('Se realizo el registro persona, carro y modalidad');
+              //Update Container
+              this.props.newOptCont();
               this.handleReset();
             },
             (err) => {
@@ -171,6 +173,17 @@ var FormPersonaCarro = Form.create()(React.createClass({
     });
   },
 
+
+  componentWillReceiveProps: function(nextProps) {
+    var next = nextProps.newOption;
+    var prev = this.props.newOption;
+    if (next != prev){
+      this.setState({
+        newOption: this.state.newOption + 1
+      });
+    }
+  },
+
   render: function () {
 
     const { getFieldDecorator} = this.props.form;
@@ -192,6 +205,7 @@ var FormPersonaCarro = Form.create()(React.createClass({
                   }],
                 })(
                 <SelectInput
+                  newOption={this.state.newOption}
                   url="apiFuec/allPerson"
                   style={{marginRight: 4}}
                 />
@@ -245,6 +259,7 @@ var FormPersonaCarro = Form.create()(React.createClass({
                   }],
                 })(
                 <SelectInput
+                  newOption={this.state.newOption}
                   url="apiFuec/allCar"
                   onUserSelect={this.handleSelect}
                 />

@@ -113,6 +113,9 @@ var FormPersona = Form.create()(React.createClass({
                   childSelectValue: undefined,
                   newOption: this.state.newOption + 1
                 });
+
+                //Update Container
+                this.props.newOptCont();
                 this.handleReset();
               },
               (err) => {
@@ -138,6 +141,8 @@ var FormPersona = Form.create()(React.createClass({
                 this.setState({
                   newOption: this.state.newOption + 1
                 });
+                //Update Container
+                this.props.newOptCont();
                 this.handleReset();
               },
               (err) => {
@@ -169,6 +174,8 @@ var FormPersona = Form.create()(React.createClass({
             this.setState({
               newOption: this.state.newOption + 1
             });
+            //Update Container
+            this.props.newOptCont();
             this.handleReset();
           },
           (err) => {

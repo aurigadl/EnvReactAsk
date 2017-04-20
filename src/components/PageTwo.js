@@ -1,209 +1,68 @@
 import React from 'react'
 import FormRuta from './FormRuta.js'
-import TableFuec from './TableFuec.js'
+import FormFuec from './FormFuec.js'
 import FormCarro from './FormCarro.js'
-import SelectInput from './SelectInput.js'
 import FormPersona from './FormPersona.js'
 import FormContrato from './FormContrato.js'
 import FormMarcaAuto from './FormMarcaAuto.js'
-import TableAgreement from './TableAgreement.js'
 import FormPersonaCarro from './FormPersonaCarro.js'
-import {remoteData} from '../utils/mrequest';
-import {Tooltip, message, DatePicker, Layout, BackTop, Modal,
-   Card , Form , Input , Col, Row, Button, Icon} from 'antd';
+import {Tooltip, Layout, BackTop,
+   Col, Row, Button, Icon} from 'antd';
 
 const { Header, Content} = Layout;
-const { RangePicker } = DatePicker;
-const FormItem = Form.Item;
-const InputGroup = Input.Group;
 
-const PageTwo = Form.create()(React.createClass({
+const PageTwo = React.createClass({
 
   getInitialState: function () {
     return {
-      childSelV: undefined,
-      childSelT: undefined,
-      no_sec: '',
-      no_fuec: '',
-      id_company_legal: '',
-      option: [],
-      file_pdf: undefined,
-      no_fuec:undefined,
-      previewVisible: false
-    }
-  },
-
-  setNewFuec: function(agree){
-    const st = this.state;
-    const sec = st.sec.toString();
-    const company = st.id_company_legal.toString();
-    return company + ' ' + agree + ' ' + sec;
-  },
-
-  componentDidMount: function () {
-    var parreq = {
-      method: 'GET',
-      url: 'apiSystem/allSystem'
+      newPerson: 0,
+      newAgreement: 0,
+      newBrand: 0,
+      newRoute: 0,
+      newPerCar: 0,
+      newCar: 0,
     };
-
-    remoteData(parreq,
-      (data) => {
-        const res = data.result;
-
-        this.setState({
-          sec:res.secuence_payroll,
-          id_company_legal: res.id_company_legal
-        });
-
-        this.props.form.setFieldsValue({
-          input_uno : res.id_company_legal  + ' 0000 ' + res.secuence_payroll
-        })
-
-      },
-      (err) => {
-        message.error('No se cargaron los datos de configuración: ' +
-          '\n Error :' + err.message.error)
-      }
-    )
   },
 
-  addNewRuta: function () {
-    var newOption = this.state.option;
-    newOption.unshift({});
+  handleChangePerson: function(){
     this.setState({
-      option: newOption
+      newPerson: this.state.newPerson + 1
     });
   },
 
-  delRelRuta: function (i) {
-    var newn = this.state.option;
-    delete newn[i];
-    var build = newn.filter((a)=>typeof a !== 'undefined')
+  handleChangeAgreement: function(){
     this.setState({
-      option: build
+      newAgreement: this.state.newAgreement + 1
     });
   },
 
-  handleSubmitForm: function (e) {
-    e.preventDefault();
-    const form = this.props.form;
-
-    form.validateFields((err, val) => {
-      if (!err) {
-        const data=[]
-        let i=0;
-        while(eval(`val.input_ruta_${i}`) !== undefined){
-          let ruta  = eval(`val.input_ruta_${i}`).key;
-          data.push(ruta);
-          i++;
-        }
-        data.push(val.input_ruta_100.key)
-
-        var params = {
-          route:  data.toString(),
-          date: [val.input_cinco[0].format('YYYY-MM-DD'), val.input_cinco[1].format('YYYY-MM-DD')] ,
-          car: val.input_tres.key,
-          agreement: val.input_cuatro.key
-        };
-
-        var parreq = {
-          method: 'PUT',
-          url: 'apiFuec/newFuec',
-          params: {
-            'params': params
-          }
-        };
-
-        remoteData(parreq,
-          (data) => {
-            const res = data.result;
-
-            this.setState({
-              file_pdf: 'data:application/pdf;base64,' + res.file_pdf,
-              no_fuec: res.no_fuec
-            });
-
-            message.success('Se creo un nuevo FUEC: ' + res.no_fuec);
-
-          },
-          (err) => {
-            message.error('No se cargaron los datos de configuración: ' +
-              '\n Error :' + err.message.error)
-          }
-        )
-
-      }
-    });
-
-  },
-
-
-  handleReset: function (e) {
+  handleChangeBrand: function(){
     this.setState({
-      no_agree: ''
+      newBrand: this.state.newBrand + 1
     });
   },
 
-  //callback to get data from component selectinput
-  handleSelect: function (childSelV, childSelT) {
+  handleChangeRoute: function(){
     this.setState({
-      childSelV: childSelV,
-      childSelT: childSelT
-    });
-
-    this.props.form.setFieldsValue({
-      input_uno : this.setNewFuec(childSelT)
+      newRoute: this.state.newRoute + 1
     });
   },
 
-  handlePreview: function(){
-    if(this.state.file_pdf){
-      this.setState({
-        previewVisible: true,
-      });
-    }
+  handleChangeCar: function(){
+    this.setState({
+      newCar: this.state.Car + 1
+    });
   },
 
-  handleCancel: function(){
-    this.setState({ previewVisible: false  })
+  handleChangePerCar: function(){
+    this.setState({
+      newPerCar: this.state.newPerCar + 1
+    });
   },
 
   render: function () {
 
-    const { getFieldDecorator } = this.props.form;
-    const { previewVisible, file_pdf, no_fuec } = this.state;
-    const st = this.state.option;
-    const children = [];
-    var link_pdf='';
-
-    if(file_pdf){
-      link_pdf = (<a onClick={this.handlePreview}>{this.state.no_fuec}.pdf </a>)
-    }
-
-    for (let i = 0; i < st.length; i++){
-      children.push(
-        <div key={i} ref={i}>
-          <InputGroup compact>
-            <Button onClick={()=>this.delRelRuta(i)} type="danger" shape="circle" icon="minus"/>
-            {getFieldDecorator(`input_ruta_${i}`,
-            {
-              rules: [
-                { required: true,
-                  message: 'Seleccione una ruta!'
-                }
-              ],
-            })(
-            <SelectInput
-              style={{ width: '88%' }}
-              url="apiFuec/allRuta"
-            />
-            )}
-          </InputGroup>
-          <br/>
-        </div>
-      );
-    }
-
+    const { newCar, newRoute, newAgreement, newPerson, newBrand, newPerCar } = this.state;
 
     return (
           <Content>
@@ -247,142 +106,46 @@ const PageTwo = Form.create()(React.createClass({
               </h2>
             </Header>
 
-            <Card id='fuec' title="FUEC - Contrato Automotor Especial" bordered={false}>
-              <Form onSubmit={this.handleSubmitForm}>
-                <Row gutter={15}>
-                  <Col span={8}>
-                    <FormItem  label="No. FUEC temporal" extra="No modificable.">
-                      {getFieldDecorator('input_uno')(
-                      <Input disabled={true} />
-                      )}
-                    </FormItem>
-
-                    <FormItem label="Ruta: Origen - Destino" >
-                      <InputGroup size="large" compact>
-                      <Button onClick={this.addNewRuta}  type="primary"  shape="circle" icon="plus"/>
-                      {getFieldDecorator('input_ruta_100',
-                      {
-                        rules: [
-                          { required: true,
-                            message: 'Seleccione un ruta!'
-                          }
-                        ],
-                      })(
-                      <SelectInput
-                        style={{ width: '88%' }}
-                        url="apiFuec/allRuta" />
-                      )}
-                      </InputGroup>
-                    </FormItem>
-
-                    {children}
-
-
-                  </Col>
-
-                  <Col span={8}>
-                    <FormItem label="Fecha del fuec" >
-                      {getFieldDecorator('input_cinco',
-                      {
-                        rules: [
-                          { required: true,
-                            type: 'array',
-                            message: 'Seleccione una fecha!'
-                          }
-                        ],
-                      })(
-                      <RangePicker placeholder={['Fecha - Inicio', 'Fecha - Fin']}/>
-                      )}
-                    </FormItem>
-
-                    <FormItem label="Vehiculo:" >
-                      {getFieldDecorator('input_tres',
-                      {
-                        rules: [
-                          { required: true,
-                            message: 'Seleccione un vehiculo!'
-                          }
-                        ],
-                      })(
-                      <SelectInput
-                        url="apiFuec/allCarWithPerson"
-                      />
-                      )}
-                    </FormItem>
-
-                  </Col>
-
-                  <Col span={8}>
-                    <FormItem label="Numero del contrato" >
-                      {getFieldDecorator('input_cuatro',
-                      {
-                        rules: [
-                          { required: true,
-                            message: 'Seleccione un  contrato!'
-                          }
-                        ],
-                      })(
-                      <SelectInput
-                        url="apiFuec/allAgreement"
-                        onUserSelect={this.handleSelect}
-                      />
-                      )}
-                    </FormItem>
-
-
-                    <Modal width='80%' style={{ top: 20  }} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                      <iframe
-                        src={file_pdf}
-                        width="100%"
-                        height="500px"
-                        alt="pdf"
-                        type="application/pdf"
-                      />
-                    </Modal>
-
-
-                    <FormItem>
-                      <Button type="primary" htmlType="submit" size="large">Grabar</Button>
-                      <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
-                    </FormItem>
-
-                    <br/>
-                    {link_pdf}
-
-                  </Col>
-
-                </Row>
-                </Form>
-
-              </Card>
+              <FormFuec
+                newOption={newAgreement + newRoute + newCar + newPerCar}
+                id='fuec'/>
 
               <FormPersonaCarro
+                newOptCont={this.handleChangePerCar}
+                newOption={newPerson + newCar}
                 id='personaCarro'/>
+
+              <FormCarro
+                newOptCont={this.handleChangeCar}
+                newOption={newBrand}
+                id='carro'/>
+
+              <FormContrato
+                newOptCont={this.handleChangeAgreement}
+                newOption={newPerson}
+                id='contrato'/>
+
+              <FormPersona
+                newOptCont={this.handleChangePerson}
+                id="persona"/>
 
               <Row>
                 <Col span="12">
                   <FormRuta
+                    newOptCont={this.handleChangeRoute}
                     id="ruta"/>
                 </Col>
                 <Col span="12">
                   <FormMarcaAuto
+                    newOptCont={this.handleChangeBrand}
                     id="marca"/>
                 </Col>
               </Row>
-
-              <FormCarro
-                id='carro'/>
-
-              <FormContrato
-                id='contrato'/>
-
-              <FormPersona
-                id="persona"/>
 
             <BackTop/>
           </Content>
     );
   }
-}));
+});
 
 export default PageTwo

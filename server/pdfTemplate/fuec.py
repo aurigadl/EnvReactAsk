@@ -439,9 +439,9 @@ class TmpPdfFuec:
 
         contractor = self.contractor_owner
         name_c = str(contractor[1] + ' ' + contractor[2])
-        id_c = str(contractor[4])
-        tel_c = str(contractor[5])
-        dir_c = contractor[8][:10]
+        id_c = str(contractor[5])
+        tel_c = str(contractor[4])
+        dir_c = contractor[9][:10]
 
         # text title
         pdf.set_xy(17, 194)

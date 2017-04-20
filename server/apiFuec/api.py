@@ -164,7 +164,7 @@ def api_fuec_new():
     system_all = System.query.first()
     nameCompany = system_all.get_json()['name']
     companyLogo = system_all.get_json()['logo']
-    id_payroll = str(system_all.get_json()['secuence_payroll'])
+    id_payroll = system_all.get_json()['secuence_payroll']
     id_contractor = str(agreem['id_person'])
 
     # tmp_company_log
@@ -179,7 +179,7 @@ def api_fuec_new():
 
     # no_fuec
     id_fuec = str(system_all.get_json()['id_company_legal'])
-    no_fuec = id_fuec + no_agreefuec + id_payroll
+    no_fuec = id_fuec + no_agreefuec + str(id_payroll + 1)
 
     # nit
     nit1 = system_all.get_json()['nit_1']
@@ -248,6 +248,10 @@ def api_fuec_new():
 
     db.session.add(new_fuec_db)
     db.session.commit()
+
+    System.query.first().query.update(dict(secuence_payroll=(id_payroll + 1)))
+    db.session.commit()
+
     return jsonify({"jsonrpc": "2.0", "result": {"id": new_fuec_db.id,
                                                  "file_pdf": file_pdf.encode("base64"),
                                                  "no_fuec":no_fuec

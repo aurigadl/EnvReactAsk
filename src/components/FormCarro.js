@@ -92,9 +92,9 @@ var FormCarro = Form.create()(React.createClass({
           remoteData(parreq,
             (data) => {
               message.success('Se creo un nuevo registro carro');
-              this.setState({
-                newOption: this.state.newOption + 1
-              });
+              this.setState({ newOption: this.state.newOption + 1 });
+              //Update Container
+              this.props.newOptCont();
               this.handleReset();
             },
             (err) => {
@@ -118,9 +118,9 @@ var FormCarro = Form.create()(React.createClass({
           remoteData(parreq,
             (data) => {
               message.success('Se actulizo el registro carro: ' + selecChildT);
-              this.setState({
-                newOption: this.state.newOption + 1
-              });
+              this.setState({ newOption: this.state.newOption + 1 });
+              //Update Container
+              this.props.newOptCont();
               this.handleReset();
             },
             (err) => {
@@ -151,9 +151,9 @@ var FormCarro = Form.create()(React.createClass({
       remoteData(parreq,
           (data) => {
             message.success('Se borro el registro: ' + this.state.childSelectText);
-            this.setState({
-              newOption: this.state.newOption + 1
-            });
+            this.setState({ newOption: this.state.newOption + 1 });
+            //Update Container
+            this.props.newOptCont();
             this.handleReset();
           },
           (err) => {
@@ -166,6 +166,16 @@ var FormCarro = Form.create()(React.createClass({
 
   hasErrors: function(fieldsError) {
     return Object.keys(fieldsError).some(field => fieldsError[field]);
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    var next = nextProps.newOption;
+    var prev = this.props.newOption;
+    if (next != prev){
+      this.setState({
+        newOption: this.state.newOption + 1
+      });
+    }
   },
 
   render: function () {
@@ -214,6 +224,7 @@ var FormCarro = Form.create()(React.createClass({
                     ],
                   })(
                   <SelectInput
+                    newOption={this.state.newOption}
                     url="apiFuec/allMarca"/>
                   )}
                 </FormItem>

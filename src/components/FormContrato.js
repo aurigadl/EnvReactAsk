@@ -17,7 +17,8 @@ var FormConductor = Form.create()(React.createClass({
       childSelectText: '',
       file_pdf:'',
       fileList:[],
-      previewVisible: false
+      previewVisible: false,
+      newOption: 0,
     };
   },
 
@@ -118,6 +119,9 @@ var FormConductor = Form.create()(React.createClass({
           remoteData(parreq,
               (data) => {
                 message.success('Se creo un nuevo registro contrato');
+                this.setState({ newOption: this.state.newOption + 1 });
+                //Update Container
+                this.props.newOptCont();
                 this.handleReset();
               },
               (err) => {
@@ -138,6 +142,9 @@ var FormConductor = Form.create()(React.createClass({
           remoteData(parreq,
               (data) => {
                 message.success('Se actulizo el registro contrato');
+                this.setState({ newOption: this.state.newOption + 1 });
+                //Update Container
+                this.props.newOptCont();
                 this.handleReset();
               },
               (err) => {
@@ -195,6 +202,16 @@ var FormConductor = Form.create()(React.createClass({
     this.setState({ previewVisible: false  })
   },
 
+  componentWillReceiveProps: function(nextProps) {
+    var next = nextProps.newOption;
+    var prev = this.props.newOption;
+    if (next != prev){
+      this.setState({
+        newOption: this.state.newOption + 1
+      });
+    }
+  },
+
 
   render: function () {
     const { getFieldDecorator } = this.props.form;
@@ -214,14 +231,14 @@ var FormConductor = Form.create()(React.createClass({
                     }],
                   })(
                   <SelectInput
+                    newOption={this.state.newOption}
                     url="apiFuec/allAgreement"
                     onUserSelect={this.handleSelect}
                   />
                   )}
                 </FormItem>
                 <FormItem  label="No. Contrato" >
-                 {getFieldDecorator('input_uno',
-                 {
+                 {getFieldDecorator('input_uno', {
                    rules: [
                      { required: true,
                        message: 'Ingrese el numero del contrato!'
@@ -235,8 +252,7 @@ var FormConductor = Form.create()(React.createClass({
 
               <Col span={8}>
                 <FormItem label="Contratante - Persona Juridica o Natural">
-                  {getFieldDecorator('input_dos',
-                  {
+                  {getFieldDecorator('input_dos', {
                     rules: [
                       { required: true,
                         type: 'object',
@@ -245,14 +261,14 @@ var FormConductor = Form.create()(React.createClass({
                     ],
                   })(
                   <SelectInput
+                    newOption={this.state.newOption}
                     url="apiFuec/allPerson"
                   />
                   )}
                 </FormItem>
 
                 <FormItem label="Objeto del Contrato">
-                  {getFieldDecorator('input_cuatro',
-                  {
+                  {getFieldDecorator('input_cuatro', {
                     rules: [
                       { required: true,
                         type: 'object',
@@ -281,8 +297,7 @@ var FormConductor = Form.create()(React.createClass({
               <Col span={8}>
 
                 <FormItem label="Union - Tipo de contrato">
-                  {getFieldDecorator('input_tres',
-                  {
+                  {getFieldDecorator('input_tres', {
                     rules: [
                       { type: 'object',
                         message: 'Seleccione un tipo de contrato!'
@@ -296,8 +311,7 @@ var FormConductor = Form.create()(React.createClass({
                 </FormItem>
 
                 <FormItem label="Union - Con">
-                  {getFieldDecorator('input_nueve',
-                  {
+                  {getFieldDecorator('input_nueve', {
                     rules: [
                       { type: 'object',
                         message: 'Seleccione una persona o empresa !'
@@ -305,6 +319,7 @@ var FormConductor = Form.create()(React.createClass({
                     ],
                   })(
                   <SelectInput
+                    newOption={this.state.newOption}
                     url="apiFuec/allPerson"
                   />
                   )}
