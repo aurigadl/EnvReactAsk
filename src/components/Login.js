@@ -1,13 +1,18 @@
 import React from 'react'
 import {withRouter} from 'react-router'
 import auth from '../utils/auth.js'
-import {Form, Icon, Input, Button, Row, Col} from 'antd';
+import { Form, Icon, Input, Button, Row  } from 'antd';
 import css from './login.less';
 import bg from '../../server/static/bg.jpg'
+
 const FormItem = Form.Item;
 
+function hasErrors(fieldsError) {
+  return Object.keys(fieldsError).some(field => fieldsError[field]);
+}
 
 const Login = Form.create()(React.createClass({
+
   getInitialState() {
     return {
       error: false,
@@ -15,46 +20,79 @@ const Login = Form.create()(React.createClass({
     }
   },
 
-  handleSubmit(event) {
+  componentDidMount: function () {
+    // To disabled submit button at the beginning.
+    this.props.form.validateFields();
+  },
+
+  handleSubmit: function(event) {
     event.preventDefault();
-    var email, pass, pass_c;
+    var email, pass, pass_c = null;
+
+    if (this.state.showHide) {
+       pass_c = this.props.form.getFieldValue('passw');
+    }
 
     this.props.form.validateFields((err, values) => {
       if (!err) {
         email = values.email;
         pass = values.pass;
 
-        if (this.state.showHide) {
-          pass_c = values.pass_c;
-        }
+        auth.login(email, pass, pass_c, (result) => {
+          if (result.error != null && result.error.status === 423) {
+            this.setState({showHide: true});
+            this.props.form.setFieldsValue({
+              passw : '',
+              pass  : '',
+            });
+          }
+          if (!result.authenticated)
+            this.setState({error: true});
+
+          const {location} = this.props;
+
+          if (location.state && location.state.nextPathname) {
+            this.props.router.replace(location.state.nextPathname)
+          } else {
+            this.props.router.replace('/')
+          }
+        })
+
       }
     });
-
-    auth.login(email, pass, pass_c, this.callbackFormLogin)
-  },
-
-  callbackFormLogin: function (result) {
-    if (result.error != null && result.error.status === 423) {
-      this.refs.pass.value = '';
-      this.refs.pass_c.value = '';
-      return this.setState({showHide: true});
-    }
-    if (!result.authenticated)
-      return this.setState({error: true});
-
-    const {location} = this.props;
-
-    if (location.state && location.state.nextPathname) {
-      this.props.router.replace(location.state.nextPathname)
-    } else {
-      this.props.router.replace('/')
-    }
   },
 
   render() {
 
-    const {getFieldDecorator} = this.props.form;
-    var showClass = this.state.showHide ? null : 'is-hidden';
+    const { getFieldDecorator, getFieldsError, getFieldError, isFieldTouched  } = this.props.form;
+
+    // Only show error after a field is touched.
+    const userNameError = isFieldTouched('userName') && getFieldError('userName');
+    const passwordError = isFieldTouched('password') && getFieldError('password');
+    var passw, error, text = null;
+
+    if(this.state.error){
+      error = <p>Datos no son correctos</p>;
+    };
+
+    if (this.state.showHide){
+      passw = <FormItem extra="Contraseña minimo 8 caracteres y debe contener
+              mayusculas, minusculas y numeros.">
+                {getFieldDecorator('passw', {
+                   rules: [{
+                    required: true,
+                    pattern:/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}/,
+                    message: 'Ingresa nuevamente la contraseña!'
+                   }],
+                })(
+                  <Input
+                    addonBefore={<Icon type="lock" />}
+                    type="password"
+                    placeholder="Contraseña"/>
+                )}
+              </FormItem>;
+      text = "Cambio de contraseña"
+    };
 
     return (
       <Row id="main">
@@ -67,58 +105,41 @@ const Login = Form.create()(React.createClass({
             <FormItem>
               {getFieldDecorator('email', {
                 initialValue: "admon@mi.co",
-                rules: [{required: true, message: 'Ingresa un usurio!'}],
+                rules: [{required: true,
+                         type:'email',
+                         message: 'Ingresa un usuario!'}],
               })(
                 <Input
                   addonBefore={<Icon type="user" />}
                   type="text"
-                  placeholder="micorreo@ejemplo.com"
-                  required/>
+                  placeholder="micorreo@ejemplo.com" />
               )}
             </FormItem>
 
-            <FormItem extra="Contraseña minimo 8 caracteres y debe contener
-              mayusculas, minusculas y numeros.">
+            <FormItem  extra={text}>
               {getFieldDecorator('pass', {
                 initialValue: "Abcd1234",
-                rules: [{required: true, message: 'Ingresa una contraseña!'}],
+                rules: [{ required: true,
+                          message: 'Ingresa una contraseña!',
+                          pattern:/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,20}/,
+                        }],
               })(
                 <Input
                   addonBefore={<Icon type="lock" />}
-                  aria-describedby="pass"
-                  pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
                   type="password"
-                  placeholder="Contraseña"
-                  required/>
+                  placeholder="Contraseña"/>
               )}
             </FormItem>
-
-            <div className="ant-form-extra">
-            </div>
-
-            { this.state.showResults ?
-              <FormItem className={showClass}>
-                {getFieldDecorator('passw', {
-                  initialValue: "Abcd1234",
-                  rules: [{message: 'Ingresa nuevamente la contraseña!'}],
-                })(
-                  <Input
-                    addonBefore={<Icon type="lock" />}
-                    pattern="(?=^.{8,}$)(?=.*\d)(?=.*[A-Z])(?=.*[a-z]).*$"
-                    type="password"
-                    placeholder="Contraseña"/>
-                )}
-                <div className="ant-form-extra">Repetir nueva Contraseña</div>
-              </FormItem> : null }
+            {passw}
 
             <Button
               className="login-form-button"
               type="primary"
               htmlType="submit"
+              disabled={hasErrors(getFieldsError())}
               className="login-form-button">Ingresar</Button>
-            {this.state.error && (
-              <p>Los datos no son correctos :(</p>
-            )}
+
+            {error}
 
           </Form>
           <article>
