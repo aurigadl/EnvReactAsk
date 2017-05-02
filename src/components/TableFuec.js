@@ -177,7 +177,6 @@ var TableFuec = React.createClass({
     return (
       <div className="header callout secondary">
         <div className="sign">
-          <h1>La tabla</h1>
           <div className="columns">
             <Griddle
               columnMetadata={this.metadata}

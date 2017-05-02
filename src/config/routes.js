@@ -14,7 +14,6 @@ function redirectToDashboard(nextState, replace) {
     replace('/')
   }
 }
-
 export default {
   component: require('../components/App').default,
   childRoutes: [
@@ -66,6 +65,13 @@ export default {
               getComponent: (nextState, cb) => {
                 require.ensure([], (require) => {
                   cb(null, require('../components/PageOne').default)
+                })
+              }
+            },
+            { path: '/pageThree',
+              getComponent: (nextState, cb) => {
+                require.ensure([], (require) => {
+                  cb(null, require('../components/PageThree').default)
                 })
               }
             }

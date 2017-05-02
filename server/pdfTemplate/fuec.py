@@ -79,7 +79,7 @@ class TmpPdfFuec:
         text_last_date_d = self.text_last_date[2]
 
         for i in range(len(self.route)):
-            route += 'Ruta_' + str(i) + ': ' + str(self.route[i][0]) + ' '
+            route += 'Ruta_' + str(i) + ': ' + self.route[i][0] + ' '
 
         pdf = fpdf.FPDF(format='letter')
         pdf.set_margins(15, 15, 15)
@@ -367,7 +367,7 @@ class TmpPdfFuec:
         if len(self.data_drivers) >= 1:
             # Content
             data = self.data_drivers[0]
-            name = str(data[1] + ' ' + data[2])
+            name = data[1] + ' ' + data[2]
             id = str(data[4])
             license = str(data[7])
             date = data[8] or 'Sin registro'
@@ -438,7 +438,7 @@ class TmpPdfFuec:
             pdf.cell(w=45, h=0, txt=date, border=0, align='C')
 
         contractor = self.contractor_owner
-        name_c = str(contractor[1] + ' ' + contractor[2])
+        name_c = contractor[1] + ' ' + contractor[2]
         id_c = str(contractor[5])
         tel_c = str(contractor[4])
         dir_c = contractor[9][:10]

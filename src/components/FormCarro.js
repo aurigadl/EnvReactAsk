@@ -91,8 +91,8 @@ var FormCarro = Form.create()(React.createClass({
 
           remoteData(parreq,
             (data) => {
-              message.success('Se creo un nuevo registro carro');
-              this.setState({ newOption: this.state.newOption + 1 });
+              message.success('Se creo un nuevo registro Vehiculo ');
+              tis.setState({ newOption: this.state.newOption + 1 });
               //Update Container
               this.props.newOptCont();
               this.handleReset();
@@ -117,7 +117,7 @@ var FormCarro = Form.create()(React.createClass({
 
           remoteData(parreq,
             (data) => {
-              message.success('Se actulizo el registro carro: ' + selecChildT);
+             message.success('Se actulizo el registro Vehiculo: ' + selecChildT);
               this.setState({ newOption: this.state.newOption + 1 });
               //Update Container
               this.props.newOptCont();
@@ -182,12 +182,12 @@ var FormCarro = Form.create()(React.createClass({
     const { getFieldDecorator, getFieldsError } = this.props.form;
 
     return (
-        <Card id={this.props.id} title="Carro" bordered={false}>
+        <Card id={this.props.id} title="Vehiculo" bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
             <Row gutter={15}>
               <Col span={8}>
 
-                <FormItem label="Carros Existentes - Placa">
+                <FormItem label="Vehiculos Existentes - Placa">
                   <InputGroup compact>
                     <SelectInput
                       style={{ width: '88%' }}
@@ -206,7 +206,7 @@ var FormCarro = Form.create()(React.createClass({
                   </InputGroup>
                 </FormItem>
 
-                <FormItem label="No. de Carro">
+                <FormItem label="No. de Vehiculo">
                   {getFieldDecorator('input_uno')(
                   <Input
                     disabled={true} />

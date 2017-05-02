@@ -206,7 +206,11 @@ const Fuec = Form.create()(React.createClass({
 
     return (
 
-        <Card id={this.props.id} title="FUEC - Contrato Automotor Especial" bordered={false}>
+        <Card
+          id={this.props.id}
+          extra={<h3><a href="/pageThree#fuec"><Icon type="bars" /></a></h3>}
+          title="FUEC - Contrato Automotor Especial"
+          bordered={false}>
           <Form onSubmit={this.handleSubmitForm}>
             <Row gutter={15}>
               <Col span={8}>

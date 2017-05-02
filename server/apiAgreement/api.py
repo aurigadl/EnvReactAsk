@@ -39,16 +39,13 @@ def agreement_file():
 @apiAgreement.route('/apiFuec/fullAllAgreement', methods=['GET'])
 @rbac.allow(['admon', 'candidate'], methods=['GET'])
 def full_Agreement_all():
-    adalias1 = aliased(Person)
-    adalias2 = aliased(Person)
-    full_Agreement_all = Agreement.query.join(KindAgreement, User, adalias1, adalias2, ObjectAgreement) \
+    full_Agreement_all = Agreement.query.join(KindAgreement, User, Person, ObjectAgreement) \
         .with_entities(Agreement.id,
                        Agreement.created_at,
                        User.first_name + ' ' + User.last_name,
                        Agreement.no_agreement,
-                       adalias1.first_name + ' ' + adalias1.last_name,
+                       Person.first_name + ' ' + Person.last_name,
                        KindAgreement.name,
-                       adalias1.first_name + ' ' + adalias1.last_name,
                        ObjectAgreement.name
                        ).filter(
         KindAgreement.id == Agreement.id_type_agreement,
