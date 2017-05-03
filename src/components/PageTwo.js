@@ -21,6 +21,9 @@ const PageTwo = React.createClass({
       newRoute: 0,
       newPerCar: 0,
       newCar: 0,
+      initValRoute:{},
+      initValCar:{},
+      initValAgree:{},
     };
   },
 
@@ -60,9 +63,22 @@ const PageTwo = React.createClass({
     });
   },
 
+
+  handleChangeFuec: function(objselfuec){
+    //objselfuec is object with
+    //{agree:{}, car:{}, route:{}}
+    this.setState({
+      initValRoute:objselfuec.route,
+      initValCar:objselfuec.car,
+      initValAgree:objselfuec.agree,
+    });
+  },
+
   render: function () {
 
-    const { newCar, newRoute, newAgreement, newPerson, newBrand, newPerCar } = this.state;
+    const { newCar, newRoute, newAgreement, newPerson,
+            newBrand, newPerCar, initValRoute, initValCar,
+            initValAgree } = this.state;
 
     return (
           <Content>
@@ -107,20 +123,24 @@ const PageTwo = React.createClass({
             </Header>
 
               <FormFuec
+                newOptCont={this.handleChangeFuec}
                 newOption={newAgreement + newRoute + newCar + newPerCar}
                 id='fuec'/>
 
               <FormPersonaCarro
+                initVal={initValCar}
                 newOptCont={this.handleChangePerCar}
                 newOption={newPerson + newCar}
                 id='personaCarro'/>
 
               <FormCarro
+                initVal={initValCar}
                 newOptCont={this.handleChangeCar}
                 newOption={newBrand}
                 id='carro'/>
 
               <FormContrato
+                initVal={initValAgree}
                 newOptCont={this.handleChangeAgreement}
                 newOption={newPerson}
                 id='contrato'/>
@@ -132,6 +152,7 @@ const PageTwo = React.createClass({
               <Row>
                 <Col span="12">
                   <FormRuta
+                    initVal={initValRoute}
                     newOptCont={this.handleChangeRoute}
                     id="ruta"/>
                 </Col>

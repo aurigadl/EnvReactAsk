@@ -20,23 +20,11 @@ var FormPersonaCarro = Form.create()(React.createClass({
                person:[]}
             ],
       newOption: 0,
+      initialValue: {},
     };
   },
 
-  handleSelect: function (childSelV, childSelT) {
-    this.setState({
-      childSelV: childSelV,
-      childSelT: childSelT
-    });
-
-    if (childSelV != undefined) {
-      var params = {'id': childSelV};
-      var parreq = {
-        method: 'GET',
-        url: 'apiFuec/idPersonCar',
-        params: params
-      };
-
+  getRemoteData : function(parreq){
       remoteData(parreq,
           (data) => {
             var dataArray = [];
@@ -72,6 +60,23 @@ var FormPersonaCarro = Form.create()(React.createClass({
             message.warning('NO se encontraron datos para cargar')
           }
       );
+  },
+
+  handleSelect: function (childSelV, childSelT) {
+    this.setState({
+      childSelV: childSelV,
+      childSelT: childSelT
+    });
+
+    if (childSelV != undefined) {
+      var params = {'id': childSelV};
+      var parreq = {
+        method: 'GET',
+        url: 'apiFuec/idPersonCar',
+        params: params
+      };
+
+      this.getRemoteData(parreq);
 
     } else {
       this.setState({
@@ -177,19 +182,43 @@ var FormPersonaCarro = Form.create()(React.createClass({
   componentWillReceiveProps: function(nextProps) {
     var next = nextProps.newOption;
     var prev = this.props.newOption;
+    var next_i = nextProps.initVal;
+    var prev_i = this.props.initVal;
+
     if (next != prev){
       this.setState({
         newOption: this.state.newOption + 1
       });
+    }
+
+    if (next_i != prev_i){
+      var params = {'id': next_i.key};
+      var parreq = {
+        method: 'GET',
+        url: 'apiFuec/idPersonCar',
+        params: params
+      };
+
+      this.setState({
+        initialValue: next_i
+      });
+
+      this.getRemoteData(parreq);
     }
   },
 
   render: function () {
 
     const { getFieldDecorator} = this.props.form;
-
+    const {initialValue} = this.state
     const children = [];
     const st = this.state.option;
+    var valSelec = '';
+
+    if(initialValue){
+      valSelec = initialValue;
+    }
+
     for (let i = 0; i < st.length; i++){
       const data = st[i];
       children.push(
@@ -252,6 +281,7 @@ var FormPersonaCarro = Form.create()(React.createClass({
             <Col span={8}>
               <FormItem  label="Carro">
                 {getFieldDecorator('input_uno', {
+                  initialValue:valSelec,
                   rules: [{
                     type:'object',
                     required: true,

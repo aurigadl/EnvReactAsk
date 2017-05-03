@@ -19,26 +19,12 @@ var FormConductor = Form.create()(React.createClass({
       fileList:[],
       previewVisible: false,
       newOption: 0,
+      initialValue: {},
     };
   },
 
 
-  handleSelect: function (childSelectValue, childSelectText) {
-    this.handleReset();
-
-    this.setState({
-      childSelectValue: childSelectValue,
-      childSelectText: childSelectText
-    });
-
-    if (childSelectValue != undefined) {
-      var params = {'id': childSelectValue};
-      var parreq = {
-        method: 'GET',
-        url: 'apiFuec/idAgreement',
-        params: params
-      };
-
+  getRemoteData : function(parreq){
       remoteData(parreq,
         (data) => {
           const res = data.result;
@@ -81,6 +67,25 @@ var FormConductor = Form.create()(React.createClass({
           message.error('NO se cargo el registro' +
             '\n Error :' + err.message.error)
       });
+  },
+
+  handleSelect: function (childSelectValue, childSelectText) {
+    this.handleReset();
+
+    this.setState({
+      childSelectValue: childSelectValue,
+      childSelectText: childSelectText
+    });
+
+    if (childSelectValue != undefined) {
+      var params = {'id': childSelectValue};
+      var parreq = {
+        method: 'GET',
+        url: 'apiFuec/idAgreement',
+        params: params
+      };
+
+      this.getRemoteData(parreq);
     }
   },
 
@@ -205,17 +210,36 @@ var FormConductor = Form.create()(React.createClass({
   componentWillReceiveProps: function(nextProps) {
     var next = nextProps.newOption;
     var prev = this.props.newOption;
+    var next_i = nextProps.initVal;
+    var prev_i = this.props.initVal;
+
     if (next != prev){
       this.setState({
         newOption: this.state.newOption + 1
       });
+    }
+
+    if (next_i != prev_i){
+      var params = {'id': next_i.key};
+      var parreq = {
+        method: 'GET',
+        url: 'apiFuec/idAgreement',
+        params: params
+      };
+
+      this.getRemoteData(parreq);
     }
   },
 
 
   render: function () {
     const { getFieldDecorator } = this.props.form;
-    const { previewVisible, file_pdf, fileList } = this.state;
+    const { previewVisible, file_pdf, fileList, initialValue} = this.state;
+    var valSelec = '';
+
+    if(initialValue){
+      valSelec = initialValue;
+    }
 
     return (
         <Card id={this.props.id} title="Contrato" extra={ <a href="./tables#contratos"><Icon type="layout"/></a>} bordered={false}>
@@ -225,6 +249,7 @@ var FormConductor = Form.create()(React.createClass({
               <Col span={8}>
                 <FormItem  label="Contratos Existentes">
                   {getFieldDecorator('input_cinco', {
+                    initialValue:valSelec,
                     rules: [{
                       type:'object',
                       message: 'Seleccione un Contrato!'

@@ -16,6 +16,7 @@ var FormCarro = Form.create()(React.createClass({
       childSelectValue: undefined,
       childSelectText: '',
       newOption: 0,
+      initialValue: {},
     };
   },
 
@@ -23,7 +24,28 @@ var FormCarro = Form.create()(React.createClass({
     this.props.form.resetFields();
     this.setState({
       childSelectValue: undefined,
+      initialValue:{},
     });
+  },
+
+  getRemoteData : function(parreq){
+      remoteData(parreq,
+          (data) => {
+            const res = data.result;
+            this.props.form.setFieldsValue({
+              input_uno: res.no_car,
+              input_dos: {key:res.brand_i,label:res.brand_t},
+              input_tres: res.license_plate,
+              input_cuatro: res.model,
+              input_cinco: {key:res.class_car_i,label:res.class_car_t},
+              input_seis: res.operation_card
+            });
+          },
+          (err) => {
+            message.error('NO se cargaron los datos de la seleccion: ' +
+              '\n Error :' + err.message.error)
+          }
+      );
   },
 
   handleSelect: function (childSelectValue, childSelectText) {
@@ -42,24 +64,7 @@ var FormCarro = Form.create()(React.createClass({
         params: params
       };
 
-      remoteData(parreq,
-          (data) => {
-            const res = data.result;
-            this.props.form.setFieldsValue({
-              input_uno: res.no_car,
-              input_dos: {key:res.brand_i,label:res.brand_t},
-              input_tres: res.license_plate,
-              input_cuatro: res.model,
-              input_cinco: {key:res.class_car_i,label:res.class_car_t},
-              input_seis: res.operation_card
-            });
-          },
-          (err) => {
-            message.error('NO se cargaron los datos de la seleccion: ' +
-              '\n Error :' + err.message.error)
-          }
-      );
-
+      this.getRemoteData(parreq);
     }
   },
 
@@ -171,15 +176,41 @@ var FormCarro = Form.create()(React.createClass({
   componentWillReceiveProps: function(nextProps) {
     var next = nextProps.newOption;
     var prev = this.props.newOption;
+    var next_i = nextProps.initVal;
+    var prev_i = this.props.initVal;
+
     if (next != prev){
       this.setState({
         newOption: this.state.newOption + 1
       });
     }
+
+    if (next_i != prev_i){
+      var params = {'id': next_i.key};
+      var parreq = {
+        method: 'GET',
+        url: 'apiFuec/idCar',
+        params: params
+      };
+
+      this.setState({
+        initialValue: next_i
+      });
+
+      this.getRemoteData(parreq);
+    }
   },
 
   render: function () {
     const { getFieldDecorator, getFieldsError } = this.props.form;
+    const {childSelectValue, initialValue} = this.state
+    var valSelec = '';
+
+    if(childSelectValue){
+      valSelec = {key:childSelectValue}
+    }else if(initialValue){
+      valSelec = initialValue;
+    }
 
     return (
         <Card id={this.props.id} title="Vehiculo" bordered={false}>
@@ -192,7 +223,7 @@ var FormCarro = Form.create()(React.createClass({
                     <SelectInput
                       style={{ width: '88%' }}
                       url="apiFuec/allCar"
-                      value={{key:this.state.childSelectValue}}
+                      value={valSelec}
                       newOption={this.state.newOption}
                       onUserSelect={this.handleSelect}
                     />
@@ -255,7 +286,7 @@ var FormCarro = Form.create()(React.createClass({
                     ],
                   })(
                   <InputNumber
-                    min={2010}
+                    min={2000}
                     max={2020}
                     placeholder="YYYY"/>
                   )}

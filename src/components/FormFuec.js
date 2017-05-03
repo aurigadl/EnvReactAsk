@@ -24,6 +24,7 @@ const Fuec = Form.create()(React.createClass({
       input_uno: 0,
       newOption: 0,
       sending: false,
+      changSel: {agree:{}, car:{}, route:{}},
     }
   },
 
@@ -139,15 +140,6 @@ const Fuec = Form.create()(React.createClass({
     this.props.form.resetFields();
   },
 
-  //callback to get data from component selectinput
-  handleSelect: function (childSelV, childSelT) {
-    this.setState({
-      childSelV: childSelV,
-      childSelT: childSelT,
-      input_uno : this.setNewFuec(childSelT)
-    });
-  },
-
   handlePreview: function(){
     if(this.state.file_pdf){
       this.setState({
@@ -158,6 +150,36 @@ const Fuec = Form.create()(React.createClass({
 
   handleCancel: function(){
     this.setState({ previewVisible: false  })
+  },
+
+  handleChange_agreement:  function (value) {
+    var temp_changsel = this.state.changSel;
+    temp_changsel.agree = value;
+    this.setState({
+      childSelV: value.key,
+      childSelT: value.label,
+      input_uno: this.setNewFuec(value.label),
+      changeSel: temp_changsel
+    });
+    this.props.newOptCont(temp_changsel)
+  },
+
+  handleChange_route:  function (value) {
+    var temp_changsel = this.state.changSel;
+    temp_changsel.route = value;
+    this.setState({
+      changeSel: temp_changsel
+    });
+    this.props.newOptCont(temp_changsel)
+  },
+
+  handleChange_car:  function (value) {
+    var temp_changsel = this.state.changSel;
+    temp_changsel.car = value;
+    this.setState({
+      changeSel: temp_changsel
+    });
+    this.props.newOptCont(temp_changsel)
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -193,6 +215,7 @@ const Fuec = Form.create()(React.createClass({
                 }
               ], })(
             <SelectInput
+              onChange={this.handleChange_route}
               newOption={this.state.newOption}
               style={{ width: '88%' }}
               url="apiFuec/allRuta"
@@ -231,6 +254,7 @@ const Fuec = Form.create()(React.createClass({
                       message: 'Seleccione un ruta!' } ],
                     })(
                     <SelectInput
+                      onChange={this.handleChange_route}
                       newOption={this.state.newOption}
                       style={{ width: '88%' }}
                       url="apiFuec/allRuta" />
@@ -259,6 +283,7 @@ const Fuec = Form.create()(React.createClass({
                     message: 'Seleccione un vehiculo!' } ],
                   })(
                   <SelectInput
+                    onChange={this.handleChange_car}
                     newOption={this.state.newOption}
                     url="apiFuec/allCarWithPerson"
                   />
@@ -273,10 +298,10 @@ const Fuec = Form.create()(React.createClass({
                     rules: [ { required: true,
                     message: 'Seleccione un  contrato!' } ],
                   })(
-                  <SelectInput
+                   <SelectInput
+                    onChange={this.handleChange_agreement}
                     newOption={this.state.newOption}
                     url="apiFuec/allAgreement"
-                    onUserSelect={this.handleSelect}
                   />
                   )}
                 </FormItem>

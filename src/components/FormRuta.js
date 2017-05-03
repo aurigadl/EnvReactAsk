@@ -15,15 +15,11 @@ var FormRuta = Form.create()(React.createClass({
       childSelectValue: undefined,
       childSelectText: '',
       inputValue: '',
-      newOptionMA: 0
+      newOptionMA: 0,
+      initialValue: {}
     };
   },
 
-  //let emtpy fields and diseble button
-  componentDidMount: function(){
-    // To disabled submit button at the beginning.
-    this.props.form.validateFields();
-  },
 
   //callback to get data from component selectinput
   handleUserSelect: function (childSelectValue, childSelectText) {
@@ -38,11 +34,12 @@ var FormRuta = Form.create()(React.createClass({
 
   //Return all field to the initial state
   handleReset: function (e) {
+    this.props.form.validateFields();
     this.props.form.resetFields();
     this.setState({
       childSelectValue: '',
+      initialValue:{},
     });
-    this.props.form.validateFields();
   },
 
   //Register change when the user enter characters
@@ -146,10 +143,37 @@ var FormRuta = Form.create()(React.createClass({
     }
   },
 
+  componentWillReceiveProps: function(nextProps) {
+    var next = nextProps.newOption;
+    var prev = this.props.newOption;
+    var next_i = nextProps.initVal;
+    var prev_i = this.props.initVal;
+
+    if (next != prev){
+      this.setState({
+        newOption: this.state.newOption + 1
+      });
+    }
+
+    if (next_i != prev_i){
+      this.setState({
+        initialValue: next_i
+      });
+    }
+  },
+
   render: function () {
 
     const { getFieldDecorator, getFieldError, isFieldTouched  } = this.props.form;
     const editError = isFieldTouched('edit') && getFieldError('edit');
+    var valSelec, label = '';
+
+    if(this.state.childSelectValue){
+      valSelec = {key:this.state.childSelectValue}
+    }else if(this.state.initialValue){
+      valSelec = this.state.initialValue;
+      label = this.state.initialValue.label;
+    }
 
     return (
         <Card id={this.props.id} title="Rutas y Trayectos" bordered={false}>
@@ -161,7 +185,7 @@ var FormRuta = Form.create()(React.createClass({
                   <SelectInput
                     style={{ width: '88%' }}
                     url="apiFuec/allRuta"
-                    value={{key:this.state.childSelectValue}}
+                    value={valSelec}
                     newOption={this.state.newOptionMA}
                     onUserSelect={this.handleUserSelect}
                   />
@@ -182,10 +206,10 @@ var FormRuta = Form.create()(React.createClass({
                 help={editError || ''}
               >
                 {getFieldDecorator('edit', {
+                initialValue: label,
                 rules: [{required: true,
                          whitespace: true,
                          min: '3',
-                         initialValue: '',
                          message: 'Ingrese una nueva ruta!'}],
                 })(
                 <Input
