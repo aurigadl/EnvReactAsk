@@ -155,9 +155,11 @@ var FormRuta = Form.create()(React.createClass({
       });
     }
 
-    if (next_i != prev_i){
+    if (JSON.stringify(next_i) != JSON.stringify(prev_i)){
       this.setState({
-        initialValue: next_i
+        initialValue: next_i,
+        childSelectValue: next_i.key,
+        childSelectText: next_i.label
       });
     }
   },
@@ -165,14 +167,14 @@ var FormRuta = Form.create()(React.createClass({
   render: function () {
 
     const { getFieldDecorator, getFieldError, isFieldTouched  } = this.props.form;
+    const { childSelectValue, initialValue, childSelectText } = this.state;
     const editError = isFieldTouched('edit') && getFieldError('edit');
-    var valSelec, label = '';
+    var valSelec = '';
 
-    if(this.state.childSelectValue){
-      valSelec = {key:this.state.childSelectValue}
-    }else if(this.state.initialValue){
-      valSelec = this.state.initialValue;
-      label = this.state.initialValue.label;
+    if(childSelectValue){
+      valSelec = {key:childSelectValue,label:childSelectText}
+    }else if(initialValue){
+      valSelec = initialValue;
     }
 
     return (
@@ -206,7 +208,7 @@ var FormRuta = Form.create()(React.createClass({
                 help={editError || ''}
               >
                 {getFieldDecorator('edit', {
-                initialValue: label,
+                initialValue: valSelec.label,
                 rules: [{required: true,
                          whitespace: true,
                          min: '3',

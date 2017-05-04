@@ -191,7 +191,7 @@ var FormPersonaCarro = Form.create()(React.createClass({
       });
     }
 
-    if (next_i != prev_i){
+    if (JSON.stringify(next_i) != JSON.stringify(prev_i)){
       var params = {'id': next_i.key};
       var parreq = {
         method: 'GET',
@@ -200,7 +200,9 @@ var FormPersonaCarro = Form.create()(React.createClass({
       };
 
       this.setState({
-        initialValue: next_i
+        initialValue: next_i,
+        childSelV: next_i.key,
+        childSelT: next_i.label
       });
 
       this.getRemoteData(parreq);

@@ -69,6 +69,7 @@ var FormConductor = Form.create()(React.createClass({
       });
   },
 
+
   handleSelect: function (childSelectValue, childSelectText) {
     this.handleReset();
 
@@ -219,13 +220,19 @@ var FormConductor = Form.create()(React.createClass({
       });
     }
 
-    if (next_i != prev_i){
+    if (JSON.stringify(next_i) != JSON.stringify(prev_i)){
       var params = {'id': next_i.key};
       var parreq = {
         method: 'GET',
         url: 'apiFuec/idAgreement',
         params: params
       };
+
+      this.setState({
+        childSelectValue: next_i.key,
+        childSelectText: next_i.label,
+        initialValue: next_i
+      });
 
       this.getRemoteData(parreq);
     }
