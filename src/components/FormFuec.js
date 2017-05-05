@@ -2,7 +2,7 @@ import React from 'react'
 import SelectInput from './SelectInput.js'
 import {remoteData} from '../utils/mrequest';
 
-import { message, DatePicker, Modal,
+import { message, DatePicker, Modal, Table,
    Card , Form , Input , Col, Row, Button, Icon} from 'antd';
 
 const { RangePicker } = DatePicker;
@@ -25,6 +25,9 @@ const Fuec = Form.create()(React.createClass({
       newOption: 0,
       sending: false,
       changSel: {agree:{}, car:{}, route:{}},
+      tableAgreement: '',
+      tableCarPeson: '',
+      tableCar: '',
     }
   },
 
@@ -154,6 +157,7 @@ const Fuec = Form.create()(React.createClass({
 
   handleChange_agreement:  function (value) {
     var temp_changsel = this.state.changSel;
+    var params = {'id': value.key};
     temp_changsel.agree = value;
     this.setState({
       childSelV: value.key,
@@ -162,6 +166,59 @@ const Fuec = Form.create()(React.createClass({
       changeSel: temp_changsel
     });
     this.props.newOptCont(temp_changsel)
+
+    var parreq = {
+      method: 'GET',
+      url: 'apiFuec/idAgreement',
+      params: params
+    };
+
+    remoteData(parreq,
+      (data) => {
+        const columns = [
+          { title: 'Caracteristicas',
+            dataIndex: 'nomb',
+            key: 'nomb'
+          },
+          {
+            title: 'Datos',
+            dataIndex: 'dato',
+            key: 'dato',
+          }
+        ];
+
+        const res = data.result;
+        const dataArray =[{key: 1,nomb:'Número de contrato', dato:res.no_agreement},
+                    {key: 2,nomb:'Contratante', dato:res.name_person},
+                    {key: 3,nomb:'Objeto del contrato', dato:res.name_object_agreement}
+                   ]
+
+        if(res.id_type_agreement){
+          dataArray.push({key: 4, nomb:'Union - Tipo de contrato', dato:res.name_type_agreement});
+        }
+
+        if(res.id_person_agreement){
+          dataArray.push({key: 5,nomb:'Union - Con', dato:res.name_person_agreement})
+        }
+
+        this.setState({
+          tableAgreement: <div>
+                          <br/>
+                          <h4>Datos del Contrato</h4>
+                          <Table dataSource={dataArray}
+                          columns={columns}
+                          size="small"
+                          pagination={false}
+                          />
+                    </div>
+
+        });
+
+      },
+      (err) => {
+        message.error('NO se cargo el registro' +
+          '\n Error :' + err.message.error)
+    });
   },
 
   handleChange_route:  function (value) {
@@ -180,6 +237,107 @@ const Fuec = Form.create()(React.createClass({
       changeSel: temp_changsel
     });
     this.props.newOptCont(temp_changsel)
+
+    var params = {'id': value.key};
+    var parreq = {
+      method: 'GET',
+      url: 'apiFuec/idPersonCar',
+      params: params
+    };
+
+    remoteData(parreq,
+        (data) => {
+          var dataArray = [];
+
+          for (var x in data.result) {
+            let mod = data.result[x].mod;
+            let per = data.result[x].person;
+
+            var _mod = mod.name;
+            var _per = per.name;
+            dataArray.push({key: x, mod: _mod, person: _per});
+          }
+
+          const columns = [
+            { title: 'Persona',
+              dataIndex: 'person',
+              key: 'person'
+            },
+            {
+              title: 'Función',
+              dataIndex: 'mod',
+              key: 'mod',
+            }
+          ];
+
+          this.setState({
+            tableCarPeson: <div>
+                            <br/>
+                            <h4>Vehiculo Relación Personas - Funciones</h4>
+                            <Table dataSource={dataArray}
+                            columns={columns}
+                            size="small"
+                            pagination={false}
+                           />
+                         </div>
+
+          });
+
+        },
+        (err) => {
+          message.warning('NO se encontraron datos para cargar')
+        }
+    );
+
+    var parreq = {
+      method: 'GET',
+      url: 'apiFuec/idCar',
+      params: params
+    };
+
+    remoteData(parreq,
+        (data) => {
+          const res = data.result;
+          const columns = [
+            { title: 'Caracteristicas',
+              dataIndex: 'nomb',
+              key: 'nomb'
+            },
+            {
+              title: 'Datos',
+              dataIndex: 'dato',
+              key: 'dato',
+            }
+          ];
+
+          data =[ {nomb:'Numero de carro:', dato:res.no_car},
+                  {nomb:'Marca:', dato:res.brand_t},
+                  {nomb:'Licencia:', dato:res.license_plate},
+                  {nomb:'Modelo:', dato:res.model},
+                  {nomb:'Clase:', dato:res.class_car_t},
+                  {nomb:'Tarjeta de Operación:', dato:res.operation_card}
+                ]
+
+          this.setState({
+            tableCar: <div>
+                            <br/>
+                            <h4>Datos del Vehiculo</h4>
+                            <Table dataSource={data}
+                            columns={columns}
+                            size="small"
+                            pagination={false}
+                           />
+                      </div>
+          });
+
+
+        },
+        (err) => {
+          message.error('NO se cargaron los datos de la seleccion: ' +
+            '\n Error :' + err.message.error)
+        }
+    );
+
   },
 
   componentWillReceiveProps: function(nextProps) {
@@ -187,14 +345,17 @@ const Fuec = Form.create()(React.createClass({
     var prev = this.props.newOption;
     if (next != prev){
       this.setState({
-        newOption: this.state.newOption + 1
+        newOption: this.state.newOption + 1,
+        tableCarPeson: '',
+        tableCar: '',
       });
     }
   },
 
   render: function () {
     const { getFieldDecorator } = this.props.form;
-    const { previewVisible, file_pdf, no_fuec, input_uno, sending } = this.state;
+    const { previewVisible, file_pdf, no_fuec, tableCarPeson,
+            input_uno, sending, tableCar, tableAgreement } = this.state;
     const st = this.state.option;
     const children = [];
     var link_pdf='';
@@ -307,7 +468,7 @@ const Fuec = Form.create()(React.createClass({
                 </FormItem>
 
 
-                <Modal width='80%' style={{ top: 20  }} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                <Modal width='80%' style={{ top: 20 }} visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                   <iframe
                     src={file_pdf}
                     width="100%"
@@ -335,7 +496,15 @@ const Fuec = Form.create()(React.createClass({
 
             </Row>
           </Form>
-
+          <Row gutter={15}>
+            <Col span={12}>
+              {tableCarPeson}
+              {tableAgreement}
+            </Col>
+            <Col span={12}>
+              {tableCar}
+            </Col>
+          </Row>
         </Card>
       );
   }
