@@ -218,8 +218,6 @@ def api_fuec_new():
 
     file_pdf = makeTmp()
 
-    os.remove(tmp_companyLogo)
-    os.remove(tmp_img_sign)
 
     created_by = g_data._user_obj.id
 
@@ -251,6 +249,9 @@ def api_fuec_new():
 
     System.query.first().query.update(dict(secuence_payroll=(id_payroll + 1)))
     db.session.commit()
+
+    os.remove(tmp_companyLogo)
+    os.remove(tmp_img_sign)
 
     return jsonify({"jsonrpc": "2.0", "result": {"id": new_fuec_db.id,
                                                  "file_pdf": file_pdf.encode("base64"),

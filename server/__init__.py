@@ -13,11 +13,10 @@ from rbac import RBAC as r
 import config
 import libs.sessionPickle as newSession
 
+appEnv = 'PRO'
 #Params to config init  PRO - DEV
 if os.environ.has_key('FLASK'):
     appEnv = os.environ['FLASK']
-else:
-    appEnv = 'PRO'
 
 rbac = r.RBAC()
 db = SQLAlchemy()
@@ -29,8 +28,8 @@ CORS(app, supports_credentials=True)
 
 if appEnv == 'DEV':
     app.config.from_object(config.devConfig1)
-if appEnv == 'PRO':
-    app.config.from_object(config.devConfig1)
+else:
+    app.config.from_object(config.config)
 db.app = app
 db.init_app(app)
 rbac.init_app(app)
@@ -145,9 +144,5 @@ if not os.path.exists(path):
     os.chmod(path, int('700', 8))
 app.session_interface = newSession.PickleSessionInterface(path)
 
-if appEnv == 'DEV' and os.path.exists('server/app.db'):
-    os.remove('server/app.db')
-    init_db()
-
-if appEnv == 'PRO' and not os.path.exists('server/app.db'):
+if not os.path.exists('server/app.db'):
     init_db()
