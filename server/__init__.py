@@ -14,9 +14,13 @@ import config
 import libs.sessionPickle as newSession
 
 appEnv = 'PRO'
+appPath = ''
 #Params to config init  PRO - DEV
 if os.environ.has_key('FLASK'):
     appEnv = os.environ['FLASK']
+
+if os.environ.has_key('PATH_SOURCE'):
+    appPath = os.environ['PATH_SOURCE']
 
 rbac = r.RBAC()
 db = SQLAlchemy()
@@ -144,5 +148,6 @@ if not os.path.exists(path):
     os.chmod(path, int('700', 8))
 app.session_interface = newSession.PickleSessionInterface(path)
 
-if not os.path.exists('server/app.db'):
+
+if not os.path.exists(os.path.join(appPath, 'server/app.db')):
     init_db()

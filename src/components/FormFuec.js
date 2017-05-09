@@ -310,12 +310,12 @@ const Fuec = Form.create()(React.createClass({
             }
           ];
 
-          data =[ {nomb:'Numero de carro:', dato:res.no_car},
-                  {nomb:'Marca:', dato:res.brand_t},
-                  {nomb:'Licencia:', dato:res.license_plate},
-                  {nomb:'Modelo:', dato:res.model},
-                  {nomb:'Clase:', dato:res.class_car_t},
-                  {nomb:'Tarjeta de Operación:', dato:res.operation_card}
+          data =[ {key:1, nomb:'Numero de carro:', dato:res.no_car},
+                  {key:2, nomb:'Marca:', dato:res.brand_t},
+                  {key:3, nomb:'Licencia:', dato:res.license_plate},
+                  {key:4, nomb:'Modelo:', dato:res.model},
+                  {key:5, nomb:'Clase:', dato:res.class_car_t},
+                  {key:6, nomb:'Tarjeta de Operación:', dato:res.operation_card}
                 ]
 
           this.setState({

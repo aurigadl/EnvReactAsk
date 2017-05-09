@@ -41,12 +41,14 @@ class TmpPdfFuec:
         self.kind_agreement_1 = ' '
         self.kind_agreement_2 = ' '
         self.kind_agreement_3 = ' '
-        if kindAgreement[0] is 1:
-            self.kind_agreement_1 = 'X'
-        elif kindAgreement[0] is 2:
-            self.kind_agreement_2 = 'X'
-        elif kindAgreement[0] is 3:
-            self.kind_agreement_3 = 'X'
+
+        if isinstance(kindAgreement, (list)):
+            if kindAgreement[0] is 1:
+                self.kind_agreement_1 = 'X'
+            elif kindAgreement[0] is 2:
+                self.kind_agreement_2 = 'X'
+            elif kindAgreement[0] is 3:
+                self.kind_agreement_3 = 'X'
 
         self.kind_agreement_link = kind_agreement_link
 

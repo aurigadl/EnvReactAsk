@@ -20,7 +20,10 @@ from server.apiSystem.models import System
 from server.apiModality.models import Modality
 
 apiFuec = Blueprint('apiFuec', __name__)
+appPath = ''
 
+if os.environ.has_key('PATH_SOURCE'):
+    appPath = os.environ['PATH_SOURCE']
 
 # Method for App FUEC
 @apiFuec.route('/apiFuec/newFuec', methods=['PUT'])
@@ -127,8 +130,8 @@ def api_fuec_new():
         kindAgreement = kindAgreement_sql[0]
         agreem['id_type_agreement'] = agreement[7]
     else:
-        kindAgreement = None
-        agreem['id_type_agreement'] = None
+        kindAgreement = ' '
+        agreem['id_type_agreement'] = ' '
 
     if agreement[8]:
         person_a_sql = Person.query.with_entities(Person.first_name, Person.last_name) \
@@ -136,8 +139,8 @@ def api_fuec_new():
         name_person_agreement = person_a_sql[0] + ' ' + person_a_sql[1]
         kind_agreement_link = agreement[8]
     else:
-        name_person_agreement = None
-        kind_agreement_link = None
+        name_person_agreement = ' '
+        kind_agreement_link = ' '
 
     ruta = Ruta.query.with_entities(Ruta.name).filter(
         Ruta.id.in_(route)).all()
@@ -168,8 +171,9 @@ def api_fuec_new():
     id_contractor = str(agreem['id_person'])
 
     # tmp_company_log
+
     data_logo = companyLogo.split(',')[1].decode('base64')
-    tmp_companyLogo = 'server/tmp/' + str(int(random.random() * 1000000)) + '.png'
+    tmp_companyLogo = os.path.join(appPath,'server/tmp/',  str(int(random.random() * 1000000)) + '.png')
     fcl = open(tmp_companyLogo, 'wb')
     fcl.write(data_logo)
     fcl.close()
@@ -188,7 +192,7 @@ def api_fuec_new():
 
     img_sign = system_all.get_json()['sign']
     data_sign = img_sign.split(',')[1].decode('base64')
-    tmp_img_sign = 'server/tmp/' + str(int(random.random() * 1000000)) + '.png'
+    tmp_img_sign = os.path.join(appPath,'server/tmp/', str(int(random.random() * 1000000)) + '.png')
     fcs = open(tmp_img_sign, 'wb')
     fcs.write(data_sign)
     fcs.close()
@@ -315,7 +319,6 @@ def full_fuec_all():
         , 'car_brand'
         , 'car_class_car'
         , 'car_operation'
-
         , 'data_driver_json'
         , 'contractor_owner'), r)) for r in full_fuec_all]
 

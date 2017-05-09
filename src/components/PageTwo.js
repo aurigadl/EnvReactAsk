@@ -89,7 +89,7 @@ const PageTwo = React.createClass({
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#fuec">Fu</a></Button>
               </Tooltip>
 
-              <Tooltip placement="left" title={'Carro - Personas'}>
+              <Tooltip placement="left" title={'Vehiculo - Personas'}>
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#personaCarro">Pc</a></Button>
               </Tooltip>
 
@@ -101,7 +101,7 @@ const PageTwo = React.createClass({
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#marca">Ma</a></Button>
               </Tooltip>
 
-              <Tooltip placement="left" title={'Carro'}>
+              <Tooltip placement="left" title={'Vehiculo'}>
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#carro">Ca</a></Button>
               </Tooltip>
 
