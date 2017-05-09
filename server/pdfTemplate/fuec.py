@@ -1,3 +1,4 @@
+import os
 import fpdf
 from datetime import datetime
 
@@ -5,6 +6,11 @@ from datetime import datetime
 class TmpPdfFuec:
     # this will define the ELEMENTS that will
     # compose the template.
+    appPath = ''
+
+    if os.environ.has_key('PATH_SOURCE'):
+        appPath = os.environ['PATH_SOURCE']
+
     def __init__(self
                  , companyLogo=None
                  , code_fuec=None
@@ -99,7 +105,8 @@ class TmpPdfFuec:
         pdf.line(15, 265, 201, 265)
 
         # image min-transporte
-        pdf.image('server/image/min_transporte.jpg', 20, 24, 85, 13)
+        logo = os.path.join(self.appPath,'server/image/','min_transporte.jpg')
+        pdf.image(logo, 20, 24, 85, 13)
         pdf.image(self.companyLogo, 130, 18.5, 66, 23, 'png')
 
         # line split header
