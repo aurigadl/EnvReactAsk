@@ -84,6 +84,9 @@ const Fuec = Form.create()(React.createClass({
 
     form.validateFields((err, val) => {
       if (!err) {
+
+        message.info('Su solicitud se esta procesando');
+
         this.setState({ sending: true });
         const data=[]
         let i=0;
