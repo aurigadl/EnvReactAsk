@@ -93,16 +93,9 @@ const PageTwo = React.createClass({
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#personaCarro">Pc</a></Button>
               </Tooltip>
 
-              <Tooltip placement="left" title={'Ruta'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#ruta">Ru</a></Button>
-              </Tooltip>
-
-              <Tooltip placement="left" title={'Marca'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#marca">Ma</a></Button>
-              </Tooltip>
 
               <Tooltip placement="left" title={'Vehiculo'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#carro">Ca</a></Button>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#carro">Vi</a></Button>
               </Tooltip>
 
               <Tooltip placement="left" title={'Contrato'}>
@@ -111,6 +104,14 @@ const PageTwo = React.createClass({
 
               <Tooltip placement="left" title={'Persona'}>
                 <Button size={'large'} shape="circle" type="primary" ghost><a href="#persona">Pe</a></Button>
+              </Tooltip>
+
+              <Tooltip placement="left" title={'Ruta'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#ruta">Ru</a></Button>
+              </Tooltip>
+
+              <Tooltip placement="left" title={'Marca'}>
+                <Button size={'large'} shape="circle" type="primary" ghost><a href="#marca">Ma</a></Button>
               </Tooltip>
 
             </div>
