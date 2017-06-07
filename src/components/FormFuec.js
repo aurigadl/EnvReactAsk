@@ -88,7 +88,7 @@ const Fuec = Form.create()(React.createClass({
         message.info('Su solicitud se esta procesando');
 
         this.setState({ sending: true });
-        const data=[]
+        const data=[];
         let i=0;
         while(eval(`val.input_ruta_${i}`) !== undefined){
           let ruta  = eval(`val.input_ruta_${i}`).key;
@@ -144,6 +144,11 @@ const Fuec = Form.create()(React.createClass({
 
   handleReset: function (e) {
     this.props.form.resetFields();
+    this.setState({
+      tableAgreement: '',
+      tableCarPeson: '',
+      tableCar: '',
+    })
   },
 
   handlePreview: function(){
@@ -453,7 +458,8 @@ const Fuec = Form.create()(React.createClass({
                   />
                   )}
                 </FormItem>
-
+                <p>Solo se muestran los vehiculos que tiene un conductor 
+                  y un supervisor asociado.</p>
               </Col>
 
               <Col span={8}>

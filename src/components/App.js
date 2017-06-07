@@ -1,31 +1,36 @@
 import React from 'react'
 import {Link} from 'react-router'
 import auth from '../utils/auth'
-import {Affix, Popover, Layout, Icon, Button} from 'antd';
+import { Menu, Affix, Popover, Layout, Icon, Button} from 'antd';
+
+const SubMenu = Menu.SubMenu;
 const {Sider} = Layout;
 
 const content = (
-    <ul id='fistMenu'>
-      <li>
-        <Link to='/pageOne'>
-          <Button size={'large'} type="dashed" shape="circle" icon="setting"/>
-          Admin
-        </Link>
-      </li>
-      <li>
-        <Link to='/pageTwo'>
-          <Button size={'large'} type="dashed" shape="circle" icon="solution"/>
-          Fuec
-        </Link>
-      </li>
-      <li>
-        <Link to='/logout'>
-          <Button size={'large'} type="dashed" shape="circle" icon="logout"/>
-          Salir
-        </Link>
-      </li>
-    </ul>
-    );
+    <Menu mode="vertical">
+        <Menu.Item key="1">
+          <Link to='/pageOne'>
+            <Icon  type="setting"/>
+            Admin
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="2">
+          <Link to='/pageTwo'>
+            Fuec
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="3">
+          <Link to='/pageFour'>
+            Documentos
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="4">
+          <Link to='/logout'>
+            <Icon type="logout"/>
+            Salir
+          </Link>
+        </Menu.Item>
+    </Menu>);
 
 const App = React.createClass({
 
@@ -46,11 +51,11 @@ const App = React.createClass({
     auth.onChange = this.updateAuth
   },
 
-
-  onCollapse(collapsed){
-    this.setState({collapsed});
+  toggle(){
+    this.setState({
+      collapsed: !this.state.collapsed,
+    });
   },
-
 
   render(){
     if(!this.state.loggedIn){
@@ -62,9 +67,12 @@ const App = React.createClass({
         {this.state.loggedIn ? (
           <Sider  width={45} style={{color:'#108ee9', 'fontSize': '35px', background: '#dcdcdc', padding: '5px'}}>
             <Affix offsetTop={5} >
-              <Popover placement="leftTop" content={content} trigger="click">
-                <Icon type="appstore" />
-              </Popover>
+              <Icon
+                className="trigger"
+                type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'}
+                onClick={this.toggle}
+              />
+              {content}
             </Affix>
           </Sider>
         ) : null}

@@ -17,6 +17,13 @@ function redirectToDashboard(nextState, replace) {
 export default {
   component: require('../components/App').default,
   childRoutes: [
+    { path: '/pageOne',
+      getComponent: (nextState, cb) => {
+        require.ensure([], (require) => {
+          cb(null, require('../components/PageOne').default)
+        })
+      }
+    },
     { path: '/logout',
       getComponent: (nextState, cb) => {
         require.ensure([], (require) => {
@@ -61,17 +68,17 @@ export default {
                 })
               }
             },
-            { path: '/pageOne',
-              getComponent: (nextState, cb) => {
-                require.ensure([], (require) => {
-                  cb(null, require('../components/PageOne').default)
-                })
-              }
-            },
             { path: '/pageThree',
               getComponent: (nextState, cb) => {
                 require.ensure([], (require) => {
                   cb(null, require('../components/PageThree').default)
+                })
+              }
+            },
+            { path: '/pageFour',
+              getComponent: (nextState, cb) => {
+                require.ensure([], (require) => {
+                  cb(null, require('../components/PageFour').default)
                 })
               }
             }

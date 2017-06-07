@@ -2,8 +2,9 @@ import React from 'react'
 import AdminFormUser from './AdminFormUser.js'
 import AdminFormEmpresa from './AdminFormEmpresa.js'
 import AdminFormUserRoles from './AdminFormUserRoles.js'
+import AdminDocGestion from './AdminDocGestion.js'
 import {Row, Tooltip, message, Layout,
- Col, BackTop, Button, Icon} from 'antd';
+ Col, BackTop, Button, Icon, Input} from 'antd';
 
 const { Header, Content} = Layout;
 
@@ -29,16 +30,20 @@ const PageOne = React.createClass({
 
         <div className="hiperLink">
 
-          <Tooltip placement="left" title={'Carro'}>
+          <Tooltip placement="left" title={'Empresa'}>
             <Button size={'large'} shape="circle" type="primary" ghost><a href="#empresa">Em</a></Button>
           </Tooltip>
 
-          <Tooltip placement="left" title={'Contrato'}>
+          <Tooltip placement="left" title={'Usuario'}>
             <Button size={'large'} shape="circle" type="primary" ghost><a href="#usuario">Us</a></Button>
           </Tooltip>
 
-          <Tooltip placement="left" title={'Persona'}>
+          <Tooltip placement="left" title={'Roles'}>
             <Button size={'large'} shape="circle" type="primary" ghost><a href="#usuarioroles">Ur</a></Button>
+          </Tooltip>
+
+          <Tooltip placement="left" title={'Documentos'}>
+            <Button size={'large'} shape="circle" type="primary" ghost><a href="#documentos">Ur</a></Button>
           </Tooltip>
 
         </div>
@@ -60,14 +65,18 @@ const PageOne = React.createClass({
               id="usuario"
               onItemNew={this.handleNewElement} />
           </Col>
-          <Col span="12">
 
+          <Col span="12">
             <AdminFormUserRoles
               id="usuarioroles"
               newOption={this.state.newOption}
               onItemNew={this.handleNewElement} />
           </Col>
+
+
         </Row>
+
+        <AdminDocGestion />
 
         <BackTop/>
 

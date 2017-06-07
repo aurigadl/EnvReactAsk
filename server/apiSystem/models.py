@@ -27,6 +27,7 @@ class System(db.Model):
     secuence_contract = db.Column(db.Integer, default=0)
     secuence_payroll = db.Column(db.Integer, default=0)
     secuence_vehicle = db.Column(db.Integer, default=0)
+    document_gestion = db.Column(db.Text, default=0)
 
     def __init__(self
                  , name=None
@@ -42,6 +43,7 @@ class System(db.Model):
                  , secuence_contract=False
                  , secuence_payroll=False
                  , secuence_vehicle=False
+                 , document_gestion=None
                  ):
         if name:
             self.name = name.lower()
@@ -69,6 +71,8 @@ class System(db.Model):
             self.secuence_payroll = secuence_payroll
         if secuence_vehicle:
             self.secuence_vehicle = secuence_vehicle
+        if document_gestion:
+            self.document_gestion = document_gestion
 
     def get_json(self):
         return dict(name=self.name
