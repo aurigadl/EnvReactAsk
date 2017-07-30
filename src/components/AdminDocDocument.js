@@ -1,28 +1,39 @@
 import React from 'react'
-import {remoteData} from '../utils/mrequest';
+import Reflux from 'reflux';
+import confDocActions from '../actions/confDoc';
+import confDocStore from '../stores/confDoc';
 
-import { Card, Form, Button, Switch, Icon, Input, Radio } from 'antd';
+import { Card, Form, Button, Switch, Icon, Input, Radio, message} from 'antd';
 
 const FormItem = Form.Item;
 const ButtonGroup = Button.Group;
 
 let uuid = 0;
 const AdminDocDocument = Form.create()(React.createClass({
+
+  mixins: [Reflux.connect(confDocStore, 'confDocStore')],
+
+  componentDidMount: function () {
+    const { form } = this.props;
+    uuid = this.state.confDocStore.docConf.length;
+    form.setFieldsValue({
+      keys: Array.from(Array(uuid)).map((e,i)=>i+1),
+    });
+  },
+
   remove: function (k) {
-    const { form  } = this.props;
+    const { form } = this.props;
     // can use data-binding to get
     const keys = form.getFieldValue('keys');
     // We need at least one passenger
     if (keys.length === 1) {
       return;
     }
-
     // can use data-binding to set
     form.setFieldsValue({
       keys: keys.filter(key => key !== k),
     });
   },
-
 
   add: function () {
     uuid++;
@@ -35,13 +46,36 @@ const AdminDocDocument = Form.create()(React.createClass({
     form.setFieldsValue({ keys: nextKeys, });
   },
 
-  handleChDoc: function(e){
-     console.log('doc letra: ' + e.target.value);
+  hasErrors: function(fieldsError) {
+    return Object.keys(fieldsError).some(field => fieldsError[field]);
   },
 
 
+  handleSubmitForm: function (e) {
+    e.preventDefault();
+    const form = this.props.form;
+    form.validateFields((err, val) => {
+      if (!err) {
+        var data = [];
+        var i = 1;
+        do{
+          let ident = eval(`val.ident_${i}`);
+          let name  = eval(`val.names_${i}`);
+          let state = eval(`val.active_${i}`);
+          data.push({'estado': state,
+                    'ident':  ident,
+                    'nombre': name});
+          i++;
+        }while(eval(`val.ident_${i}`) !== undefined)
+        message.success('Se grabaron los identificadores de documentos');
+        confDocActions.saveConfDocument(data);
+      }
+    });
+  },
+
   render: function () {
-    const { getFieldDecorator, getFieldValue  } = this.props.form;
+    const { getFieldDecorator, getFieldValue, getFieldsError } = this.props.form;
+    const { docConf } = this.state.confDocStore ;
 
     const formItemLayout = {
       labelCol: {
@@ -55,65 +89,73 @@ const AdminDocDocument = Form.create()(React.createClass({
     getFieldDecorator('keys', { initialValue: []  });
     const keys = getFieldValue('keys');
     const formItems = keys.map((k, index) => {
-      return (
-        <Card
-          key={k}
-          style={{ 'marginBottom': 15 }}
-          extra={ <Icon
+    const vali = docConf[index]? true : false;
+    const icon = <Icon
                     className="dynamic-delete-button"
                     type="minus-circle-o"
-                    disabled={keys.length === 1}
-                    onClick={() => this.remove(k)}
-                  /> }
-          bordered={true}>
+                    onClick={()=>this.remove(k)} />
+      return (
+          <Card
+            key={k}
+            style={{ 'marginBottom': 15 }}
+            bordered={true}>
 
-          <FormItem {...formItemLayout}
-            label='Estado'
-          >
-            <Switch/>
-          </FormItem>
+            { vali ? null : icon }
 
-          <FormItem
-            {...formItemLayout}
-            label='Nombre'
-            required={false}
-          >
-            {getFieldDecorator(`names-${k}`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: "Ingrese un nombre o borre este registro.",
-            }],
+            <FormItem {...formItemLayout}
+              label='Estado'>
+              {getFieldDecorator(`active_${k}`, {
+                initialValue: vali ? docConf[index].estado : null,
+                valuePropName: 'checked'
+                })(
+                <Switch/>
+              )}
+            </FormItem>
 
-            })(
-            <Input placeholder="Nombre del documento" style={{ width: '60%', marginRight: 8  }} />
+            <FormItem
+              {...formItemLayout}
+              label='Nombre'
+              required={true}
+            >
+              {getFieldDecorator(`names_${k}`, {
+                  validateTrigger: ['onChange', 'onBlur'],
+                  initialValue: vali ? docConf[index].nombre : null,
+                  rules: [{
+                  required: true,
+                  whitespace: true,
+                  message: "Ingrese un nombre o borre este registro.",
+                }],
+              })(
+              <Input
+                disabled={vali}
+                placeholder="Nombre del documento"
+                 style={{ width: '60%', marginRight: 8  }} />
+              )}
+            </FormItem>
 
-            )}
-          </FormItem>
+            <FormItem
+              {...formItemLayout}
+              label='Idenfiticación'
+              required={true}>
 
-          <FormItem
-            {...formItemLayout}
-            label='Idenfiticación'
-            required={false}
-          >
-            {getFieldDecorator(`names-${k}`, {
-            validateTrigger: ['onChange', 'onBlur'],
-            rules: [{
-              required: true,
-              whitespace: true,
-              message: "Ingrese una identificación o borre este registro.",
-            }],
+              {getFieldDecorator(`ident_${k}`, {
+                  validateTrigger: ['onChange', 'onBlur'],
+                  initialValue: vali ? docConf[index].ident : null,
+                  rules: [{
+                  required: true,
+                  whitespace: true,
+                  message: "Ingrese una identificación o borre este registro.",
+                }],
+              })(
+              <Input
+                disabled={vali}
+                placeholder="Identificación del documento"
+                style={{ width: '60%', marginRight: 8  }} />
+              )}
+            </FormItem>
 
-            })(
-            <Input placeholder="Nombre del documento" style={{ width: '60%', marginRight: 8  }} />
-
-            )}
-          </FormItem>
-
-
-        </Card>
-        );
+          </Card>
+          );
     });
 
     return (
@@ -144,8 +186,11 @@ const AdminDocDocument = Form.create()(React.createClass({
           </FormItem>
 
           <ButtonGroup>
-            <Button>Recargar</Button>
-            <Button type="primary">Grabar</Button>
+            <Button onClick={confDocActions.fetchConfDocument}>Restaurar</Button>
+            <Button
+              disabled={this.hasErrors(getFieldsError())}
+              type="primary"
+              htmlType="submit"> Grabar </Button>
           </ButtonGroup>
 
         </Form>

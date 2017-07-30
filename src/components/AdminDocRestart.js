@@ -1,9 +1,10 @@
 import React from 'react'
 import moment from 'moment';
 
-import { Switch, Radio, Form, DatePicker } from 'antd';
+import { Button, Switch, Radio, Form, DatePicker } from 'antd';
 
 const RadioGroup = Radio.Group;
+const ButtonGroup = Button.Group;
 const FormItem = Form.Item;
 const dateFormat = 'YYYY/MM/DD';
 
@@ -46,6 +47,12 @@ const AdminDocRestart = React.createClass({
             defaultValue={moment('2018/01/01', dateFormat)}
             format={dateFormat} />
         </FormItem>
+
+        <ButtonGroup>
+          <Button>Restaurar</Button>
+          <Button type="primary">Grabar</Button>
+        </ButtonGroup>
+
       </Form>
       );
   }

@@ -4,6 +4,7 @@ import {remoteData} from '../utils/mrequest';
 import { Card, Form, Button, Select, Switch, Icon, Input, Radio } from 'antd';
 
 const FormItem = Form.Item;
+const ButtonGroup = Button.Group;
 let uuid = 0;
 
 const AdminDocGroups = Form.create()(React.createClass({
@@ -130,13 +131,16 @@ const AdminDocGroups = Form.create()(React.createClass({
             Grupos de trabajo:
           </h4>
           <p>
-            Como todo organización se cuenta con un numero de secciones, o departamentos que generan, reciben y clasifican la información. Con las siguiente opción podras crear un sin numero de las mismas, identificandolas como gustes para interpretar mejor los documentos que tienen, crean o reciben.
+            Como todo organización se cuenta con un numero de secciones, o
+            departamentos que generan, reciben y clasifican la información.
+            Con las siguiente opción podras crear un sin numero de las mismas,
+            identificandolas como gustes.
           </p>
           <p>
             Escoge entre numeros o letras para identificarlos. Esta secuencia que
             selecciones no cambia. Si en algun momento no quieres usarlo mas,
             puedes inactivarlo pero no borrarlo. de lo contrario se perderia
-            la realcion de clasificación con los elementos ya existentes.
+            la realción de clasificación con los elementos ya existentes.
           </p>
           <p>
             Existe la opción para seguir la secuencia de otro grupo de trabajo,
@@ -159,6 +163,12 @@ const AdminDocGroups = Form.create()(React.createClass({
               <Icon type="plus" /> Agregar Grupo
             </Button>
           </FormItem>
+
+          <ButtonGroup>
+            <Button>Restaurar</Button>
+            <Button type="primary">Grabar</Button>
+          </ButtonGroup>
+
         </Form>
       );
   }

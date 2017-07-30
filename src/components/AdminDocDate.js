@@ -1,7 +1,8 @@
 import React from 'react'
-import { Switch, Radio, Form  } from 'antd';
+import { Switch, Radio, Form, Button} from 'antd';
 
 const RadioGroup = Radio.Group;
+const ButtonGroup = Button.Group;
 const FormItem = Form.Item;
 
 const AdminDocDate = React.createClass({
@@ -19,7 +20,7 @@ const AdminDocDate = React.createClass({
     return (
       <Form onSubmit={this.handleSubmitForm}>
         <h4>
-          Generación de Secuencia por Fecha :
+          Secuencia por Fecha :
         </h4>
         <p>
           Selecciona una fecha para generar una secuencias y distinguir
@@ -33,13 +34,20 @@ const AdminDocDate = React.createClass({
           <Switch defaultChecked={false}/>
         </FormItem>
 
-        <FormItem {...formItemLayout}>
+        <FormItem {...formItemLayout}
+          label="Secuencia" >
           <RadioGroup>
             <Radio value={1}>Año/Mes/Día</Radio>
             <Radio value={2}>Año/Mes</Radio>
             <Radio value={3}>Año</Radio>
           </RadioGroup>
         </FormItem>
+
+        <ButtonGroup>
+          <Button>Restaurar</Button>
+          <Button type="primary">Grabar</Button>
+        </ButtonGroup>
+
       </Form>
       );
   }

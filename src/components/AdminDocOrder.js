@@ -1,7 +1,8 @@
 import React from 'react'
-import { Select, Form } from 'antd';
+import { Button, Select, Form } from 'antd';
 
 const FormItem = Form.Item;
+const ButtonGroup = Button.Group;
 const Option = Select.Option;
 
 const AdminDocDate = React.createClass({
@@ -80,6 +81,12 @@ const AdminDocDate = React.createClass({
             <Option value="4">Comodin</Option>
           </Select>
         </FormItem>
+
+        <ButtonGroup>
+          <Button>Restaurar</Button>
+          <Button type="primary">Grabar</Button>
+        </ButtonGroup>
+
       </div>
       );
   }

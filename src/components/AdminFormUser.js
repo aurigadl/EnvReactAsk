@@ -6,7 +6,7 @@ import { message, Checkbox ,Card, Form,
   Input , Col, Row, Button, Icon} from 'antd';
 
 const FormItem = Form.Item;
-const InputGroup = Input.Group;
+const ButtonGroup = Button.Group;
 
 var AdminFormUser = Form.create()(React.createClass({
 
@@ -232,15 +232,14 @@ var AdminFormUser = Form.create()(React.createClass({
                 </Col>
               </Row>
 
-              <FormItem>
+              <ButtonGroup>
                 <Button
                   disabled={this.hasErrors(getFieldsError())}
                   type="primary"
-                  htmlType="submit"
-                  size="large">Grabar</Button>
+                  htmlType="submit">Grabar</Button>
 
-                <Button style={{ marginLeft: 8  }} htmlType="reset" size="large" onClick={this.handleReset}>Limpiar</Button>
-              </FormItem>
+                <Button htmlType="reset" onClick={this.handleReset}>Limpiar</Button>
+              </ButtonGroup>
 
             </Row>
           </Form>

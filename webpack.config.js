@@ -11,7 +11,7 @@ module.exports = {
   cache: true,
   entry: {
     module: path.join(srcPath, 'module.js'),
-    common: ['react', 'react-router', 'alt']
+    common: ['react', 'react-router']
   },
 
   resolve: {

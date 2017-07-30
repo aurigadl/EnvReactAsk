@@ -334,13 +334,10 @@ var AdminFormEmpresa = Form.create()(React.createClass({
                   )}
                 </FormItem>
 
-                <FormItem>
                   <Button
                     disabled={this.hasErrors(getFieldsError())}
                     type="primary"
-                    htmlType="submit"
-                    size="large">Grabar</Button>
-                </FormItem>
+                    htmlType="submit">Grabar</Button>
 
               </Col>
             </Row>

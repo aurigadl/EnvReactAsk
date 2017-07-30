@@ -1,8 +1,9 @@
 import React from 'react'
-import { Switch, Radio, Form, Input} from 'antd';
+import { Button, Switch, Radio, Form, Input} from 'antd';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
+const ButtonGroup = Button.Group;
 
 const AdminDocOption = React.createClass({
 
@@ -20,7 +21,7 @@ const AdminDocOption = React.createClass({
     return (
       <Form onSubmit={this.handleSubmitForm}>
         <h4>
-          Generación de Secuencia Adicional:
+          Secuencia Adicional:
         </h4>
         <p>
           Crea un numero de identificacion general o una secuencia con el
@@ -42,14 +43,20 @@ const AdminDocOption = React.createClass({
           </Radio.Group>
         </FormItem>
         <FormItem label="Fijo o Variable" {...formItemLayout}>
-          <Radio.Group defaultValue="horizontal">
+          <RadioGroup defaultValue="horizontal">
             <Radio.Button value="0">Fijo</Radio.Button>
             <Radio.Button value="1">Variable</Radio.Button>
-          </Radio.Group>
+          </RadioGroup>
         </FormItem>
         <FormItem label='Valor Actual o Inicial' {...formItemLayout}>
           <Input placeholder="Valor actual"/>
         </FormItem>
+
+        <ButtonGroup>
+          <Button>Restaurar</Button>
+          <Button type="primary">Grabar</Button>
+        </ButtonGroup>
+
       </Form>
       );
   }

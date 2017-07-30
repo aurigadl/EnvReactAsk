@@ -10,9 +10,7 @@ const CheckboxGroup = Checkbox.Group;
 
 var AdminFormUserRoles = Form.create()(React.createClass({
 
-  getInitialState: function () {
-    return {
-      childSelectValue: undefined,
+  getInitialState: function () { return { childSelectValue: undefined,
       childSelectText: '',
       indeterminate: false,
       plainOptions :[],
@@ -181,13 +179,10 @@ var AdminFormUserRoles = Form.create()(React.createClass({
                 )}
               </FormItem>
 
-              <FormItem>
-                <Button
-                  disabled={this.hasErrors(getFieldsError())}
-                  type="primary"
-                  htmlType="submit"
-                  size="large">Grabar</Button>
-              </FormItem>
+              <Button
+                disabled={this.hasErrors(getFieldsError())}
+                type="primary"
+                htmlType="submit">Grabar</Button>
 
             </Row>
           </Form>
