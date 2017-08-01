@@ -149,7 +149,15 @@ var FormMarcaAuto = Form.create()(React.createClass({
   render: function () {
 
     const { getFieldDecorator, getFieldError, isFieldTouched  } = this.props.form;
+    const { childSelectValue, initialValue, childSelectText } = this.state;
     const marcaEditError = isFieldTouched('marcaedit') && getFieldError('marcaedit');
+    var valSelec = '';
+
+    if(childSelectValue){
+      valSelec = {key:childSelectValue,label:childSelectText}
+    }else if(initialValue){
+      valSelec = initialValue;
+    }
 
     return (
         <Card id={this.props.id} title="Marca de Carros" bordered={false}>
@@ -182,11 +190,7 @@ var FormMarcaAuto = Form.create()(React.createClass({
                 help={marcaEditError || ''}
               >
                 {getFieldDecorator('marcaedit', {
-                rules: [{required: true,
-                         whitespace: true,
-                         min: '3',
-                         initialValue: '',
-                         message: 'Ingrese un nuevo nombre de marca!'}],
+                initialValue: valSelec.label,
                 })(
                 <Input
                   placeholder="Editar o crear..."
