@@ -9,13 +9,19 @@ const content = (
       <li>
         <Link to='/pageOne'>
           <Button size={'large'} type="dashed" shape="circle" icon="setting"/>
-          Admin
+          Empresa
         </Link>
       </li>
       <li>
         <Link to='/pageTwo'>
           <Button size={'large'} type="dashed" shape="circle" icon="solution"/>
           Fuec
+        </Link>
+      </li>
+      <li>
+        <Link to='/pageThree#fuec'>
+          <Button size={'large'} type="dashed" shape="circle" icon="search"/>
+         Consultar
         </Link>
       </li>
       <li>

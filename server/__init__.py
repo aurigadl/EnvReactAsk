@@ -31,7 +31,7 @@ app = Flask(__name__, static_folder=config.config.STATIC_FOLDER, static_url_path
 CORS(app, supports_credentials=True)
 
 if appEnv == 'DEV':
-    app.config.from_object(config.devConfig1)
+    app.config.from_object(config.devConfig2)
 else:
     app.config.from_object(config.config)
 db.app = app
@@ -82,8 +82,9 @@ def allowed_file_extensions(filename):
 def init_db():
     """Initializes the database."""
     db.create_all()
-    new_role_basic = Role('candidate', 'They may present test')
-    new_role_admon = Role('admon', 'They may to do anything')
+    new_role_basic = Role('fuec', 'Puede Crear')
+    new_role_basic = Role('consulta', 'Consultar registros')
+    new_role_admon = Role('empresa', 'Administracion')
     new_user_admon = User(email='admon@mi.co',
                           password='Abcd1234',
                           display_name='User admin system',

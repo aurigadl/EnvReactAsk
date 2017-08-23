@@ -17,7 +17,7 @@ const PageThree = React.createClass({
             <Header>
               <h2>
                 <Icon type="solution"/>
-                  Tabla - Contrato Del Servicio Público
+                  Contrato Del Servicio Público
               </h2>
             </Header>
             <TableFuec/>

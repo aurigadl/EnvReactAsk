@@ -85,34 +85,47 @@ const PageTwo = React.createClass({
 
             <div className="hiperLink">
 
-              <Tooltip placement="left" title={'Fuec'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#fuec">Fu</a></Button>
-              </Tooltip>
+              <a href="#fuec">
+                <Tooltip placement="left" title={'Fuec'}>
+                  <Button size={'large'} shape="circle" type="primary" ghost>Fu</Button>
+                </Tooltip>
+              </a>
 
-              <Tooltip placement="left" title={'Vehiculo - Personas'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#personaCarro">Pc</a></Button>
-              </Tooltip>
+              <a href="#personaCarro">
+                <Tooltip placement="left" title={'Vehiculo - Personas'}>
+                  <Button size={'large'} shape="circle" type="primary" ghost>Pc</Button>
+                </Tooltip>
+              </a>
 
+              <a href="#carro">
+                <Tooltip placement="left" title={'Vehiculo'}>
+                  <Button size={'large'} shape="circle" type="primary" ghost>Vi</Button>
+                </Tooltip>
+              </a>
 
-              <Tooltip placement="left" title={'Vehiculo'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#carro">Vi</a></Button>
-              </Tooltip>
+              <a href="#contrato">
+                <Tooltip placement="left" title={'Contrato'}>
+                  <Button size={'large'} shape="circle" type="primary" ghost>Co</Button>
+                </Tooltip>
+              </a>
 
-              <Tooltip placement="left" title={'Contrato'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#contrato">Co</a></Button>
-              </Tooltip>
+              <a href="#persona">
+                <Tooltip placement="left" title={'Persona'}>
+                  <Button size={'large'} shape="circle" type="primary" ghost>Pe</Button>
+                </Tooltip>
+              </a>
 
-              <Tooltip placement="left" title={'Persona'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#persona">Pe</a></Button>
-              </Tooltip>
+              <a href="#ruta">
+                <Tooltip placement="left" title={'Ruta'}>
+                  <Button size={'large'} shape="circle" type="primary" ghost>Ru</Button>
+                </Tooltip>
+              </a>
 
-              <Tooltip placement="left" title={'Ruta'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#ruta">Ru</a></Button>
-              </Tooltip>
-
-              <Tooltip placement="left" title={'Marca'}>
-                <Button size={'large'} shape="circle" type="primary" ghost><a href="#marca">Ma</a></Button>
-              </Tooltip>
+              <a href="#marca">
+                <Tooltip placement="left" title={'Marca'}>
+                  <Button size={'large'} shape="circle" type="primary" ghost>Ma</Button>
+                </Tooltip>
+              </a>
 
             </div>
 

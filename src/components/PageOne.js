@@ -28,19 +28,23 @@ const PageOne = React.createClass({
       <Content>
 
         <div className="hiperLink">
+          <a href="#empresa">
+            <Tooltip placement="left" title={'Carro'}>
+              <Button size={'large'} shape="circle" type="primary" ghost>Em</Button>
+            </Tooltip>
+          </a>
 
-          <Tooltip placement="left" title={'Carro'}>
-            <Button size={'large'} shape="circle" type="primary" ghost><a href="#empresa">Em</a></Button>
-          </Tooltip>
+          <a href="#usuario">
+            <Tooltip placement="left" title={'Contrato'}>
+              <Button size={'large'} shape="circle" type="primary" ghost>Us</Button>
+            </Tooltip>
+          </a>
 
-          <Tooltip placement="left" title={'Contrato'}>
-            <Button size={'large'} shape="circle" type="primary" ghost><a href="#usuario">Us</a></Button>
-          </Tooltip>
-
-          <Tooltip placement="left" title={'Persona'}>
-            <Button size={'large'} shape="circle" type="primary" ghost><a href="#usuarioroles">Ur</a></Button>
-          </Tooltip>
-
+          <a href="#usuarioroles">
+            <Tooltip placement="left" title={'Persona'}>
+              <Button size={'large'} shape="circle" type="primary" ghost>Ur</Button>
+            </Tooltip>
+          </a>
         </div>
 
         <Header>
