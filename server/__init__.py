@@ -82,18 +82,23 @@ def allowed_file_extensions(filename):
 def init_db():
     """Initializes the database."""
     db.create_all()
-    new_role_basic = Role('fuec', 'Puede Crear')
+
+    new_role_fuec = Role('fuec', 'Puede Crear')
     new_role_basic = Role('consulta', 'Consultar registros')
     new_role_admon = Role('empresa', 'Administracion')
+
     new_user_admon = User(email='admon@mi.co',
                           password='Abcd1234',
                           display_name='User admin system',
                           active=True,
                           new_user=False)
+
     new_user_admon.add_role(new_role_admon)
-    db.session.add(new_role_basic)
-    db.session.add(new_role_admon)
+    new_user_admon.add_role(new_role_fuec )
+    new_user_admon.add_role(new_role_basic)
+
     db.session.add(new_user_admon)
+
     db.session.commit()
     db.create_all()
 
@@ -124,7 +129,7 @@ def page_not_found(error):
 
 # ------ Routes
 @app.route('/', methods=['GET'])
-@rbac.allow(['anonymous'], methods=['GET'], with_children=False)
+@rbac.allow(['anonymous'], methods=['GET'])
 def root():
     return app.send_static_file('index.html')
 

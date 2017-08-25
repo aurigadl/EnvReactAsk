@@ -27,7 +27,7 @@ if os.environ.has_key('PATH_SOURCE'):
 
 # Method for App FUEC
 @apiFuec.route('/apiFuec/newFuec', methods=['PUT'])
-@rbac.allow(['admon', 'candidate'], methods=['PUT'])
+@rbac.allow(['empresa', 'fuec'], methods=['PUT'])
 def api_fuec_new():
     json_data = request.get_json()
     data_drivers = []
@@ -264,7 +264,7 @@ def api_fuec_new():
 
 
 @apiFuec.route('/apiFuec/fullAllFuec', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def full_fuec_all():
     full_fuec_all = Fuec.query.join(User).with_entities(
         Fuec.id
@@ -326,7 +326,7 @@ def full_fuec_all():
 
 
 @apiFuec.route('/apiFuec/fileFuec', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def fuec_file():
     fuec = request.args.get('fuec')
 

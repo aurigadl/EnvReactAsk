@@ -9,7 +9,7 @@ from server.apiPersonCar.models import PersonCar
 apiCar = Blueprint('apiCar', __name__)
 
 @apiCar.route('/apiFuec/allClassCar', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def api_fuec_classcar_all():
     classCar_all = ClassCar.query.with_entities(ClassCar.id, ClassCar.name).all()
     if not len(classCar_all):
@@ -25,7 +25,7 @@ def api_fuec_classcar_all():
 
 
 @apiCar.route('/apiFuec/allCar', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def Car_all():
     Car_all = Car.query.with_entities(Car.id, Car.license_plate).all()
     dict_Car_all = [dict(zip(('id', 'nomb'), r)) for r in Car_all]
@@ -33,7 +33,7 @@ def Car_all():
 
 
 @apiCar.route('/apiFuec/allCarWithPerson', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def Car_with_person_all():
     Car_all = Car.query.join(PersonCar).with_entities(Car.id, Car.license_plate).filter(
         Car.id == PersonCar.id_car).all()
@@ -42,7 +42,7 @@ def Car_with_person_all():
 
 
 @apiCar.route('/apiFuec/newCar', methods=['POST'])
-@rbac.allow(['admon', 'candidate'], methods=['POST'])
+@rbac.allow(['empresa', 'fuec'], methods=['POST'])
 def new_Car():
     data = {}
     json_data = request.get_json()
@@ -107,7 +107,7 @@ def new_Car():
 
 
 @apiCar.route('/apiFuec/updateIdCar', methods=['PUT'])
-@rbac.allow(['admon', 'candidate'], methods=['PUT'])
+@rbac.allow(['empresa', 'fuec'], methods=['PUT'])
 def update_Car_id():
     data = {}
     json_data = request.get_json()
@@ -152,7 +152,7 @@ def update_Car_id():
 
 
 @apiCar.route('/apiFuec/idCar', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def car_id():
     Car_id = request.args.get('id')
     if Car_id and Car_id.isdigit() and len(Car_id) != 0:
@@ -183,7 +183,7 @@ def car_id():
 
 
 @apiCar.route('/apiFuec/deleteIdCar', methods=['DELETE'])
-@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
+@rbac.allow(['empresa', 'fuec'], methods=['DELETE'])
 def delete_car_id():
     json_data = request.get_json()
 

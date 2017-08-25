@@ -8,7 +8,7 @@ apiPerson = Blueprint('apiPerson', __name__)
 
 
 @apiPerson.route('/apiFuec/allIdType', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def api_fuec_IdType_all():
     idType_all = IdType.query.with_entities(IdType.id, IdType.name).all()
     if not len(idType_all):
@@ -23,7 +23,7 @@ def api_fuec_IdType_all():
 
 
 @apiPerson.route('/apiFuec/allPerson', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def person_all():
     rows = []
     person_all = Person.query.with_entities(Person.id, Person.first_name, Person.last_name).all()
@@ -38,7 +38,7 @@ def person_all():
 
 
 @apiPerson.route('/apiFuec/newPerson', methods=['POST'])
-@rbac.allow(['admon', 'candidate'], methods=['POST'])
+@rbac.allow(['empresa', 'fuec'], methods=['POST'])
 def new_person():
     json_data = request.get_json()
 
@@ -117,7 +117,7 @@ def new_person():
 
 
 @apiPerson.route('/apiFuec/updateIdPerson', methods=['PUT'])
-@rbac.allow(['admon', 'candidate'], methods=['PUT'])
+@rbac.allow(['empresa', 'fuec'], methods=['PUT'])
 def update_person_id():
     data = {}
     json_data = request.get_json()
@@ -179,7 +179,7 @@ def update_person_id():
 
 
 @apiPerson.route('/apiFuec/idPerson', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def user_id():
     person_id = request.args.get('id')
     if person_id and person_id.isdigit() and len(person_id) != 0:
@@ -223,7 +223,7 @@ def user_id():
 
 
 @apiPerson.route('/apiFuec/deleteIdPerson', methods=['DELETE'])
-@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
+@rbac.allow(['empresa', 'fuec'], methods=['DELETE'])
 def delete_person_id():
     json_data = request.get_json()
 

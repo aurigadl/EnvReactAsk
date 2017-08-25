@@ -8,7 +8,7 @@ apiSystem = Blueprint('apiSystem', __name__)
 
 # Method for App FUEC
 @apiSystem.route('/apiSystem/allSystem', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
+@rbac.allow(['empresa'], methods=['GET'])
 def api_fuec_marcas_all():
     system_all = System.query.first()
     if system_all is None:
@@ -31,7 +31,7 @@ def api_fuec_marcas_all():
 
 
 @apiSystem.route('/apiSystem/updateSystem', methods=['PUT'])
-@rbac.allow(['admon'], methods=['PUT'])
+@rbac.allow(['empresa'], methods=['PUT'])
 def update_marca_id():
     data = {}
     json_data = request.get_json()

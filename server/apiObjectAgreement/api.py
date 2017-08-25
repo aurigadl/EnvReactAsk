@@ -7,7 +7,7 @@ apiObjectAgreement = Blueprint('apiObjectAgreement', __name__)
 
 # Method for App FUEC
 @apiObjectAgreement.route('/apiFuec/allObjectAgreement', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def api_fuec_apiObjectAgreement():
     apiObjectAgreement = ObjectAgreement.query.with_entities(ObjectAgreement.id, ObjectAgreement.name).all()
     if not len(apiObjectAgreement):

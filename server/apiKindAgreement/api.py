@@ -7,7 +7,7 @@ apiKindAgreement = Blueprint('apiKindAgreement', __name__)
 
 # Method for App FUEC
 @apiKindAgreement.route('/apiFuec/allKindAgreement', methods=['GET'])
-@rbac.allow(['admon','candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def api_KindAgreement_all():
     Kind_agreement_all = KindAgreement.query.with_entities(KindAgreement.id, KindAgreement.name).all()
     if not len(Kind_agreement_all):

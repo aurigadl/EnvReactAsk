@@ -8,7 +8,7 @@ apiModality = Blueprint('apiModality', __name__)
 
 # Method for App FUEC
 @apiModality.route('/apiFuec/allModality', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def api_fuec_modality_all():
     modality_all = Modality.query.with_entities(Modality.id, Modality.name).all()
     if not len(modality_all):

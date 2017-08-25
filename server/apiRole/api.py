@@ -5,7 +5,7 @@ apiRole = Blueprint('apiRole', __name__)
 
 
 @apiRole.route('/apiAdmin/allRoles', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
+@rbac.allow(['empresa'], methods=['GET'])
 def api_admin_roles_all():
     roles_all = Role.query.with_entities(Role.id, Role.name, Role.description).all()
     dict_roles = [dict(zip(('id', 'nomb', 'description'), r)) for r in roles_all]
@@ -13,7 +13,7 @@ def api_admin_roles_all():
 
 
 @apiRole.route('/apiAdmin/allUserRole', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
+@rbac.allow(['empresa'], methods=['GET'])
 def api_admin_user_roles_all():
     roles_user_all = User.query.with_entities(Role.id, Role.name, User.id, User.email).join(Role, User.roles).all()
     dict_roles = [dict(zip(('role_id', 'role_name', 'user_id', 'user_name'), r)) for r in roles_user_all]
@@ -21,7 +21,7 @@ def api_admin_user_roles_all():
 
 
 @apiRole.route('/apiAdmin/idUserRole', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
+@rbac.allow(['empresa'], methods=['GET'])
 def api_admin_user_roles_id():
     user_id = request.args.get('id')
     if user_id and user_id.isdigit() and len(user_id) != 0:
@@ -33,7 +33,7 @@ def api_admin_user_roles_id():
 
 
 @apiRole.route('/apiAdmin/setUserRole', methods=['PUT'])
-@rbac.allow(['admon'], methods=['PUT'])
+@rbac.allow(['empresa'], methods=['PUT'])
 def api_admin_user_roles_update():
     json_data = request.get_json()
     value_data = json_data.get('params').items()

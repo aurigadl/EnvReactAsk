@@ -7,7 +7,7 @@ apiMarca = Blueprint('apiMarca', __name__)
 
 # Method for App FUEC
 @apiMarca.route('/apiFuec/allMarca', methods=['GET'])
-@rbac.allow(['admon','candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def api_fuec_marcas_all():
     marcas_all = Marca.query.with_entities(Marca.id, Marca.name).all()
     dict_marcas = [dict(zip(('id', 'nomb'), r)) for r in marcas_all]
@@ -15,7 +15,7 @@ def api_fuec_marcas_all():
 
 
 @apiMarca.route('/apiFuec/newMarca', methods=['POST'])
-@rbac.allow(['admon','candidate'], methods=['POST'])
+@rbac.allow(['empresa', 'fuec'], methods=['POST'])
 def api_fuec_new_marca():
     json_data = request.get_json()
 
@@ -42,7 +42,7 @@ def api_fuec_new_marca():
 
 
 @apiMarca.route('/apiFuec/updateIdMarca', methods=['PUT'])
-@rbac.allow(['admon','candidate'], methods=['PUT'])
+@rbac.allow(['empresa', 'fuec'], methods=['PUT'])
 def update_marca_id():
     json_data = request.get_json()
 
@@ -68,7 +68,7 @@ def update_marca_id():
 
 
 @apiMarca.route('/apiFuec/deleteIdMarca', methods=['DELETE'])
-@rbac.allow(['admon','candidate'], methods=['DELETE'])
+@rbac.allow(['empresa', 'fuec'], methods=['DELETE'])
 def delete_marca_id():
     json_data = request.get_json()
 

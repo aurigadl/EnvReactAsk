@@ -8,7 +8,7 @@ apiRuta = Blueprint('apiRuta', __name__)
 
 # Method for App FUEC
 @apiRuta.route('/apiFuec/allRuta', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def api_fuec_rutas_all():
     rutas_all = Ruta.query.with_entities(Ruta.id, Ruta.name).all()
     dict_rutas = [dict(zip(('id', 'nomb'), r)) for r in rutas_all]
@@ -16,7 +16,7 @@ def api_fuec_rutas_all():
 
 
 @apiRuta.route('/apiFuec/newRuta', methods=['POST'])
-@rbac.allow(['admon', 'candidate'], methods=['POST'])
+@rbac.allow(['empresa', 'fuec'], methods=['POST'])
 def api_fuec_new_ruta():
     json_data = request.get_json()
 
@@ -43,7 +43,7 @@ def api_fuec_new_ruta():
 
 
 @apiRuta.route('/apiFuec/updateIdRuta', methods=['PUT'])
-@rbac.allow(['admon', 'candidate'], methods=['PUT'])
+@rbac.allow(['empresa', 'fuec'], methods=['PUT'])
 def update_ruta_id():
     json_data = request.get_json()
 
@@ -69,7 +69,7 @@ def update_ruta_id():
 
 
 @apiRuta.route('/apiFuec/deleteIdRuta', methods=['DELETE'])
-@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
+@rbac.allow(['empresa', 'fuec'], methods=['DELETE'])
 def delete_ruta_id():
     json_data = request.get_json()
 

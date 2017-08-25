@@ -18,7 +18,7 @@ def create_token(user):
 
 
 @apiUser.route('/apiUser/login', methods=['POST', 'OPTIONS'])
-@rbac.allow(['anonymous'], methods=['POST', 'OPTIONS'], with_children=False)
+@rbac.allow(['anonymous'], methods=['POST', 'OPTIONS'])
 def login():
     user_data = {}
     if not hasattr(request.json, 'get') or len(request.json) == 0:
@@ -69,7 +69,7 @@ def login():
 
 
 @apiUser.route('/apiUser/newuser', methods=['POST'])
-@rbac.allow(['admon'], methods=['POST'], with_children=False)
+@rbac.allow(['empresa'], methods=['POST'], with_children=False)
 def new_user():
     json_data = request.get_json()
 
@@ -116,7 +116,7 @@ def new_user():
 
 
 @apiUser.route('/apiUser/allUser', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
+@rbac.allow(['empresa'], methods=['GET'])
 def user_all():
     user_all = User.query.with_entities(User.id, User.email).all()
     dict_users = [dict(zip(('id', 'nomb'), r)) for r in user_all]
@@ -124,7 +124,7 @@ def user_all():
 
 
 @apiUser.route('/apiUser/idUser', methods=['GET'])
-@rbac.allow(['admon'], methods=['GET'])
+@rbac.allow(['empresa'], methods=['GET'])
 def user_id():
     user_id = request.args.get('id')
     if user_id and user_id.isdigit() and len(user_id) != 0:
@@ -137,7 +137,7 @@ def user_id():
 
 
 @apiUser.route('/apiUser/updateMyUser', methods=['PUT'])
-@rbac.allow(['candidate', 'admon'], methods=['PUT'])
+@rbac.allow(['empresa', 'consulta', 'fuec'], methods=['PUT'])
 def update_user():
     json_data = request.get_json()
     if json_data.has_key('params') and len(json_data.get('params')) != 0:
@@ -156,7 +156,7 @@ def update_user():
 
 
 @apiUser.route('/apiUser/updateIdUser', methods=['PUT'])
-@rbac.allow(['admon'], methods=['PUT'])
+@rbac.allow(['empresa'], methods=['PUT'])
 def update_user_id():
     json_data = request.get_json()
 
@@ -182,7 +182,7 @@ def update_user_id():
 
 
 @apiUser.route('/apiUser/logout', methods=['PUT', 'OPTIONS'])
-@rbac.allow(['candidate', 'admon'], methods=['PUT', 'OPTIONS'])
+@rbac.allow(['empresa', 'consulta', 'fuec'], methods=['PUT', 'OPTIONS'])
 def logout_user():
     session.clear()
     return jsonify({"jsonrpc": "2.0", "result": True}), 202

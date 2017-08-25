@@ -10,7 +10,7 @@ apiPersonCar = Blueprint('apiPersonCar', __name__)
 
 
 @apiPersonCar.route('/apiFuec/idPersonCar', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def user_id():
     id_car = request.args.get('id')
     dict_all = []
@@ -35,7 +35,7 @@ def user_id():
 
 
 @apiPersonCar.route('/apiFuec/updatePersonCar', methods=['PUT'])
-@rbac.allow(['admon', 'candidate'], methods=['PUT'])
+@rbac.allow(['empresa', 'fuec'], methods=['PUT'])
 def update_person_id():
     data = {}
     json_data = request.get_json()

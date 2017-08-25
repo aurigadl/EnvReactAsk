@@ -10,7 +10,7 @@ apiAgreement = Blueprint('apiAgreement', __name__)
 
 
 @apiAgreement.route('/apiFuec/allAgreement', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def Agreement_all():
     Agreement_all = Agreement.query.with_entities(Agreement.id, Agreement.no_agreement).all()
     dict_agreement_all = [dict(zip(('id', 'nomb'), r)) for r in Agreement_all]
@@ -18,7 +18,7 @@ def Agreement_all():
 
 
 @apiAgreement.route('/apiFuec/fileAgreement', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def agreement_file():
     agreement = request.args.get('agreement')
 
@@ -37,7 +37,7 @@ def agreement_file():
 
 
 @apiAgreement.route('/apiFuec/fullAllAgreement', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def full_Agreement_all():
     full_Agreement_all = Agreement.query.join(KindAgreement, User, Person, ObjectAgreement) \
         .with_entities(Agreement.id,
@@ -67,7 +67,7 @@ def full_Agreement_all():
 
 
 @apiAgreement.route('/apiFuec/newAgreement', methods=['POST'])
-@rbac.allow(['admon', 'candidate'], methods=['POST'])
+@rbac.allow(['empresa', 'fuec'], methods=['POST'])
 def new_agreement():
     data = {}
     json_data = request.get_json()
@@ -129,7 +129,7 @@ def new_agreement():
 
 
 @apiAgreement.route('/apiFuec/updateIdAgreement', methods=['PUT'])
-@rbac.allow(['admon', 'candidate'], methods=['PUT'])
+@rbac.allow(['empresa', 'fuec'], methods=['PUT'])
 def update_agreement_id():
     data = {}
     json_data = request.get_json()
@@ -175,7 +175,7 @@ def update_agreement_id():
 
 
 @apiAgreement.route('/apiFuec/idAgreement', methods=['GET'])
-@rbac.allow(['admon', 'candidate'], methods=['GET'])
+@rbac.allow(['empresa', 'fuec'], methods=['GET'])
 def user_id():
     agreem = {}
     agreement_id = request.args.get('id')
@@ -240,7 +240,7 @@ def user_id():
 
 
 @apiAgreement.route('/apiFuec/deleteIdAgreement', methods=['DELETE'])
-@rbac.allow(['admon', 'candidate'], methods=['DELETE'])
+@rbac.allow(['empresa', 'fuec'], methods=['DELETE'])
 def delete_agreement_id():
     json_data = request.get_json()
 
