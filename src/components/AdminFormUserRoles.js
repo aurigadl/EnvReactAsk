@@ -2,7 +2,8 @@ import React from 'react'
 import SelectInput from './SelectInput.js';
 import {remoteData} from '../utils/mrequest';
 
-import {Card , Input, Form , Row, Button, Checkbox} from 'antd';
+import {Card , Input, Form , Row, Button,
+        message , Checkbox} from 'antd';
 
 const FormItem = Form.Item;
 const CheckboxGroup = Checkbox.Group;
@@ -40,8 +41,8 @@ var AdminFormUserRoles = Form.create()(React.createClass({
         })
       },
       (err) => {
-        message.error('NO se cargaron los registros: '+ brand_new +
-          '\n Error :' + err.message.error)
+        message.error('NO se cargaron los roles existentes' +
+          '\n Error :' + err.message.error);
       }
     );
   },
@@ -70,8 +71,8 @@ var AdminFormUserRoles = Form.create()(React.createClass({
           this.onChange(chlist);
         },
         (err) => {
-          message.error('NO se cargaron los registros: '+ brand_new +
-            '\n Error :' + err.message.error)
+          message.error('NO se cargaron los registros de los roles' +
+            '\n Error :' + err.message.error);
         }
       );
     }
@@ -108,7 +109,6 @@ var AdminFormUserRoles = Form.create()(React.createClass({
 
     })
   },
-
 
   onChange : function(checkedList) {
     this.setState({

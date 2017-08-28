@@ -16,7 +16,7 @@ class AccessControlList(object):
         self._exempt = []
         self.seted = False
 
-    def allow(self, role, method, resource, with_children=True):
+    def allow(self, role, method, resource, with_children=False):
         """Add allowing rules.
 
         :param role: Role of this rule.
@@ -24,12 +24,13 @@ class AccessControlList(object):
         :param resource: Resource also view function.
         :param with_children: Allow role's children in rule as well
                               if with_children is `True`
-        """
         if with_children:
             for r in role.get_children():
                 permission = (r.get_name(), method, resource)
                 if not permission in self._allowed:
                     self._allowed.append(permission)
+        """
+        
         if role == 'anonymous':
             permission = (role, method, resource)
         else:
